@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Plus, Copy, Check, Link, Eye, UserCheck, X, Send, Mail, Phone, TrendingUp } from 'lucide-react';
+import { PhoneInput } from '@/components/PhoneInput';
 
 const API_URL = 'http://localhost:8000/api/v1';
 const FRONTEND_URL = 'http://localhost:5173';
@@ -76,7 +77,7 @@ interface Invitation {
 }
 
 export function InvitationsPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [contactStats, setContactStats] = useState<ContactStats>({ total: 0, converted: 0, pending: 0, conversionRate: 0 });
@@ -98,24 +99,19 @@ export function InvitationsPage() {
   const [sendEmail, setSendEmail] = useState('');
   const [sendPhone, setSendPhone] = useState('');
   const [sendMessage, setSendMessage] = useState(DEFAULT_MESSAGE_FR);
-  const [sendLang, setSendLang] = useState<'fr' | 'en' | 'it'>('fr');
+  const [sendLang, setSendLang] = useState<string>('fr');
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [fetchWithAuth]);
 
   async function fetchData() {
-    if (!token) return;
     try {
       setLoading(true);
       const [invRes, contactsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/invitations`, {
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`${API_URL}/admin/contacts`, {
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        }),
+        fetchWithAuth(`${API_URL}/admin/invitations`),
+        fetchWithAuth(`${API_URL}/admin/contacts`),
       ]);
       if (invRes.ok) {
         const data = await invRes.json();
@@ -138,7 +134,6 @@ export function InvitationsPage() {
   }
 
   async function createInvitation() {
-    if (!token) return;
     try {
       setCreating(true);
       const body: Record<string, unknown> = {
@@ -149,12 +144,8 @@ export function InvitationsPage() {
       if (expiresInDays > 0) body.expiresInDays = expiresInDays;
       if (targetEmail.trim()) body.targetEmail = targetEmail.trim();
 
-      const res = await fetch(`${API_URL}/admin/invitations`, {
+      const res = await fetchWithAuth(`${API_URL}/admin/invitations`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(body),
       });
 
@@ -188,7 +179,7 @@ export function InvitationsPage() {
   }
 
   async function handleSend() {
-    if (!token || !sendingInvId) return;
+    if (!sendingInvId) return;
     if (sendMethod === 'email' && !sendEmail.trim()) return;
     if (sendMethod === 'sms' && !sendPhone.trim()) return;
 
@@ -205,12 +196,8 @@ export function InvitationsPage() {
         body.phone = sendPhone.trim();
       }
 
-      const res = await fetch(`${API_URL}/admin/invitations/${sendingInvId}/send`, {
+      const res = await fetchWithAuth(`${API_URL}/admin/invitations/${sendingInvId}/send`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(body),
       });
 
@@ -424,14 +411,10 @@ export function InvitationsPage() {
                 ) : (
                   <div>
                     <label className="label">Numéro de téléphone</label>
-                    <input
-                      type="tel"
+                    <PhoneInput
                       value={sendPhone}
-                      onChange={(e) => setSendPhone(e.target.value)}
-                      className="input"
-                      placeholder="+33612345678"
+                      onChange={setSendPhone}
                     />
-                    <p className="text-xs text-gray-500 mt-1">Format international avec indicatif pays</p>
                   </div>
                 )}
 
@@ -439,11 +422,13 @@ export function InvitationsPage() {
                   <label className="label">Langue</label>
                   <select
                     value={sendLang}
-                    onChange={(e) => setSendLang(e.target.value as 'fr' | 'en' | 'it')}
+                    onChange={(e) => setSendLang(e.target.value)}
                     className="input"
                   >
                     <option value="fr">Français</option>
                     <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                    <option value="es">Español</option>
                     <option value="it">Italiano</option>
                   </select>
                 </div>

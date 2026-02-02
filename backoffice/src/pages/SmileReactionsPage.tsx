@@ -37,7 +37,7 @@ interface SmileConfig {
 }
 
 export function SmileReactionsPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [reactions, setReactions] = useState<SmileReaction[]>([]);
   const [configs, setConfigs] = useState<SmileConfig[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,22 +46,15 @@ export function SmileReactionsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [fetchWithAuth]);
 
   async function fetchData() {
-    if (!token) return;
-
     try {
       setLoading(true);
 
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-
       const [reactionsRes, configsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/smile-reactions`, { headers }),
-        fetch(`${API_URL}/admin/smile-configs`, { headers }),
+        fetchWithAuth(`${API_URL}/admin/smile-reactions`),
+        fetchWithAuth(`${API_URL}/admin/smile-configs`),
       ]);
 
       if (reactionsRes.ok) {
@@ -81,17 +74,12 @@ export function SmileReactionsPage() {
   }
 
   async function handleRevoke(reactionId: number) {
-    if (!token) return;
     const reason = prompt('Raison de la révocation (optionnel) :');
     if (reason === null) return; // cancelled
 
     try {
-      const res = await fetch(`${API_URL}/admin/smile-reactions/${reactionId}/revoke`, {
+      const res = await fetchWithAuth(`${API_URL}/admin/smile-reactions/${reactionId}/revoke`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ reason: reason || undefined }),
       });
 

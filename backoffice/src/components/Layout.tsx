@@ -29,6 +29,7 @@ const navItems = [
   { to: '/smile-reactions', icon: Smile, label: 'Réactions Smile' },
   { to: '/invitations', icon: Link, label: 'Invitations' },
   { to: '/generate-pub', icon: Clapperboard, label: 'Spot Pub' },
+  { to: '/pages', icon: FileText, label: 'Pages' },
   { to: '/sublym', icon: Building2, label: 'Sublym' },
   { to: '/settings', icon: Settings, label: 'Paramètres' },
 ];

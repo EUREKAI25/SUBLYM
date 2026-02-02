@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import fr from '@/locales/fr.json';
 import en from '@/locales/en.json';
 import it from '@/locales/it.json';
@@ -9,6 +9,8 @@ type Locale = 'fr' | 'en' | 'it' | 'de' | 'es';
 type Translations = typeof fr;
 
 const translations: Record<Locale, Translations> = { fr, en, it, de, es };
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 // Fonction pour récupérer une valeur imbriquée par chemin (ex: "landing.title")
 function getNestedValue(obj: Record<string, unknown>, path: string): string {
@@ -63,6 +65,7 @@ function getInitialLocale(): Locale {
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+  const [apiTexts, setApiTexts] = useState<Record<string, string>>({});
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
@@ -70,12 +73,33 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = newLocale;
   }, []);
 
+  // Fetch texts from API when locale changes
+  useEffect(() => {
+    const fetchTexts = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/config/texts/${locale}`);
+        if (res.ok) {
+          const data = await res.json();
+          setApiTexts(data);
+        }
+      } catch {
+        // Silently fall back to local JSON
+      }
+    };
+    fetchTexts();
+  }, [locale]);
+
   const t = useCallback(
     (key: string, params?: Record<string, string | number>): string => {
+      // First try API texts (flat keys like "landing.title")
+      if (apiTexts[key]) {
+        return interpolate(apiTexts[key], params);
+      }
+      // Fallback to local JSON
       const text = getNestedValue(translations[locale] as unknown as Record<string, unknown>, key);
       return interpolate(text, params);
     },
-    [locale]
+    [locale, apiTexts]
   );
 
   return (

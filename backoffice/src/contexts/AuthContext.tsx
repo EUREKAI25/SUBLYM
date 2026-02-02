@@ -17,6 +17,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
+  fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -92,6 +93,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('admin_user');
   }, []);
 
+  const fetchWithAuth = useCallback(async (url: string, options: RequestInit = {}): Promise<Response> => {
+    const currentToken = localStorage.getItem('admin_token');
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
+        ...options.headers,
+      },
+    });
+
+    if (response.status === 401) {
+      logout();
+      window.location.href = '/login';
+    }
+
+    return response;
+  }, [logout]);
+
   return (
     <AuthContext.Provider value={{
       admin,
@@ -100,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       login,
       logout,
+      fetchWithAuth,
     }}>
       {children}
     </AuthContext.Provider>

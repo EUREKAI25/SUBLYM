@@ -9,3 +9,4 @@ export { SettingsPage } from './SettingsPage';
 export { FinancesPage } from './FinancesPage';
 export { GeneratePubPage } from './GeneratePubPage';
 export { SublymPage } from './SublymPage';
+export { PagesPage } from './PagesPage';

@@ -44,7 +44,7 @@ const levels = [
 ];
 
 export function UsersPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -60,11 +60,9 @@ export function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [token, page, filters]);
+  }, [fetchWithAuth, page, filters]);
 
   async function fetchUsers() {
-    if (!token) return;
-
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -82,12 +80,7 @@ export function UsersPage() {
         params.append('email', search);
       }
 
-      const response = await fetch(`${API_URL}/admin/users?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetchWithAuth(`${API_URL}/admin/users?${params}`);
 
       if (response.ok) {
         const data = await response.json();

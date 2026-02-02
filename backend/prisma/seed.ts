@@ -3,8 +3,27 @@
 
 import { PrismaClient, Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
+
+function flattenJSON(obj: Record<string, any>, prefix = ''): { key: string; value: string }[] {
+  const result: { key: string; value: string }[] = [];
+  for (const k of Object.keys(obj)) {
+    const fullKey = prefix ? `${prefix}.${k}` : k;
+    if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
+      result.push(...flattenJSON(obj[k], fullKey));
+    } else {
+      result.push({ key: fullKey, value: String(obj[k]) });
+    }
+  }
+  return result;
+}
 
 async function main() {
   console.log('🌱 Seeding database...');
@@ -297,73 +316,31 @@ async function main() {
   console.log('✅ Test accounts seeded');
 
   // ============================================
-  // TEXTS (Sample - FR)
+  // TEXTS (from locale JSON files)
   // ============================================
   
-  const textsFR: { key: string; value: string }[] = [
-    // Hero
-    { key: 'hero.title', value: 'Visualisez vos rêves' },
-    { key: 'hero.subtitle', value: 'La loi d\'attraction en action' },
-    { key: 'hero.cta', value: 'Commencer gratuitement' },
+  const localesDir = path.resolve(__dirname, '../../frontend/src/locales');
+  const languages = ['fr', 'en', 'de', 'es', 'it'];
+  
+  for (const lang of languages) {
+    const filePath = path.join(localesDir, `${lang}.json`);
+    if (!fs.existsSync(filePath)) {
+      console.log(`⚠️  Locale file not found: ${filePath}, skipping`);
+      continue;
+    }
+    const raw = fs.readFileSync(filePath, 'utf-8');
+    const json = JSON.parse(raw);
+    const entries = flattenJSON(json);
     
-    // Auth
-    { key: 'auth.login.title', value: 'Connexion' },
-    { key: 'auth.login.email_placeholder', value: 'Votre email' },
-    { key: 'auth.login.submit', value: 'Recevoir le lien magique' },
-    { key: 'auth.login.check_email', value: 'Vérifiez votre boîte mail' },
-    { key: 'auth.register.title', value: 'Inscription' },
-    { key: 'auth.register.firstname_placeholder', value: 'Prénom' },
-    { key: 'auth.register.lastname_placeholder', value: 'Nom' },
-    { key: 'auth.register.submit', value: 'Créer mon compte' },
-    { key: 'auth.register.rgpd_consent', value: 'J\'accepte les conditions générales et la politique de confidentialité' },
-    
-    // Emails
-    { key: 'email.magic_link.subject', value: 'Votre lien de connexion SUBLYM' },
-    { key: 'email.magic_link.body', value: '<h1>Bienvenue sur SUBLYM</h1><p>Cliquez sur le lien ci-dessous pour vous connecter :</p><p><a href="{{link}}">Se connecter</a></p><p>Ce lien expire dans 30 minutes.</p>' },
-    { key: 'email.welcome.subject', value: 'Bienvenue sur SUBLYM, {{firstName}} !' },
-    { key: 'email.generation_ready.subject', value: 'Votre rêve est prêt !' },
-    
-    // Dream
-    { key: 'dream.create.title', value: 'Décrivez votre rêve' },
-    { key: 'dream.create.placeholder', value: 'Je rêve de...' },
-    { key: 'dream.create.submit', value: 'Générer ma vidéo' },
-    { key: 'dream.create.reject_label', value: 'Éléments à éviter (optionnel)' },
-    
-    // Photos
-    { key: 'photos.upload.title', value: 'Vos photos' },
-    { key: 'photos.upload.instruction', value: 'Uploadez 3 à 5 photos de vous (visage bien visible)' },
-    { key: 'photos.upload.submit', value: 'Valider mes photos' },
-    { key: 'photos.verify.success', value: 'Vos photos ont été validées' },
-    { key: 'photos.verify.error', value: 'Vous n\'avez pas été identifié dans cette photo, recommencez avec une autre photo' },
-    
-    // Pricing
-    { key: 'pricing.title', value: 'Nos formules' },
-    { key: 'pricing.monthly', value: '/mois' },
-    { key: 'pricing.yearly', value: '/an' },
-    { key: 'pricing.subscribe', value: 'S\'abonner' },
-    { key: 'pricing.current', value: 'Formule actuelle' },
-    
-    // Errors
-    { key: 'error.generic', value: 'Une erreur est survenue. Veuillez réessayer.' },
-    { key: 'error.unauthorized', value: 'Vous devez être connecté pour accéder à cette page.' },
-    { key: 'error.subscription_required', value: 'Un abonnement est requis pour cette fonctionnalité.' },
-    { key: 'error.generation_limit', value: 'Vous avez atteint votre limite de générations ce mois-ci.' },
-    { key: 'error.photos_not_verified', value: 'Vos photos doivent être vérifiées avant de générer.' },
-    
-    // Smile
-    { key: 'smile.offer.title', value: 'Offre Smile' },
-    { key: 'smile.offer.description', value: 'Obtenez 3 mois Premium gratuits en partageant votre réaction !' },
-    { key: 'smile.offer.ended', value: 'L\'offre Smile est terminée pour votre pays.' },
-  ];
-
-  for (const text of textsFR) {
-    await prisma.text.upsert({
-      where: { lang_key: { lang: 'fr', key: text.key } },
-      update: { value: text.value },
-      create: { lang: 'fr', key: text.key, value: text.value },
-    });
+    for (const entry of entries) {
+      await prisma.text.upsert({
+        where: { lang_key: { lang, key: entry.key } },
+        update: { value: entry.value },
+        create: { lang, key: entry.key, value: entry.value },
+      });
+    }
+    console.log(`✅ Texts (${lang.toUpperCase()}) seeded: ${entries.length} entries`);
   }
-  console.log('✅ Texts (FR) seeded');
 
   // ============================================
   // STATIC PAGES
@@ -388,9 +365,9 @@ async function main() {
 
   for (const page of staticPages) {
     await prisma.staticPage.upsert({
-      where: { slug_lang: { slug: page.slug, lang: page.lang } },
+      where: { slug_lang_version: { slug: page.slug, lang: page.lang, version: 1 } },
       update: page,
-      create: page,
+      create: { ...page, version: 1 },
     });
   }
   console.log('✅ Static pages seeded');

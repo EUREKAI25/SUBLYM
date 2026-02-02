@@ -472,7 +472,7 @@ const sendInvitationSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().optional(),
   message: z.string().max(500).optional(),
-  lang: z.enum(['fr', 'en', 'it']).optional(),
+  lang: z.enum(['fr', 'en', 'de', 'es', 'it']).optional(),
 });
 
 app.post('/invitations/:id/send', zValidator('json', sendInvitationSchema), async (c) => {
@@ -1010,6 +1010,101 @@ app.delete('/legal-documents/:id', superadminMiddleware, async (c) => {
   });
 
   return c.json({ success: true });
+});
+
+
+// ============================================
+// PAGES CRUD (Versioned static pages)
+// ============================================
+
+// GET /admin/pages - list all pages grouped by slug+lang
+app.get('/pages', async (c) => {
+  const pages = await prisma.staticPage.findMany({
+    orderBy: [{ slug: 'asc' }, { lang: 'asc' }, { version: 'desc' }],
+  });
+  const grouped: Record<string, any> = {};
+  for (const page of pages) {
+    const key = `${page.slug}:${page.lang}`;
+    if (!grouped[key]) {
+      grouped[key] = { slug: page.slug, lang: page.lang, title: page.title, currentVersion: page.version, enabled: page.enabled, updatedAt: page.updatedAt };
+    }
+  }
+  return c.json({ pages: Object.values(grouped) });
+});
+
+// GET /admin/pages/:slug
+app.get('/pages/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  const lang = c.req.query('lang');
+  const where: any = { slug };
+  if (lang) where.lang = lang;
+  const pages = await prisma.staticPage.findMany({ where, orderBy: [{ lang: 'asc' }, { version: 'desc' }] });
+  if (pages.length === 0) throw new NotFoundError('Page');
+  const byLang: Record<string, any> = {};
+  for (const page of pages) { if (!byLang[page.lang]) byLang[page.lang] = page; }
+  return c.json({ slug, pages: Object.values(byLang) });
+});
+
+// GET /admin/pages/:slug/versions
+app.get('/pages/:slug/versions', async (c) => {
+  const slug = c.req.param('slug');
+  const lang = c.req.query('lang') || 'fr';
+  const versions = await prisma.staticPage.findMany({
+    where: { slug, lang }, orderBy: { version: 'desc' },
+    select: { id: true, version: true, title: true, enabled: true, publishedBy: true, createdAt: true, updatedAt: true },
+  });
+  return c.json({ slug, lang, versions });
+});
+
+// PUT /admin/pages/:slug - publish new version
+const updatePageSchema = z.object({
+  lang: z.string().min(2).max(5),
+  title: z.string().min(1),
+  content: z.string().min(1),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+});
+
+app.put('/pages/:slug', zValidator('json', updatePageSchema), async (c) => {
+  const { admin } = getAdminContext(c);
+  const slug = c.req.param('slug');
+  const data = c.req.valid('json');
+  const current = await prisma.staticPage.findFirst({ where: { slug, lang: data.lang }, orderBy: { version: 'desc' } });
+  const newVersion = current ? current.version + 1 : 1;
+  if (current) { await prisma.staticPage.updateMany({ where: { slug, lang: data.lang }, data: { enabled: false } }); }
+  const page = await prisma.staticPage.create({
+    data: { slug, lang: data.lang, title: data.title, content: data.content, metaTitle: data.metaTitle, metaDescription: data.metaDescription, version: newVersion, enabled: true, publishedBy: admin.id },
+  });
+  await prisma.auditLog.create({ data: { adminId: admin.id, action: 'PAGE_PUBLISH', target: `page:${slug}:${data.lang}:v${newVersion}`, details: { slug, lang: data.lang, version: newVersion } } });
+  return c.json({ success: true, page });
+});
+
+// ============================================
+// PRICING (Update pricing levels)
+// ============================================
+
+app.put('/pricing', superadminMiddleware, async (c) => {
+  const { admin } = getAdminContext(c);
+  const body = await c.req.json();
+  const { levels } = body;
+  if (!Array.isArray(levels)) throw new ValidationError('levels must be an array');
+  const results = [];
+  for (const level of levels) {
+    if (level.id) {
+      const updated = await prisma.pricingLevel.update({
+        where: { id: level.id },
+        data: { name: level.name, description: level.description, photosMin: level.photosMin, photosMax: level.photosMax, keyframesCount: level.keyframesCount, videoEnabled: level.videoEnabled, scenesCount: level.scenesCount, generationsPerMonth: level.generationsPerMonth, subliminalEnabled: level.subliminalEnabled, priceMonthly: level.priceMonthly, priceYearly: level.priceYearly, priceOneShot: level.priceOneShot, currency: level.currency || 'EUR', enabled: level.enabled, displayOrder: level.displayOrder, badgeText: level.badgeText },
+      });
+      results.push(updated);
+    } else {
+      const created = await prisma.pricingLevel.create({
+        data: { level: level.level, name: level.name, description: level.description, photosMin: level.photosMin || 3, photosMax: level.photosMax || 5, keyframesCount: level.keyframesCount || 5, videoEnabled: level.videoEnabled ?? true, scenesCount: level.scenesCount || 5, generationsPerMonth: level.generationsPerMonth || 1, subliminalEnabled: level.subliminalEnabled ?? false, priceMonthly: level.priceMonthly, priceYearly: level.priceYearly, priceOneShot: level.priceOneShot, currency: level.currency || 'EUR', enabled: level.enabled ?? true, displayOrder: level.displayOrder || 0, badgeText: level.badgeText },
+      });
+      results.push(created);
+    }
+  }
+  await prisma.auditLog.create({ data: { adminId: admin.id, action: 'PRICING_UPDATE', details: { levelsCount: levels.length } } });
+  return c.json({ success: true, levels: results });
 });
 
 export { app as adminRoutes };

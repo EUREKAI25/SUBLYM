@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, Send, Loader2, ArrowLeft, ArrowRight, Camera, Image, User, Calendar, Check, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import {
@@ -967,6 +967,14 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
               </>
             )}
           </button>
+
+          {/* Lien "J'ai deja un compte" */}
+          <p className="text-center text-sm text-charcoal-600 mt-6">
+            {t('login.alreadyHaveAccount')}{' '}
+            <Link to="/login" className="text-wine-600 hover:text-wine-800 font-medium underline underline-offset-4">
+              {t('login.loginHere')}
+            </Link>
+          </p>
         </form>
       </div>
     </div>

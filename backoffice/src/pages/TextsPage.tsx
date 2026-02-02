@@ -21,6 +21,8 @@ interface Language {
 const defaultLanguages: Language[] = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'it', name: 'Italiano', flag: '🇮🇹' },
 ];
 
@@ -31,7 +33,7 @@ const getDefaultLang = () => {
 };
 
 export function TextsPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [texts, setTexts] = useState<Text[]>([]);
   const [languages, setLanguages] = useState<Language[]>(defaultLanguages);
   const [selectedLang, setSelectedLang] = useState(getDefaultLang());
@@ -46,21 +48,61 @@ export function TextsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const jsonInputRef = useRef<HTMLInputElement>(null);
 
+  // Flatten nested JSON to dot-notation keys
+  function flattenJson(obj: Record<string, any>, prefix = ''): { key: string; value: string }[] {
+    const result: { key: string; value: string }[] = [];
+    for (const k of Object.keys(obj)) {
+      const fullKey = prefix ? `${prefix}.${k}` : k;
+      if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
+        result.push(...flattenJson(obj[k], fullKey));
+      } else {
+        result.push({ key: fullKey, value: String(obj[k]) });
+      }
+    }
+    return result;
+  }
+
+  // Import JSON
+  const importJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        const entries = flattenJson(json);
+        const updates = entries.map(({ key, value }) => ({ lang: selectedLang, key, value }));
+
+        if (updates.length > 0) {
+          const response = await fetchWithAuth(`${API_URL}/admin/texts`, {
+            method: 'PUT',
+            body: JSON.stringify({ texts: updates }),
+          });
+
+          if (response.ok) {
+            fetchTexts();
+            alert(`${updates.length} textes importés depuis JSON !`);
+          } else {
+            alert('Erreur lors de l\'import JSON');
+          }
+        }
+      } catch {
+        alert('Fichier JSON invalide');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   useEffect(() => {
     fetchTexts();
-  }, [token, selectedLang]);
+  }, [fetchWithAuth, selectedLang]);
 
   async function fetchTexts() {
-    if (!token) return;
-
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/admin/texts?lang=${selectedLang}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetchWithAuth(`${API_URL}/admin/texts?lang=${selectedLang}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -107,16 +149,12 @@ export function TextsPage() {
   };
 
   const saveEdit = async () => {
-    if (!editingKey || !token) return;
+    if (!editingKey) return;
 
     try {
       setSaving(true);
-      const response = await fetch(`${API_URL}/admin/texts`, {
+      const response = await fetchWithAuth(`${API_URL}/admin/texts`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           texts: [{ lang: selectedLang, key: editingKey, value: editValue }],
         }),
@@ -155,7 +193,7 @@ export function TextsPage() {
   // Import CSV
   const importCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !token) return;
+    if (!file) return;
 
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -172,12 +210,8 @@ export function TextsPage() {
 
       if (updates.length > 0) {
         try {
-          const response = await fetch(`${API_URL}/admin/texts`, {
+          const response = await fetchWithAuth(`${API_URL}/admin/texts`, {
             method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ texts: updates }),
           });
 
@@ -228,7 +262,13 @@ export function TextsPage() {
             Import CSV
           </button>
           <input ref={fileInputRef} type="file" accept=".csv" onChange={importCSV} className="hidden" />
-          
+
+          <button onClick={() => jsonInputRef.current?.click()} className="btn-secondary flex items-center gap-2">
+            <Upload className="w-4 h-4" />
+            Import JSON
+          </button>
+          <input ref={jsonInputRef} type="file" accept=".json" onChange={importJSON} className="hidden" />
+
           <button onClick={exportCSV} className="btn-secondary flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export CSV

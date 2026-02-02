@@ -22,7 +22,7 @@ interface PricingLevel {
 }
 
 export function PricingPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [levels, setLevels] = useState<PricingLevel[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,19 +31,12 @@ export function PricingPage() {
 
   useEffect(() => {
     fetchPricing();
-  }, [token]);
+  }, [fetchWithAuth]);
 
   async function fetchPricing() {
-    if (!token) return;
-
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/config/pricing`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetchWithAuth(`${API_URL}/config/pricing`);
 
       if (response.ok) {
         const data = await response.json();
@@ -64,27 +57,21 @@ export function PricingPage() {
   };
 
   const savePricing = async () => {
-    if (!token) return;
-
     try {
       setSaving(true);
-      // Note: This would need a dedicated admin endpoint to update pricing
-      // For now, we'll just log and simulate success
-      console.log('Saving pricing:', levels);
-      
-      // TODO: Implement PUT /admin/pricing endpoint
-      // const response = await fetch(`${API_URL}/admin/pricing`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ levels }),
-      // });
+      const response = await fetchWithAuth(`${API_URL}/admin/pricing`, {
+        method: 'PUT',
+        body: JSON.stringify({ levels }),
+      });
 
-      setHasChanges(false);
-      setEditingLevel(null);
-      alert('Configuration sauvegardée !');
+      if (response.ok) {
+        setHasChanges(false);
+        setEditingLevel(null);
+        alert('Configuration sauvegardée !');
+      } else {
+        const err = await response.json().catch(() => ({}));
+        alert(err.message || 'Erreur lors de la sauvegarde');
+      }
     } catch (err) {
       console.error('Error saving pricing:', err);
       alert('Erreur lors de la sauvegarde');

@@ -146,17 +146,6 @@ export function LoginPage() {
                 </button>
               </form>
 
-              {/* Lien "J'ai déjà un compte" */}
-              <p className="text-center text-sm text-charcoal-600 mt-6">
-                {t('login.alreadyHaveAccount')}{' '}
-                <button
-                  type="button"
-                  onClick={() => document.querySelector('input[type="email"]')?.focus()}
-                  className="text-wine-600 hover:text-wine-800 font-medium underline underline-offset-4"
-                >
-                  {t('login.loginHere')}
-                </button>
-              </p>
             </>
           )}
 

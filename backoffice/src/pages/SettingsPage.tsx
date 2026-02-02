@@ -29,7 +29,7 @@ const currencies = [
 ];
 
 export function SettingsPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [configs, setConfigs] = useState<Record<string, string>>({});
   const [smileConfigs, setSmileConfigs] = useState<SmileConfig[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,21 +38,14 @@ export function SettingsPage() {
 
   useEffect(() => {
     fetchSettings();
-  }, [token]);
+  }, [fetchWithAuth]);
 
   async function fetchSettings() {
-    if (!token) return;
-
     try {
       setLoading(true);
 
       // Fetch configs
-      const configRes = await fetch(`${API_URL}/admin/config`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const configRes = await fetchWithAuth(`${API_URL}/admin/config`);
 
       if (configRes.ok) {
         const data = await configRes.json();
@@ -88,23 +81,17 @@ export function SettingsPage() {
   };
 
   const saveSettings = async () => {
-    if (!token) return;
-
     try {
       setSaving(true);
-      
+
       // Convert configs to array format for API
       const configsToSave = Object.entries(configs).map(([key, value]) => ({
         key,
         value: String(value),
       }));
 
-      const response = await fetch(`${API_URL}/admin/config`, {
+      const response = await fetchWithAuth(`${API_URL}/admin/config`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ configs: configsToSave }),
       });
 

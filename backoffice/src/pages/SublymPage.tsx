@@ -3,6 +3,7 @@ import {
   Save, Loader2, Mail, MapPin, FileText, Upload, CheckCircle, Trash2, Eye, Building2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { PhoneInput } from '@/components/PhoneInput';
 
 const API_URL = 'http://localhost:8000/api/v1';
 
@@ -34,7 +35,7 @@ const typeLabels: Record<string, string> = {
 };
 
 export function SublymPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [configs, setConfigs] = useState<Record<string, string>>({});
   const [legalDocuments, setLegalDocuments] = useState<LegalDocument[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,18 +51,14 @@ export function SublymPage() {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [fetchWithAuth]);
 
   async function fetchData() {
-    if (!token) return;
-
     try {
       setLoading(true);
 
       // Fetch configs
-      const configRes = await fetch(`${API_URL}/admin/config`, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
+      const configRes = await fetchWithAuth(`${API_URL}/admin/config`);
 
       if (configRes.ok) {
         const data = await configRes.json();
@@ -83,12 +80,8 @@ export function SublymPage() {
   }
 
   async function fetchLegalDocuments() {
-    if (!token) return;
-
     try {
-      const res = await fetch(`${API_URL}/admin/legal-documents`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+      const res = await fetchWithAuth(`${API_URL}/admin/legal-documents`);
 
       if (res.ok) {
         const data = await res.json();
@@ -105,8 +98,6 @@ export function SublymPage() {
   };
 
   const saveSettings = async () => {
-    if (!token) return;
-
     try {
       setSaving(true);
 
@@ -115,12 +106,8 @@ export function SublymPage() {
         value: String(value),
       }));
 
-      const response = await fetch(`${API_URL}/admin/config`, {
+      const response = await fetchWithAuth(`${API_URL}/admin/config`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ configs: configsToSave }),
       });
 
@@ -139,7 +126,7 @@ export function SublymPage() {
   };
 
   const handleUpload = async () => {
-    if (!uploadFile || !uploadType || !uploadVersion || !token) return;
+    if (!uploadFile || !uploadType || !uploadVersion) return;
 
     setUploading(true);
 
@@ -150,9 +137,11 @@ export function SublymPage() {
       formData.append('version', uploadVersion);
       if (uploadNotes) formData.append('notes', uploadNotes);
 
+      // Use manual fetch for FormData (fetchWithAuth forces Content-Type: application/json)
+      const currentToken = localStorage.getItem('admin_token');
       const res = await fetch(`${API_URL}/admin/legal-documents`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}) },
         body: formData,
       });
 
@@ -176,12 +165,9 @@ export function SublymPage() {
   };
 
   const activateDocument = async (id: number) => {
-    if (!token) return;
-
     try {
-      const res = await fetch(`${API_URL}/admin/legal-documents/${id}/activate`, {
+      const res = await fetchWithAuth(`${API_URL}/admin/legal-documents/${id}/activate`, {
         method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` },
       });
 
       if (res.ok) {
@@ -193,12 +179,11 @@ export function SublymPage() {
   };
 
   const deleteDocument = async (id: number) => {
-    if (!token || !confirm('Supprimer ce document ?')) return;
+    if (!confirm('Supprimer ce document ?')) return;
 
     try {
-      const res = await fetch(`${API_URL}/admin/legal-documents/${id}`, {
+      const res = await fetchWithAuth(`${API_URL}/admin/legal-documents/${id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
       });
 
       if (res.ok) {
@@ -370,12 +355,9 @@ export function SublymPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Telephone</label>
-            <input
-              type="tel"
+            <PhoneInput
               value={configs['sublym_phone'] || ''}
-              onChange={(e) => updateConfig('sublym_phone', e.target.value)}
-              className="input w-full"
-              placeholder="+33 1 23 45 67 89"
+              onChange={(val) => updateConfig('sublym_phone', val)}
             />
           </div>
         </div>

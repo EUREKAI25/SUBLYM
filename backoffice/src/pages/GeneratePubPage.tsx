@@ -13,7 +13,7 @@ interface UserOption {
 }
 
 export function GeneratePubPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
 
   // Form state
   const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
@@ -30,11 +30,6 @@ export function GeneratePubPage() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; traceId?: string; error?: string } | null>(null);
 
-  const headers = {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-
   // Search users
   useEffect(() => {
     if (userSearch.length < 2) {
@@ -45,9 +40,7 @@ export function GeneratePubPage() {
     const timer = setTimeout(async () => {
       setSearchingUsers(true);
       try {
-        const res = await fetch(`${API_URL}/admin/users?email=${encodeURIComponent(userSearch)}&perPage=10`, {
-          headers,
-        });
+        const res = await fetchWithAuth(`${API_URL}/admin/users?email=${encodeURIComponent(userSearch)}&perPage=10`);
         if (res.ok) {
           const data = await res.json();
           setUserResults(data.users.map((u: any) => ({
@@ -80,9 +73,8 @@ export function GeneratePubPage() {
         .map((s) => s.trim())
         .filter(Boolean);
 
-      const res = await fetch(`${API_URL}/admin/generate-pub`, {
+      const res = await fetchWithAuth(`${API_URL}/admin/generate-pub`, {
         method: 'POST',
-        headers,
         body: JSON.stringify({
           userId: selectedUser.id,
           dreamDescription: dreamDescription.trim(),

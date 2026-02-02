@@ -34,6 +34,7 @@ app.get('/texts/:lang', async (c) => {
     return acc;
   }, {} as Record<string, string>);
   
+  c.header('Cache-Control', 'public, max-age=300');
   return c.json(textsMap);
 });
 
@@ -199,19 +200,21 @@ app.get('/pages/:slug', async (c) => {
   const slug = c.req.param('slug');
   const lang = c.req.query('lang') || 'fr';
   
-  // Try to find page in requested language
-  let page = await prisma.staticPage.findUnique({
-    where: { slug_lang: { slug, lang } },
+  // Try to find page in requested language (latest enabled version)
+  let page = await prisma.staticPage.findFirst({
+    where: { slug, lang, enabled: true },
+    orderBy: { version: 'desc' },
   });
   
   // Fallback to English
   if (!page && lang !== 'en') {
-    page = await prisma.staticPage.findUnique({
-      where: { slug_lang: { slug, lang: 'en' } },
+    page = await prisma.staticPage.findFirst({
+      where: { slug, lang: 'en', enabled: true },
+      orderBy: { version: 'desc' },
     });
   }
   
-  if (!page || !page.enabled) {
+  if (!page) {
     throw new NotFoundError('Page');
   }
   

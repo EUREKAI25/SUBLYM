@@ -13,6 +13,7 @@ import { FinancesPage } from '@/pages/FinancesPage';
 import { InvitationsPage } from '@/pages/InvitationsPage';
 import { GeneratePubPage } from '@/pages/GeneratePubPage';
 import { SublymPage } from '@/pages/SublymPage';
+import { PagesPage } from '@/pages/PagesPage';
 import { Loader2 } from 'lucide-react';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="settings" element={<SettingsPage />} />
         <Route path="generate-pub" element={<GeneratePubPage />} />
         <Route path="sublym" element={<SublymPage />} />
+        <Route path="pages" element={<PagesPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

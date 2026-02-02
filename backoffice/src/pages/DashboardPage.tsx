@@ -43,7 +43,7 @@ const levelColors: Record<number, string> = {
 };
 
 export function DashboardPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
   const [smileConfigs, setSmileConfigs] = useState<SmileConfig[]>([]);
@@ -56,20 +56,15 @@ export function DashboardPage() {
         setLoading(true);
         setError(null);
 
-        const headers = {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        };
-
         // Fetch dashboard stats
-        const statsRes = await fetch(`${API_URL}/admin/dashboard`, { headers });
+        const statsRes = await fetchWithAuth(`${API_URL}/admin/dashboard`);
         if (statsRes.ok) {
           const statsData = await statsRes.json();
           setStats(statsData);
         }
 
         // Fetch recent users
-        const usersRes = await fetch(`${API_URL}/admin/users?perPage=5`, { headers });
+        const usersRes = await fetchWithAuth(`${API_URL}/admin/users?perPage=5`);
         if (usersRes.ok) {
           const usersData = await usersRes.json();
           setRecentUsers(usersData.users || []);
@@ -89,10 +84,8 @@ export function DashboardPage() {
       }
     }
 
-    if (token) {
-      fetchData();
-    }
-  }, [token]);
+    fetchData();
+  }, [fetchWithAuth]);
 
   if (loading) {
     return (

@@ -36,7 +36,7 @@ const levelNames: Record<number, string> = {
 };
 
 export function FinancesPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [summary, setSummary] = useState<FinancesSummary | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,21 +47,14 @@ export function FinancesPage() {
 
   useEffect(() => {
     fetchData();
-  }, [token, statusFilter, page]);
+  }, [fetchWithAuth, statusFilter, page]);
 
   async function fetchData() {
-    if (!token) return;
-
     try {
       setLoading(true);
 
       // Fetch summary
-      const summaryRes = await fetch(`${API_URL}/admin/finances/summary`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const summaryRes = await fetchWithAuth(`${API_URL}/admin/finances/summary`);
 
       if (summaryRes.ok) {
         const summaryData = await summaryRes.json();
@@ -77,12 +70,7 @@ export function FinancesPage() {
         params.append('status', statusFilter);
       }
 
-      const paymentsRes = await fetch(`${API_URL}/admin/finances/payments?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const paymentsRes = await fetchWithAuth(`${API_URL}/admin/finances/payments?${params}`);
 
       if (paymentsRes.ok) {
         const paymentsData = await paymentsRes.json();

@@ -26,27 +26,20 @@ interface Testimonial {
 }
 
 export function TestimonialsPage() {
-  const { token } = useAuth();
+  const { fetchWithAuth } = useAuth();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     fetchTestimonials();
-  }, [token, filter]);
+  }, [fetchWithAuth, filter]);
 
   async function fetchTestimonials() {
-    if (!token) return;
-
     try {
       setLoading(true);
       const params = filter !== 'all' ? `?status=${filter}` : '';
-      const response = await fetch(`${API_URL}/admin/testimonials${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetchWithAuth(`${API_URL}/admin/testimonials${params}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -60,15 +53,9 @@ export function TestimonialsPage() {
   }
 
   const updateStatus = async (id: number, action: 'approve' | 'reject', reason?: string) => {
-    if (!token) return;
-
     try {
-      const response = await fetch(`${API_URL}/admin/testimonials/${id}/${action}`, {
+      const response = await fetchWithAuth(`${API_URL}/admin/testimonials/${id}/${action}`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ reason }),
       });
 
