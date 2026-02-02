@@ -1,0 +1,23 @@
+## CONTEXT
+{context}
+
+## YOUR ROLE
+{dreamanalyze_role}
+
+## YOUR GOAL
+{dreamanalyze_goal}
+
+## HOW YOU MUST PROCEED
+{dreamanalyze_rule}
+
+## USER DREAM
+{dream}
+
+## RULES
+{rules}
+
+## FORBIDDEN
+{dreamanalyze_forbidden}
+
+## DELIVERABLES
+{dreamanalyze_deliverables}

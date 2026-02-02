@@ -1,0 +1,26 @@
+## CONTEXT
+{context}
+
+## YOUR ROLE
+{scenario_role}
+
+## YOUR MISSION
+{scenario_mission}
+
+## YOUR GOAL
+{scenario_goal}
+
+## HOW YOU MUST PROCEED
+{scenario_rule}
+
+## USER DREAM
+{dream}
+
+## RULES
+{rules}
+
+## FORBIDDEN
+{scenario_forbidden}
+
+## DELIVERABLES
+{scenario_deliverables}

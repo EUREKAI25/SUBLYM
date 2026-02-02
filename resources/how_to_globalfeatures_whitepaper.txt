@@ -1,0 +1,402 @@
+HOW_TO — VIDEO GLOBAL FEATURES
+Livre blanc actionnable (production cinématographique → paramètres vidéo IA)
+Version 1.0 (TXT)
+
+======================================================================
+0) CONTEXTE & BUT
+======================================================================
+Ce document est un HOW_TO destiné à une IA (ou à un agent IA) qui doit
+transformer une intention / un rêve / un scénario en paramètres de production
+cinématographique “propres”, cohérents et exploitables par un moteur vidéo.
+
+Objectif : produire un objet "globalfeatures" complet, réaliste, cohérent
+et utile, sans blabla, avec des choix motivés par la narration.
+
+globalfeatures couvre :
+- light
+- shootingangle
+- camera_behavior
+- actingbrief
+- colorpalette
+- rhythm
+- soundtrackbrief
+
+IMPORTANT : L’agent n’est pas là pour “faire joli” au hasard.
+Il doit raisonner comme un chef-op / réalisateur :
+1) Comprendre la scène et son intention émotionnelle
+2) Choisir un langage visuel cohérent (caméra, lumière, rythme)
+3) Assurer le réalisme (social, physique, cinématographique)
+4) Assurer la continuité (entre scènes / entre plans)
+5) Produire un résultat structuré et actionnable
+
+======================================================================
+1) ENTRÉES & SORTIE
+======================================================================
+ENTRÉES TYPIQUES (selon ton système) :
+- dream (rêve utilisateur)
+- scenario_global (contexte, arc émotionnel, fin attendue)
+- scene_description (ce qui se passe concrètement)
+- constraints (forbidden, reject, style, world, etc.)
+- target_duration (durée vidéo)
+- format (ratio, résolution, VR180 vs flat, etc.)
+
+SORTIE OBLIGATOIRE (format structuré, pas de texte hors structure) :
+{
+  light: {...},
+  shootingangle: {...},
+  camera_behavior: {...},
+  actingbrief: {...},
+  colorpalette: {...},
+  rhythm: {...},
+  soundtrackbrief: {...},
+  notes: {...}          # optionnel mais recommandé (continuité / risques)
+}
+
+Les champs doivent être renseignés même si l’info n’est pas donnée :
+- si absent, choisir la valeur la plus “neutre, réaliste, ciné”
+- indiquer la confiance (low/medium/high) et alternative si besoin
+
+======================================================================
+2) MÉTHODE DE RAISONNEMENT (ALGO CINÉ)
+======================================================================
+Le raisonnement se fait toujours dans cet ordre :
+
+ETAPE A — Décomposer la scène (narration)
+- Où ? (lieu) intérieur / extérieur, urbain / nature, intime / public
+- Quand ? (moment) matin / jour / golden hour / nuit, météo
+- Qui ? (présence) solo / duo / foule (sans physique détaillé)
+- Quoi ? (action) marcher, parler, rencontrer, présenter, etc.
+- Pourquoi ? (intention) émotion principale, sous-texte
+- Niveau d’énergie : calme / normal / dynamique
+
+ETAPE B — Choisir le “genre” visuel (réalisation)
+Choisir un style général : naturaliste, pub-luxury, docu, clip, ciné classique.
+Par défaut : CINÉ NATURALISTE (le plus robuste pour IA réaliste).
+
+ETAPE C — Déduire les paramètres techniques (chef op)
+- La lumière doit servir l’émotion et le lieu
+- La caméra doit être crédible (stabilisée, mouvements lents)
+- L’acting doit être naturel (micro-émotions, pas de pose)
+- Les couleurs doivent être cohérentes (3–5 teintes dominantes)
+- Le rythme doit respirer (plans assez longs)
+- La musique doit soutenir (pas envahir)
+
+ETAPE D — Vérifier la cohérence
+Checklist finale :
+- cohérence lumière ↔ palette
+- cohérence caméra ↔ rythme
+- cohérence acting ↔ intention émotionnelle
+- cohérence globale ↔ réalisme
+
+ETAPE E — Produire la sortie structurée
+Sans explication hors structure.
+Si tu veux ajouter “pourquoi”, tu le mets dans notes.rationale.
+
+======================================================================
+3) LIGHT (LUMIÈRE) — GUIDE DIDACTIQUE
+======================================================================
+3.1 Ce que la lumière raconte
+La lumière n’est pas un “effet” : c’est la mise en scène de la réalité.
+Elle dit : le moment, l’ambiance, l’intimité, le niveau de dramatisation.
+
+3.2 Les 4 réglages fondamentaux
+- Source (d’où vient la lumière ?)
+- Direction (comment sculpte-t-elle le sujet ?)
+- Contraste (soft vs hard)
+- Température (warm vs cool)
+
+3.3 Choix par défaut (si info absente)
+- extérieur jour : natural daylight, diffusion soft
+- intérieur jour : window light + bounce (soft)
+- nuit : practical lights + ambient low (pas néon agressif)
+
+3.4 Paramètres recommandés à retourner
+light = {
+  type: "natural|soft_cinematic|dramatic|high_contrast",
+  source: "daylight|window_light|practical_lights|softbox|mixed",
+  direction: "frontal|side|backlight|top|mixed",
+  intensity: "low|medium|high",
+  diffusion: "hard|soft|very_soft",
+  contrast: "low|medium|high",
+  time_of_day: "morning|day|golden_hour|night|unspecified",
+  environment_notes: "...",
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+3.5 Erreurs fréquentes
+- surdramatiser tout (contraste trop fort)
+- lumière incohérente avec l’heure
+- néons / couleurs extrêmes sans justification
+- backlight trop “clip” sur une scène réaliste
+
+======================================================================
+4) SHOOTINGANGLE (CADRAGE / ANGLE) — GUIDE DIDACTIQUE
+======================================================================
+4.1 Ce que l’angle raconte
+Le cadre raconte la relation :
+- wide : contexte, solitude, grandeur
+- medium : interaction, quotidien
+- close-up : émotion, intimité, tension
+
+4.2 Par défaut (robuste)
+- medium shot, eye-level, orientation 3/4
+= le plus “réaliste et stable” pour IA
+
+4.3 Paramètres recommandés
+shootingangle = {
+  framing: "wide|medium|close_up",
+  lens_feel: "35mm|50mm|85mm|unspecified",
+  angle_vertical: "eye_level|low_angle|high_angle",
+  orientation: "frontal|three_quarter|profile",
+  headroom: "normal|tight|loose",
+  composition: "rule_of_thirds|centered|documentary",
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+4.4 Erreurs fréquentes
+- close-up systématique (fatigue + artificiel)
+- low-angle “pub” sur scène intime
+- cadrage trop parfait / trop symétrique (effet IA)
+
+======================================================================
+5) CAMERA BEHAVIOR (MOUVEMENT CAMÉRA) — GUIDE DIDACTIQUE
+======================================================================
+5.1 Principe
+Plus la scène est émotionnelle, plus la caméra doit être SIMPLE.
+La caméra ne “fait pas le show” sauf si le genre visuel l’impose.
+
+5.2 Choix robustes
+- stabilized, slow dolly, slow pan
+- handheld subtle seulement si docu/immersion
+
+5.3 Paramètres recommandés
+camera_behavior = {
+  stability: "static|stabilized|handheld_subtle",
+  movement: "none|slow_pan|slow_dolly|follow|orbit_slow",
+  speed: "very_slow|slow|natural",
+  camera_distance: "intimate|normal|distant",
+  transitions: "cut|match_cut|dissolve|none",
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+5.4 Erreurs fréquentes
+- mouvements rapides (shaky) sans raison
+- zoom numérique “cheap”
+- orbit trop IA / trop démo
+- caméra qui change de logique d’un plan à l’autre
+
+======================================================================
+6) ACTINGBRIEF (DIRECTION D’ACTEUR) — GUIDE DIDACTIQUE
+======================================================================
+6.1 Principe
+Le réalisme vient de micro-choix :
+- respiration naturelle
+- gestes simples
+- regard orienté vers l’action / le partenaire
+- pas de pose / pas de “jeu pub”
+
+6.2 Par défaut
+- natural, understated, confident calm
+- no looking at camera
+
+6.3 Paramètres recommandés
+actingbrief = {
+  emotional_tone: "calm|confident|joyful|introspective|excited|tense",
+  intensity: "low|medium|high",
+  body_language: "relaxed|composed|animated|reserved",
+  gaze: "not_at_camera|toward_partner|toward_environment",
+  facial_expression: "subtle|smiling_soft|neutral|moved",
+  interaction: "none|with_partner|with_crowd|with_object",
+  do_not: ["look_at_camera", "overact", "pose"],
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+6.4 Erreurs fréquentes
+- sourire figé
+- personnage qui “pose”
+- regard caméra
+- émotions trop fortes pour une situation simple
+
+======================================================================
+7) COLORPALETTE (COLORIMÉTRIE) — GUIDE DIDACTIQUE
+======================================================================
+7.1 Principe
+La palette doit soutenir l’émotion et rester plausible.
+
+7.2 Par défaut
+- warm-neutral, saturation low/medium
+- 3 à 5 couleurs dominantes
+
+7.3 Paramètres recommandés
+colorpalette = {
+  temperature: "warm|neutral|cool",
+  saturation: "low|medium|slightly_enhanced",
+  contrast: "low|medium|high",
+  dominant_colors: ["...", "...", "..."],
+  skin_tone_policy: "natural",
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+7.4 Erreurs fréquentes
+- saturation trop forte
+- palette incohérente avec la lumière
+- trop de couleurs dominantes
+
+======================================================================
+8) RHYTHM (RYTHME / MONTAGE) — GUIDE DIDACTIQUE
+======================================================================
+8.1 Principe
+Le rythme vient de :
+- durée des plans
+- vitesse de caméra
+- densité d’action
+
+8.2 Par défaut robuste
+- pace: natural-to-slow
+- plans moyens à longs
+
+8.3 Paramètres recommandés
+rhythm = {
+  pace: "slow|natural|dynamic",
+  shot_duration: "long_takes|medium_takes|quick_cuts",
+  edit_density: "low|medium|high",
+  beat_points: ["..."],
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+8.4 Erreurs fréquentes
+- montage trop rapide sans action
+- “clip” sur une scène réaliste
+- incohérence avec caméra stable lente
+
+======================================================================
+9) SOUNDTRACKBRIEF (MUSIQUE / SON) — GUIDE DIDACTIQUE
+======================================================================
+9.1 Principe
+La musique est un support émotionnel discret.
+Elle ne doit pas imposer une émotion contraire à la scène.
+
+9.2 Par défaut
+- cinematic minimal ambient
+- tempo slow/medium
+- pas de voix
+
+9.3 Paramètres recommandés
+soundtrackbrief = {
+  style: "ambient|minimal_cinematic|piano|soft_orchestral|electronic_soft",
+  tempo: "slow|medium|fast",
+  intensity: "low|medium|high",
+  emotional_intent: "hopeful|intimate|uplifting|reflective|tense",
+  instruments: ["pads", "piano", "light_strings"],
+  do_not: ["lyrics", "aggressive_drums"],
+  confidence: "low|medium|high",
+  alt: { ... }
+}
+
+9.4 Erreurs fréquentes
+- musique trop épique
+- paroles qui polluent
+- rythme musical qui contredit le montage
+
+======================================================================
+10) EXEMPLE COMPLET (SORTIE STRUCTURÉE)
+======================================================================
+{
+  light: {
+    type: "soft_cinematic",
+    source: "natural_daylight",
+    direction: "side",
+    intensity: "medium",
+    diffusion: "soft",
+    contrast: "medium",
+    time_of_day: "golden_hour",
+    environment_notes: "rues urbaines, reflets chauds, ombres douces",
+    confidence: "medium",
+    alt: { type: "natural", time_of_day: "day", confidence: "low" }
+  },
+
+  shootingangle: {
+    framing: "medium",
+    lens_feel: "50mm",
+    angle_vertical: "eye_level",
+    orientation: "three_quarter",
+    headroom: "normal",
+    composition: "rule_of_thirds",
+    confidence: "high"
+  },
+
+  camera_behavior: {
+    stability: "stabilized",
+    movement: "slow_dolly",
+    speed: "very_slow",
+    camera_distance: "normal",
+    transitions: "cut",
+    confidence: "high"
+  },
+
+  actingbrief: {
+    emotional_tone: "joyful",
+    intensity: "medium",
+    body_language: "composed",
+    gaze: "not_at_camera",
+    facial_expression: "smiling_soft",
+    interaction: "with_partner",
+    do_not: ["look_at_camera", "overact", "pose"],
+    confidence: "medium"
+  },
+
+  colorpalette: {
+    temperature: "warm",
+    saturation: "low",
+    contrast: "medium",
+    dominant_colors: ["warm beige", "muted brown", "soft terracotta", "muted blue"],
+    skin_tone_policy: "natural",
+    confidence: "medium"
+  },
+
+  rhythm: {
+    pace: "slow",
+    shot_duration: "long_takes",
+    edit_density: "low",
+    beat_points: ["eye_contact", "approach", "short_dialogue", "shared_smile"],
+    confidence: "medium"
+  },
+
+  soundtrackbrief: {
+    style: "minimal_cinematic",
+    tempo: "slow",
+    intensity: "low",
+    emotional_intent: "hopeful",
+    instruments: ["pads", "piano", "light_strings"],
+    do_not: ["lyrics", "aggressive_drums"],
+    confidence: "medium"
+  },
+
+  notes: {
+    continuity: "garder la même logique de lumière et palette sur toutes les scènes",
+    realism: "éviter toute pose ou regard caméra",
+    risks: ["trop de mouvement caméra", "saturation trop élevée"],
+    rationale: "langage ciné naturaliste, mise en scène discrète, émotion portée par micro-gestes"
+  }
+}
+
+======================================================================
+11) CHECKLIST QUALITÉ (AVANT DE RENVOYER)
+======================================================================
+- Chaque champ est rempli
+- Lumière cohérente avec l’heure et le lieu
+- Palette cohérente avec la lumière
+- Caméra + rythme compatibles
+- Acting naturel, pas de regard caméra
+- Musique discrète, sans paroles, cohérente émotion
+- Si incertitude : confidence low + alternative
+
+======================================================================
+FIN DU DOCUMENT
+======================================================================

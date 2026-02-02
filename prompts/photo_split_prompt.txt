@@ -1,0 +1,15 @@
+Analyze this image and classify it for dream visualization.
+
+Respond ONLY with a valid JSON object (no markdown, no explanation):
+
+{
+  "type": "decor" or "inspiration",
+  "description": "brief description of what the image shows (max 20 words)",
+  "dream_relevance": "how this could enrich the dream scenario (max 15 words)"
+}
+
+Classification rules:
+- "decor": the image shows a PLACE (interior, exterior, landscape, building, room, street, nature)
+- "inspiration": the image shows anything else (object, activity, mood, food, art, abstract concept)
+
+CRITICAL: Return ONLY the JSON object. No text before or after.

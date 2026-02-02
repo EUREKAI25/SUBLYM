@@ -1,0 +1,7 @@
+# how_to_cinematic_soft.txt
+But : guider l'agent pour une esthétique "cinematic_soft".
+
+- Lumière : douce, naturelle, légèrement chaude, contraste modéré.
+- Caméra : plans stables, léger travelling, pas de shake.
+- Jeu : émotions subtiles, authentiques, pas de surjeu.
+- Couleur : palette harmonieuse, éviter les teintes agressives.

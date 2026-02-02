@@ -1,0 +1,23 @@
+## CONTEXT
+{context}
+
+## YOUR ROLE
+{elementlist_role}
+
+## YOUR GOAL
+{elementlist_goal}
+
+## HOW YOU MUST PROCEED
+{elementlist_rule}
+
+## USER DREAM
+{dream}
+
+## RULES
+{rules}
+
+## FORBIDDEN
+{elementlist_forbidden}
+
+## DELIVERABLES
+{deliverables}

@@ -1,0 +1,548 @@
+// SUBLYM Backend - Schéma Prisma Complet
+// Version 1.0 - 27 janvier 2026
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// CONFIGURATION GLOBALE
+// ============================================
+
+model Config {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  type      String   @default("string") // string, number, boolean, json
+  category  String   @default("general") // general, stripe, limits, smile, rekognition, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Text {
+  id        Int      @id @default(autoincrement())
+  lang      String   // fr, en, de, es, it
+  key       String   // hero.title, cta.button, email.magic_link.subject, etc.
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([lang, key])
+  @@index([lang])
+}
+
+// ============================================
+// PRICING LEVELS (Formules d'abonnement)
+// ============================================
+
+model PricingLevel {
+  id              Int      @id @default(autoincrement())
+  level           Int      @unique // 0, 1, 2, 3...
+  name            String   // "Découverte", "Essentiel", "Premium"
+  description     String?  @db.Text
+  
+  // Limites photos
+  photosMin       Int      @default(3)
+  photosMax       Int      @default(5)
+  
+  // Génération
+  keyframesCount  Int      @default(5)  // Nombre d'images générées
+  videoEnabled    Boolean  @default(true) // true = vidéo, false = images only
+  scenesCount     Int      @default(5)  // Nombre de scènes (si vidéo)
+  generationsPerMonth Int  @default(1)  // -1 = illimité
+  subliminalEnabled Boolean @default(false)
+  
+  // Tarifs
+  priceMonthly    Decimal  @db.Decimal(10, 2)
+  priceYearly     Decimal  @db.Decimal(10, 2)
+  currency        String   @default("EUR")
+  
+  // Affichage
+  enabled         Boolean  @default(true)
+  displayOrder    Int      @default(0)
+  badgeText       String?  // "Populaire", "Best value", etc.
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ============================================
+// UTILISATEURS
+// ============================================
+
+model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  firstName       String
+  lastName        String
+  birthDate       DateTime?
+  gender          String?   // male, female, other
+  country         String?
+  lang            String    @default("fr")
+  project         String    @default("sublym") // Pour réutilisation future
+  
+  // Abonnement
+  subscriptionLevel    Int       @default(0) // 0=free, 1, 2, 3...
+  subscriptionEnd      DateTime?
+  subscriptionCancelAt DateTime? // Date d'annulation programmée
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  
+  // Générations
+  freeGenerations      Int       @default(0) // Générations gratuites (invitations)
+  generationsUsedThisMonth Int   @default(0)
+  generationsResetAt   DateTime? // Date de reset du compteur mensuel
+  totalGenerations     Int       @default(0)
+  
+  // Flags
+  isTestAccount        Boolean   @default(false)
+  rgpdConsent          Boolean   @default(false)
+  rgpdConsentAt        DateTime?
+  marketingConsent     Boolean   @default(false)
+  
+  // Soft delete
+  deletedAt            DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  photos          Photo[]
+  dreams          Dream[]
+  magicLinks      MagicLink[]
+  testimonials    Testimonial[]
+  smileReaction   SmileReaction?
+  invitation      Invitation?   @relation(fields: [invitationId], references: [id])
+  invitationId    Int?
+  
+  @@index([email])
+  @@index([subscriptionLevel])
+  @@index([deletedAt])
+}
+
+model Photo {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename  String   // Nom du fichier stocké
+  path      String   // Chemin relatif dans storage
+  originalName String? // Nom original uploadé
+  mimeType  String?
+  size      Int?     // Taille en bytes
+  order     Int      @default(0)
+  verified  Boolean  @default(false) // Validé par Rekognition
+  qualityScore Float? // Score qualité Rekognition (0-100)
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+}
+
+// ============================================
+// RÊVES ET GÉNÉRATIONS
+// ============================================
+
+model Dream {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  description String   @db.Text
+  reject      String[] // Éléments interdits
+  
+  status      String   @default("draft") // draft, processing, completed, failed
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  runs        Run[]
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Run {
+  id          Int      @id @default(autoincrement())
+  dreamId     Int
+  dream       Dream    @relation(fields: [dreamId], references: [id], onDelete: Cascade)
+  
+  traceId     String   @unique @default(uuid()) // ID unique pour cette génération
+  status      String   @default("pending") // pending, generating, completed, failed
+  
+  // Progression
+  progress    Int      @default(0)  // 0-100
+  currentStep String?  // video_scene_3, etc.
+  stepMessage String?  // "Génération vidéo scène 3/5"
+  
+  // Résultats
+  scenarioName    String?
+  scenesCount     Int?
+  duration        Int?      // Durée en secondes
+  videoPath       String?   // Chemin vidéo finale
+  teaserPath      String?   // Thumbnail
+  
+  // Mode photos only
+  isPhotosOnly    Boolean   @default(false)
+  keyframesZipPath String?  // Chemin du ZIP des keyframes
+  
+  // Texte subliminal (Premium)
+  subliminalText  String?
+  
+  // Coûts
+  costEur         Decimal?  @db.Decimal(10, 4)
+  costDetails     Json?     // Détail par catégorie/provider
+  
+  // Erreur éventuelle
+  error           String?
+  canRetry        Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  completedAt     DateTime?
+  
+  @@index([dreamId])
+  @@index([traceId])
+  @@index([status])
+}
+
+// ============================================
+// AUTHENTIFICATION
+// ============================================
+
+model MagicLink {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique @default(uuid())
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model RevokedToken {
+  id        Int      @id @default(autoincrement())
+  jti       String   @unique // JWT ID
+  userId    Int
+  reason    String?  // logout, password_change, admin_revoke
+  revokedAt DateTime @default(now())
+  expiresAt DateTime // Quand le token aurait expiré naturellement
+  
+  @@index([jti])
+  @@index([userId])
+}
+
+model AdminUser {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  role         String     @default("admin") // admin, superadmin
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  auditLogs    AuditLog[]
+}
+
+// ============================================
+// TÉMOIGNAGES
+// ============================================
+
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  text        String   @db.Text
+  proofPath   String?  // Photo du rêve réalisé
+  videoPath   String?  // Vidéo témoignage (max 2min)
+  rating      Int?     // 1-5 étoiles
+  
+  status      String   @default("pending") // pending, approved, rejected
+  rejectionReason String?
+  approvedAt  DateTime?
+  approvedBy  Int?     // Admin ID
+  
+  // Consentement
+  consentDisplay    Boolean @default(false)
+  consentMarketing  Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+// ============================================
+// OFFRE SMILE
+// ============================================
+
+model SmileConfig {
+  id            Int      @id @default(autoincrement())
+  country       String   @default("ALL") // ALL ou code pays (FR, DE, etc.)
+  threshold     Int      @default(1000)  // Nombre max d'offres
+  currentCount  Int      @default(0)
+  isActive      Boolean  @default(true)
+  premiumLevel  Int      @default(3)     // Niveau accordé
+  premiumMonths Int      @default(3)     // Durée en mois
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([country])
+}
+
+model SmileReaction {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  videoPath   String?
+  videoDuration Int?   // Durée en secondes
+  videoSize   Int?     // Taille en bytes
+
+  comment     String?  @db.Text
+  commentedAt DateTime?
+
+  status      String   @default("pending") // pending, uploaded, approved, rejected
+  
+  // L'offre Smile donne X mois Premium gratuits
+  premiumGranted  Boolean   @default(false)
+  premiumLevel    Int?
+  premiumUntil    DateTime?
+  
+  createdAt   DateTime @default(now())
+  uploadedAt  DateTime?
+  grantedAt   DateTime?
+}
+
+// ============================================
+// INVITATIONS TESTEURS
+// ============================================
+
+model Invitation {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique
+  description     String?   // "Campagne YouTube Janvier 2026"
+  
+  // Limites
+  maxUses         Int       @default(1)
+  currentUses     Int       @default(0)
+  
+  // Avantages accordés
+  freeGenerations Int       @default(1)
+  
+  // Validité
+  expiresAt       DateTime?
+  enabled         Boolean   @default(true)
+  
+  // Stats de tracking
+  viewCount       Int       @default(0)
+  
+  // Envoi
+  targetEmail     String?   // Email du destinataire (optionnel)
+  targetPhone     String?   // Téléphone (optionnel)
+  sentAt          DateTime? // Date d'envoi (email/SMS)
+  sentVia         String?   // email, sms, manual
+  
+  createdAt       DateTime  @default(now())
+  createdBy       Int?      // Admin ID
+  
+  users           User[]    // Utilisateurs inscrits via ce code
+  views           InvitationView[]
+  
+  @@index([code])
+  @@index([enabled])
+}
+
+model InvitationView {
+  id              Int        @id @default(autoincrement())
+  invitationId    Int
+  invitation      Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  ip              String?
+  userAgent       String?
+  referer         String?
+  convertedToUser Boolean    @default(false)
+  convertedUserId Int?
+  viewedAt        DateTime   @default(now())
+  
+  @@index([invitationId])
+  @@index([viewedAt])
+}
+
+// ============================================
+// PAIEMENTS
+// ============================================
+
+model Payment {
+  id                  Int      @id @default(autoincrement())
+  stripePaymentId     String   @unique
+  stripeCustomerId    String?
+  stripeSubscriptionId String?
+  stripeInvoiceId     String?
+  
+  userId              Int?
+  email               String
+  
+  amount              Int      // En centimes
+  currency            String   @default("EUR")
+  status              String   // pending, succeeded, failed, refunded
+  
+  productType         String   // subscription, oneshot
+  productLevel        Int?     // Niveau d'abonnement
+  period              String?  // monthly, yearly
+  
+  // Refund
+  refundedAt          DateTime?
+  refundAmount        Int?
+  refundReason        String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([stripePaymentId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================
+// AI PROVIDERS (Monitoring)
+// ============================================
+
+model AIProvider {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique // "gpt-4o", "gemini-3-pro", "minimax-hailuo"
+  displayName     String?  // "GPT-4o (OpenAI)"
+  category        String   // text, image, video
+  
+  // Configuration
+  priority        Int      @default(1) // 1 = principal, 2+ = fallback
+  enabled         Boolean  @default(true)
+  fallbackProviderId Int?  // Provider de fallback
+  
+  // Health check
+  lastCheckAt     DateTime?
+  lastStatus      String?  // ok, error, timeout
+  errorCount      Int      @default(0) // Reset après succès
+  consecutiveErrors Int    @default(0)
+  
+  // Stats
+  totalCalls      Int      @default(0)
+  totalErrors     Int      @default(0)
+  avgResponseTime Int?     // ms
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([category])
+  @@index([enabled])
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditLog {
+  id        Int       @id @default(autoincrement())
+  adminId   Int
+  admin     AdminUser @relation(fields: [adminId], references: [id])
+  
+  action    String    // USER_UPDATE, CONFIG_UPDATE, etc.
+  target    String?   // "user:123", "config:stripe_mode", etc.
+  details   Json?     // Anciennes/nouvelles valeurs
+  
+  ip        String?
+  userAgent String?
+  
+  createdAt DateTime  @default(now())
+  
+  @@index([adminId])
+  @@index([action])
+  @@index([target])
+  @@index([createdAt])
+}
+
+// ============================================
+// PAGES STATIQUES & FAQ
+// ============================================
+
+model StaticPage {
+  id        Int      @id @default(autoincrement())
+  slug      String   // conditions, contact, faq
+  lang      String
+  title     String
+  content   String   @db.Text
+  metaTitle String?
+  metaDescription String?
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([slug, lang])
+  @@index([slug])
+}
+
+model FaqItem {
+  id        Int      @id @default(autoincrement())
+  lang      String
+  category  String?  // general, payment, generation, etc.
+  question  String   @db.Text
+  answer    String   @db.Text
+  order     Int      @default(0)
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([lang])
+  @@index([category])
+}
+
+// ============================================
+// LEGAL DOCUMENTS (CGV, CGU, Privacy, etc.)
+// ============================================
+
+model LegalDocument {
+  id          Int      @id @default(autoincrement())
+  type        String   // terms, privacy, legal_notices, cookies
+  version     String   // "1.0", "1.1", "2.0"
+  filename    String   // Nom original
+  filepath    String   // Chemin relatif dans storage (legal/terms_v1.0.pdf)
+  filesize    Int?
+  mimeType    String?
+  isActive    Boolean  @default(false)
+  uploadedBy  Int?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([type])
+  @@index([type, isActive])
+}
+
+// ============================================
+// CONTACT MESSAGES
+// ============================================
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  email     String
+  name      String?
+  subject   String?
+  message   String   @db.Text
+  userId    Int?     // Si user connecté
+  status    String   @default("new") // new, read, replied, archived
+  repliedAt DateTime?
+  repliedBy Int?     // Admin ID
+  createdAt DateTime @default(now())
+  
+  @@index([status])
+  @@index([createdAt])
+}

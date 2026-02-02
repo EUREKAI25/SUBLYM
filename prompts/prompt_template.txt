@@ -1,0 +1,34 @@
+## CONTEXT
+{context}
+
+## YOUR ROLE
+{role}
+
+## YOUR MISSION
+{mission}
+
+## YOUR GOAL
+{goal}
+
+## HOW YOU MUST PROCEED
+{rule}
+
+## USER DREAM
+{dream}
+
+## CONSTRAINTS
+{rules}
+
+## FORBIDDEN
+{forbidden}
+
+## DELIVERABLES
+{deliverables}
+
+## OUTPUT FORMAT
+Tu dois rendre le résultat en respectant ce format:
+{output_format}
+
+## EXAMPLES
+RELEVANT : {relevant_example}
+IRRELEVANT : {irrelevant_example} 

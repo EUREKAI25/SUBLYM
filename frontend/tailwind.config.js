@@ -1,0 +1,108 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        // Palette marron/doré/crème élégante
+        wine: {
+          50: '#fdfbf7',
+          100: '#f9f3e8',
+          200: '#f0e4cc',
+          300: '#e4ceaa',
+          400: '#d4b078',
+          500: '#c49a5c',
+          600: '#a67c3d',
+          700: '#8b6533',
+          800: '#6d4f2a',
+          900: '#5a4125',
+          950: '#3d2a18',
+        },
+        blush: {
+          50: '#fefdfb',
+          100: '#fcf9f4',
+          200: '#f8f1e6',
+          300: '#f2e6d4',
+          400: '#e8d4b8',
+          500: '#dcc19a',
+          600: '#c9a66f',
+          700: '#b08945',
+          800: '#8f6e38',
+          900: '#755a30',
+          950: '#4a3820',
+        },
+        cream: {
+          50: '#fffefb',
+          100: '#fefcf7',
+          200: '#fdf8ee',
+          300: '#fbf3e2',
+          400: '#f7e9ce',
+          500: '#f2ddb4',
+          600: '#e5c78a',
+          700: '#d4ac5f',
+          800: '#b8903d',
+          900: '#967432',
+          950: '#5c4620',
+        },
+        charcoal: {
+          50: '#f8f7f6',
+          100: '#efecea',
+          200: '#ddd7d2',
+          300: '#c5bbb3',
+          400: '#a99a8e',
+          500: '#8f7d6f',
+          600: '#7a685b',
+          700: '#65544a',
+          800: '#554740',
+          900: '#4a3e38',
+          950: '#2a2320',
+        },
+        // Couleur or/doré pour accents
+        gold: {
+          50: '#fffef5',
+          100: '#fffbe6',
+          200: '#fff5c2',
+          300: '#ffeb85',
+          400: '#ffdb47',
+          500: '#ffc82c',
+          600: '#e5a000',
+          700: '#bf7a00',
+          800: '#995e00',
+          900: '#7a4c00',
+          950: '#472b00',
+        },
+      },
+      fontFamily: {
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        script: ['Dancing Script', 'cursive'],
+        body: ['Lato', 'sans-serif'],
+      },
+      backgroundImage: {
+        'gradient-romantic': 'linear-gradient(135deg, #8b6533 0%, #a67c3d 50%, #c49a5c 100%)',
+        'gradient-blush': 'linear-gradient(180deg, #fefdfb 0%, #f8f1e6 100%)',
+        'gradient-warm': 'radial-gradient(ellipse at top, #fffefb 0%, #fefdfb 100%)',
+      },
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'fade-up': 'fadeUp 0.6s ease-out',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      boxShadow: {
+        'romantic': '0 4px 30px rgba(139, 101, 51, 0.15)',
+        'card': '0 2px 20px rgba(0, 0, 0, 0.06)',
+        'elevated': '0 10px 40px rgba(139, 101, 51, 0.12)',
+      },
+    },
+  },
+  plugins: [],
+};

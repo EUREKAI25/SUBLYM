@@ -1,0 +1,44 @@
+{
+  "name": "sublym-backend",
+  "version": "1.0.0",
+  "description": "SUBLYM API Backend - Dream Visualization Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.500.0",
+    "@hono/node-server": "^1.19.9",
+    "@hono/zod-validator": "^0.2.0",
+    "@prisma/client": "^5.8.0",
+    "archiver": "^6.0.1",
+    "bcrypt": "^5.1.1",
+    "hono": "^4.0.0",
+    "hono-rate-limiter": "^0.2.0",
+    "sharp": "^0.33.2",
+    "stripe": "^14.12.0",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20.11.0",
+    "@types/uuid": "^9.0.7",
+    "prisma": "^5.8.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

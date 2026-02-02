@@ -1,0 +1,24 @@
+# SUBLYM constraints.txt
+# Sections: [GLOBAL.MUST], [GLOBAL.MUST_NOT], [GLOBAL.SHOULD], [SCENE.MUST], [SCENE.MUST_NOT], [SCENE.SHOULD]
+# One rule per line. Keep it short and atomic.
+
+[GLOBAL.MUST]
+- Cohérence du temps (jour/nuit) sur tout le scénario, sauf si explicitement justifié par le récit.
+- Cohérence de la luminosité et de la colorimétrie dans une scène (pas de variations brusques).
+- Rester réaliste et plausible, sans “effets artistiques gratuits” qui cassent la cohérence narrative.
+
+[GLOBAL.MUST_NOT]
+- Ne pas passer du jour à la nuit sans justification narrative explicite.
+- Ne pas ajouter de texte/filigrane/logos dans l'image/vidéo.
+
+[GLOBAL.SHOULD]
+- Privilégier une esthétique cinématographique douce (si compatible avec le rêve).
+
+[SCENE.MUST]
+- Chaque scène doit être compréhensible et contribuer à la progression vers le rêve.
+
+[SCENE.MUST_NOT]
+- Pas de regard caméra (sauf si demandé).
+
+[SCENE.SHOULD]
+- Préférer des actions simples, lisibles, et des mouvements de caméra stables.

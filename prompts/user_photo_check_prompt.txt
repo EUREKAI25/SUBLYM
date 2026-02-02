@@ -1,0 +1,14 @@
+Analyze this image and determine if it shows a human person.
+
+Respond ONLY with a valid JSON object (no markdown, no explanation):
+
+{
+  "is_person": true or false,
+  "description": "brief description (max 15 words)"
+}
+
+Rules:
+- "is_person": true if the image shows a human being (face, portrait, selfie, full body)
+- "is_person": false if no human is visible (landscape, object, animal, text, etc.)
+
+CRITICAL: Return ONLY the JSON object. No text before or after.
