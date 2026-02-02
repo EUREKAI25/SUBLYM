@@ -21,7 +21,8 @@
     "characters": "caratteri",
     "photos": "foto",
     "minCharacters": "Minimo {{count}} caratteri",
-    "photoCount": "{{current}}/{{max}} foto"
+    "photoCount": "{{current}}/{{max}} foto",
+    "recommended": "Consigliato"
   },
   "landing": {
     "badge": "Attiva la legge dell'attrazione",
@@ -107,7 +108,34 @@
     "submitting": "Invio in corso...",
     "validationDream": "Descrivi il tuo sogno (min. 20 caratteri)",
     "validationPhotos": "Aggiungi almeno 3 foto di te",
-    "subliminalLink": "Passa a Premium per attivare il subliminale e potenziare i tuoi risultati"
+    "subliminalLink": "Passa a Premium per attivare il subliminale e potenziare i tuoi risultati",
+    "selectPhotosDesc": "Seleziona foto esistenti dal tuo dispositivo.",
+    "preparingVisualization": "Preparazione della tua visualizzazione...",
+    "takesAFewMoments": "Potrebbe richiedere qualche istante",
+    "paymentValidated": "Pagamento convalidato!",
+    "subscriptionActive": "Il tuo abbonamento è ora attivo. Creazione della tua visualizzazione in corso...",
+    "preparing": "Preparazione...",
+    "paymentCancelled": "Pagamento annullato",
+    "paymentCancelledMsg": "Hai annullato il pagamento. Nessun problema, i tuoi dati sono conservati!",
+    "choosePlan": "Scegli un piano",
+    "startOver": "Ricominciare",
+    "paymentDeclined": "Pagamento rifiutato",
+    "paymentErrorMsg": "Si è verificato un errore durante il pagamento. Riprova.",
+    "smileOptionFree": "Opzione Smile (gratuito)",
+    "createAccount": "Crea il mio account",
+    "proceedToPayment": "Procedi al pagamento",
+    "creatingAccount": "Creazione dell'account...",
+    "redirectingToPayment": "Reindirizzamento al pagamento...",
+    "howToAddPhotos": "Come vuoi aggiungere le tue foto?",
+    "takePhotos": "Scatta foto",
+    "takePhotosDesc": "Usa la fotocamera per catturare 4 pose guidate.",
+    "importPhotos": "Importa foto",
+    "takePhotosWithCamera": "Scatta foto con la fotocamera",
+    "toAccessVisualizations": "Per accedere alle tue visualizzazioni",
+    "paymentSuccessMsg": "Il pagamento è stato convalidato!",
+    "generationError": "Errore nella creazione della tua visualizzazione.",
+    "paymentCreationError": "Errore nella creazione del pagamento",
+    "registrationError": "Errore durante la registrazione"
   },
   "camera": {
     "yourName": "Il tuo nome",
@@ -129,7 +157,13 @@
     "preferUpload": "Preferisco caricare le mie foto",
     "noPermissionTitle": "Fotocamera non disponibile",
     "noPermissionDesc": "Autorizza l'accesso alla fotocamera o carica le tue foto",
-    "uploadInstead": "Carica foto"
+    "uploadInstead": "Carica foto",
+    "permissionDenied": "Accesso alla fotocamera negato. Autorizza l'accesso nelle impostazioni del browser.",
+    "notFound": "Nessuna fotocamera rilevata su questo dispositivo.",
+    "inUse": "La fotocamera è in uso da un'altra applicazione. Chiudi le altre schede.",
+    "accessError": "Impossibile accedere alla fotocamera. Riprova.",
+    "initializing": "Inizializzazione della fotocamera...",
+    "importPhotos": "Importa foto"
   },
   "upload": {
     "dragHere": "Trascina le tue foto qui",
@@ -197,7 +231,10 @@
     "commentTitle": "Lascia un commento",
     "commentPlaceholder": "Condividi le tue emozioni...",
     "commentSend": "Invia",
-    "commentSaved": "Grazie per il tuo commento!"
+    "commentSaved": "Grazie per il tuo commento!",
+    "videoNotFound": "Video non trovato",
+    "connectionError": "Errore di connessione",
+    "excludeCountry": "Non voglio che la registrazione venga utilizzata nel mio paese"
   },
   "progress": {
     "creating": "Creazione in corso...",
@@ -272,6 +309,19 @@
   "pricing": {
     "title": "Scegli il tuo piano",
     "subtitle": "Trova l'offerta che fa per te",
+    "selectSubtitle": "Seleziona l'offerta che corrisponde alle tue esigenze",
+    "perMonth": "/mese",
+    "billedYearly": "Fatturato {{amount}}/anno",
+    "orChoosePlan": "o scegli un piano",
+    "chooseSmile": "Scegli Smile",
+    "smileDescription": "Registriamo la tua reazione quando scopri il video. Semplice e gratuito!",
+    "smileTitle": "Opzione Smile — {{months}} mesi {{level}} gratuiti",
+    "continueWith": "Continua con {{name}}",
+    "securePayment": "Pagamento sicuro",
+    "anytimeCancellation": "Cancellazione in qualsiasi momento",
+    "moneyBackGuarantee": "Soddisfatti o rimborsati",
+    "scenesPerVideo": "{{count}} scene per video",
+    "upToPhotos": "Fino a {{count}} foto",
     "monthly": "Mensile",
     "yearly": "Annuale",
     "yearlyDiscount": "-20%",
@@ -288,5 +338,27 @@
     },
     "cta": "Scegli",
     "currentPlan": "Piano attuale"
+  },
+  "plans": {
+    "discovery": "Scoperta",
+    "essential": "Essenziale",
+    "premium": "Premium",
+    "level": "Livello"
+  },
+  "form": {
+    "email": "Email",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "birthDate": "Data di nascita",
+    "gender": "Genere",
+    "optional": "facoltativo",
+    "female": "Donna",
+    "male": "Uomo",
+    "other": "Altro",
+    "acceptTermsPre": "Accetto i ",
+    "termsOfService": "termini di servizio",
+    "acceptTermsMid": " e la ",
+    "privacyPolicy": "politica sulla privacy",
+    "marketingConsent": "Accetto di ricevere offerte e novità da Sublym"
   }
 }

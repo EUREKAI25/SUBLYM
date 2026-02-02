@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, Check, Crown, Zap, Star, Gift, Loader2 } from 'lucide-react';
+import { Heart, Check, Crown, Zap, Star, Gift, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { API_BASE_URL } from '@/lib/config';
+import { useI18n } from '@/hooks';
 
 interface PricingLevel {
   level: number;
@@ -51,6 +52,7 @@ export function PaymentChoice({
   onSelectPlan,
   onChooseSmile,
 }: PaymentChoiceProps) {
+  const { t } = useI18n();
   const [pricingLevels, setPricingLevels] = useState<PricingLevel[]>([]);
   const [smileStatus, setSmileStatus] = useState<SmileStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +60,7 @@ export function PaymentChoice({
   
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const [smileConsent, setSmileConsent] = useState<SmileConsent>('worldwide');
+  const [smileConsent] = useState<SmileConsent>('worldwide');
 
   // Charger les données depuis l'API
   useEffect(() => {
@@ -132,7 +134,7 @@ export function PaymentChoice({
       <div className="text-center py-16">
         <p className="text-red-600 mb-4">{error}</p>
         <button onClick={() => window.location.reload()} className="btn-secondary">
-          Réessayer
+          {t('common.retry')}
         </button>
       </div>
     );
@@ -143,10 +145,10 @@ export function PaymentChoice({
       {/* Title */}
       <div className="text-center">
         <h2 className="font-display text-2xl sm:text-3xl text-charcoal-900 mb-3">
-          Choisissez votre formule
+          {t('pricing.title')}
         </h2>
         <p className="text-charcoal-600 max-w-md mx-auto">
-          Sélectionnez l'offre qui correspond à vos besoins
+          {t('pricing.selectSubtitle')}
         </p>
       </div>
 
@@ -166,10 +168,10 @@ export function PaymentChoice({
               </div>
               <div>
                 <h3 className="font-display text-lg text-white">
-                  Option Smile — <span className="font-bold">{smileStatus.premiumMonths} mois {premiumLevelName} gratuits</span>
+                  <span dangerouslySetInnerHTML={{ __html: t('pricing.smileTitle', { months: smileStatus.premiumMonths.toString(), level: premiumLevelName }) }} />
                 </h3>
                 <p className="text-white/80 text-sm mt-1">
-                  On enregistre votre reaction en decouvrant la video. Simple et gratuit !
+                  {t('pricing.smileDescription')}
                 </p>
               </div>
             </div>
@@ -178,7 +180,7 @@ export function PaymentChoice({
               className="w-full sm:w-auto py-3 px-6 bg-white text-wine-700 font-bold rounded-xl hover:bg-white/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <Gift className="w-4 h-4" />
-              Choisir Smile
+              {t('pricing.chooseSmile')}
             </button>
           </div>
         </motion.div>
@@ -190,7 +192,7 @@ export function PaymentChoice({
           <div className="w-full border-t border-charcoal-200" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-charcoal-500">ou choisissez une formule</span>
+          <span className="px-4 bg-white text-charcoal-500">{t('pricing.orChoosePlan')}</span>
         </div>
       </div>
 
@@ -206,7 +208,7 @@ export function PaymentChoice({
                 : "text-charcoal-600 hover:text-charcoal-800"
             )}
           >
-            Mensuel
+            {t('pricing.monthly')}
           </button>
           <button
             onClick={() => setBillingPeriod('yearly')}
@@ -217,8 +219,8 @@ export function PaymentChoice({
                 : "text-charcoal-600 hover:text-charcoal-800"
             )}
           >
-            Annuel
-            <span className="ml-1 text-xs text-green-600 font-bold">-20%</span>
+            {t('pricing.yearly')}
+            <span className="ml-1 text-xs text-green-600 font-bold">{t('pricing.yearlyDiscount')}</span>
           </button>
         </div>
       </div>
@@ -282,10 +284,10 @@ export function PaymentChoice({
                 <span className="text-2xl font-bold text-wine-700">
                   {price.toFixed(2)}€
                 </span>
-                <span className="text-charcoal-500 text-sm">/mois</span>
+                <span className="text-charcoal-500 text-sm">{t('pricing.perMonth')}</span>
                 {billingPeriod === 'yearly' && (
                   <span className="block text-xs text-charcoal-400">
-                    Facturé {plan.price.yearly.toFixed(2)}€/an
+                    {t('pricing.billedYearly', { amount: `${plan.price.yearly.toFixed(2)}€` })}
                   </span>
                 )}
               </div>
@@ -294,23 +296,23 @@ export function PaymentChoice({
               <ul className="space-y-2 flex-1 text-sm">
                 <li className="flex items-center gap-2 text-charcoal-700">
                   <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                  {plan.features.generationsPerMonth === -1 
-                    ? 'Visualisations illimitées' 
-                    : `${plan.features.generationsPerMonth} visualisation${plan.features.generationsPerMonth > 1 ? 's' : ''}/mois`
+                  {plan.features.generationsPerMonth === -1
+                    ? t('pricing.features.unlimitedGenerations')
+                    : t('pricing.features.generations', { count: plan.features.generationsPerMonth })
                   }
                 </li>
                 <li className="flex items-center gap-2 text-charcoal-700">
                   <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                  {plan.features.scenesCount} scènes par vidéo
+                  {t('pricing.scenesPerVideo', { count: plan.features.scenesCount })}
                 </li>
                 <li className="flex items-center gap-2 text-charcoal-700">
                   <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                  Jusqu'à {plan.features.photosMax} photos
+                  {t('pricing.upToPhotos', { count: plan.features.photosMax })}
                 </li>
                 {plan.features.subliminalEnabled && (
                   <li className="flex items-center gap-2 text-charcoal-700">
                     <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                    Messages subliminaux
+                    {t('pricing.features.subliminal')}
                   </li>
                 )}
               </ul>
@@ -331,7 +333,7 @@ export function PaymentChoice({
             className="btn-primary py-4 px-8 text-lg flex items-center justify-center gap-2"
           >
             <Heart className="w-5 h-5" />
-            Continuer avec {pricingLevels.find(p => p.level === selectedPlan)?.name}
+            {t('pricing.continueWith', { name: pricingLevels.find(p => p.level === selectedPlan)?.name || '' })}
           </button>
         </motion.div>
       )}
@@ -340,15 +342,15 @@ export function PaymentChoice({
       <div className="flex flex-wrap justify-center gap-6 text-sm text-charcoal-500 pt-4">
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-green-500" />
-          Paiement sécurisé
+          {t('pricing.securePayment')}
         </div>
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-green-500" />
-          Annulation à tout moment
+          {t('pricing.anytimeCancellation')}
         </div>
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-green-500" />
-          Satisfait ou remboursé
+          {t('pricing.moneyBackGuarantee')}
         </div>
       </div>
     </div>

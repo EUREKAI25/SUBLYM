@@ -171,7 +171,7 @@ export function CreatePage() {
       if (paymentStatus === 'success') {
         paymentProcessedRef.current = true;
         setStep('payment-success');
-        setPaymentMessage('Votre paiement a été validé avec succès !');
+        setPaymentMessage(t('create.paymentSuccessMsg'));
         
         // Charger les données sauvegardées
         const hasData = await loadDataAfterStripe();
@@ -189,7 +189,7 @@ export function CreatePage() {
       } else if (paymentStatus === 'cancelled') {
         paymentProcessedRef.current = true;
         setStep('payment-cancelled');
-        setPaymentMessage('Vous avez annulé le paiement.');
+        setPaymentMessage(t('create.paymentCancelledMsg'));
         
         // Restaurer les données pour permettre de réessayer
         await loadDataAfterStripe();
@@ -227,7 +227,7 @@ export function CreatePage() {
     } catch (err) {
       console.error('Generation error:', err);
       setStep('payment-error');
-      setPaymentMessage('Erreur lors de la création de votre visualisation.');
+      setPaymentMessage(t('create.generationError'));
     }
   };
 
@@ -299,7 +299,7 @@ export function CreatePage() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error(data.message || 'Erreur lors de la création du paiement');
+        throw new Error(data.message || t('create.paymentCreationError'));
       }
     } catch (err: any) {
       console.error('Stripe checkout error:', err);
@@ -327,7 +327,7 @@ export function CreatePage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || 'Erreur lors de l\'inscription');
+          throw new Error(data.message || t('create.registrationError'));
         }
 
         // Stocker le token et lancer la génération
@@ -356,7 +356,7 @@ export function CreatePage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || 'Erreur lors de l\'inscription');
+          throw new Error(data.message || t('create.registrationError'));
         }
 
         // Stocker le token et rediriger vers Stripe
@@ -451,7 +451,7 @@ export function CreatePage() {
                 {photoMode === 'choice' && (
                   <div className="card">
                     <h2 className="font-display text-xl text-charcoal-800 text-center mb-6">
-                      Comment souhaitez-vous ajouter vos photos ?
+                      {t('create.howToAddPhotos')}
                     </h2>
                     
                     <div className="grid sm:grid-cols-2 gap-4">
@@ -460,16 +460,16 @@ export function CreatePage() {
                         className="group relative p-6 rounded-2xl border-2 border-wine-200 bg-gradient-to-br from-wine-50 to-blush-50 hover:border-wine-400 hover:shadow-lg transition-all text-left"
                       >
                         <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-wine-600 text-white text-xs font-medium">
-                          Recommandé
+                          {t('common.recommended')}
                         </div>
                         <div className="w-14 h-14 rounded-full bg-wine-100 flex items-center justify-center mb-4 group-hover:bg-wine-200 transition-colors">
                           <Camera className="w-7 h-7 text-wine-600" />
                         </div>
                         <h3 className="font-display text-lg text-charcoal-900 mb-2">
-                          Prendre des photos
+                          {t('create.takePhotos')}
                         </h3>
                         <p className="text-sm text-charcoal-600">
-                          Utilisez votre caméra pour capturer 4 poses guidées.
+                          {t('create.takePhotosDesc')}
                         </p>
                       </button>
 
@@ -481,10 +481,10 @@ export function CreatePage() {
                           <Image className="w-7 h-7 text-charcoal-600 group-hover:text-wine-600 transition-colors" />
                         </div>
                         <h3 className="font-display text-lg text-charcoal-900 mb-2">
-                          Importer des photos
+                          {t('create.importPhotos')}
                         </h3>
                         <p className="text-sm text-charcoal-600">
-                          Sélectionnez des photos existantes depuis votre appareil.
+                          {t('create.selectPhotosDesc')}
                         </p>
                       </button>
                     </div>
@@ -498,7 +498,7 @@ export function CreatePage() {
                       className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-4"
                     >
                       <ArrowLeft className="w-4 h-4" />
-                      Retour
+                      {t('common.back')}
                     </button>
                     <CameraCapture
                       onPhotosComplete={handleCameraPhotosComplete}
@@ -514,7 +514,7 @@ export function CreatePage() {
                       className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-4"
                     >
                       <ArrowLeft className="w-4 h-4" />
-                      Retour
+                      {t('common.back')}
                     </button>
                     <div className="space-y-6">
                       <PhotoUploader
@@ -544,7 +544,7 @@ export function CreatePage() {
                           className="text-wine-600 hover:text-wine-800 text-sm font-medium inline-flex items-center gap-2"
                         >
                           <Camera className="w-4 h-4" />
-                          Prendre des photos avec la caméra
+                          {t('create.takePhotosWithCamera')}
                         </button>
                       </div>
                     </div>
@@ -590,16 +590,16 @@ export function CreatePage() {
 
                   <div className="card">
                     <label className="block font-display text-lg text-charcoal-800 mb-2">
-                      {t('create.rejectLabel') || 'Ce que vous ne souhaitez pas voir'}
+                      {t('create.rejectLabel')}
                     </label>
                     <p className="text-sm text-charcoal-500 mb-3">
-                      {t('create.rejectHelp') || 'Facultatif. Indiquez les elements a exclure, separes par des virgules.'}
+                      {t('create.rejectHelp')}
                     </p>
                     <input
                       type="text"
                       value={rejectText}
                       onChange={(e) => setRejectText(e.target.value)}
-                      placeholder={t('create.rejectPlaceholder') || 'Ex: pas de robe, pas de plage, pas de voiture...'}
+                      placeholder={t('create.rejectPlaceholder')}
                       className="input-romantic"
                     />
                   </div>
@@ -656,8 +656,8 @@ export function CreatePage() {
             {step === 'processing' && (
               <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
                 <Loader2 className="w-12 h-12 text-wine-600 animate-spin mx-auto mb-4" />
-                <h2 className="font-display text-2xl text-charcoal-900 mb-2">Préparation de votre visualisation...</h2>
-                <p className="text-charcoal-600">Cela peut prendre quelques instants</p>
+                <h2 className="font-display text-2xl text-charcoal-900 mb-2">{t('create.preparingVisualization')}</h2>
+                <p className="text-charcoal-600">{t('create.takesAFewMoments')}</p>
               </motion.div>
             )}
 
@@ -676,17 +676,17 @@ export function CreatePage() {
                     <CheckCircle className="w-10 h-10 text-green-600" />
                   </div>
                   <h2 className="font-display text-2xl text-charcoal-900 mb-3">
-                    Paiement validé !
+                    {t('create.paymentValidated')}
                   </h2>
                   <p className="text-charcoal-600 mb-2">
                     {paymentMessage}
                   </p>
                   <p className="text-charcoal-500 text-sm mb-6">
-                    Votre abonnement est maintenant actif. Création de votre visualisation en cours...
+                    {t('create.subscriptionActive')}
                   </p>
                   <div className="flex items-center justify-center gap-2 text-wine-600">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Préparation...</span>
+                    <span>{t('create.preparing')}</span>
                   </div>
                 </div>
               </motion.div>
@@ -700,10 +700,10 @@ export function CreatePage() {
                     <XCircle className="w-10 h-10 text-orange-600" />
                   </div>
                   <h2 className="font-display text-2xl text-charcoal-900 mb-3">
-                    Paiement annulé
+                    {t('create.paymentCancelled')}
                   </h2>
                   <p className="text-charcoal-600 mb-6">
-                    {paymentMessage || 'Vous avez annulé le paiement. Pas de souci, vos données sont conservées !'}
+                    {paymentMessage || t('create.paymentCancelledMsg')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button
@@ -711,13 +711,13 @@ export function CreatePage() {
                       className="btn-primary inline-flex items-center justify-center gap-2"
                     >
                       <ArrowLeft className="w-4 h-4" />
-                      Choisir une formule
+                      {t('create.choosePlan')}
                     </button>
                     <button
                       onClick={handleNewCreation}
                       className="btn-secondary inline-flex items-center justify-center gap-2"
                     >
-                      Recommencer
+                      {t('create.startOver')}
                     </button>
                   </div>
                 </div>
@@ -732,23 +732,23 @@ export function CreatePage() {
                     <AlertCircle className="w-10 h-10 text-red-600" />
                   </div>
                   <h2 className="font-display text-2xl text-charcoal-900 mb-3">
-                    Paiement refusé
+                    {t('create.paymentDeclined')}
                   </h2>
                   <p className="text-charcoal-600 mb-6">
-                    {paymentMessage || 'Une erreur est survenue lors du paiement. Veuillez réessayer.'}
+                    {paymentMessage || t('create.paymentErrorMsg')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button
                       onClick={handleRetryPayment}
                       className="btn-primary inline-flex items-center justify-center gap-2"
                     >
-                      Réessayer
+                      {t('common.retry')}
                     </button>
                     <button
                       onClick={handleNewCreation}
                       className="btn-secondary inline-flex items-center justify-center gap-2"
                     >
-                      Recommencer
+                      {t('create.startOver')}
                     </button>
                   </div>
                 </div>
@@ -791,11 +791,11 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
 
   const getPlanLabel = () => {
-    if (isSmile) return 'Option Smile (gratuit)';
+    if (isSmile) return t('create.smileOptionFree');
     if (selectedPlan?.startsWith('level_')) {
       const level = selectedPlan.replace('level_', '');
-      const names: Record<string, string> = { '1': 'Découverte', '2': 'Essentiel', '3': 'Premium' };
-      return names[level] || `Niveau ${level}`;
+      const names: Record<string, string> = { '1': t('plans.discovery'), '2': t('plans.essential'), '3': t('plans.premium') };
+      return names[level] || `${t('plans.level')} ${level}`;
     }
     return selectedPlan;
   };
@@ -813,10 +813,10 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
             <User className="w-8 h-8 text-white" />
           </div>
           <h2 className="font-display text-2xl text-charcoal-900 mb-2">
-            Créez votre compte
+            {t('create.createAccount')}
           </h2>
           <p className="text-charcoal-600">
-            Pour accéder à vos visualisations
+            {t('create.toAccessVisualizations')}
           </p>
           {selectedPlan && (
             <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-wine-100 text-wine-700 text-sm font-medium">
@@ -830,7 +830,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-              Email <span className="text-wine-500">*</span>
+              {t('form.email')} <span className="text-wine-500">*</span>
             </label>
             <input
               type="email"
@@ -846,7 +846,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-                Prénom <span className="text-wine-500">*</span>
+                {t('form.firstName')} <span className="text-wine-500">*</span>
               </label>
               <input
                 type="text"
@@ -859,7 +859,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
             </div>
             <div>
               <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-                Nom <span className="text-wine-500">*</span>
+                {t('form.lastName')} <span className="text-wine-500">*</span>
               </label>
               <input
                 type="text"
@@ -875,7 +875,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           {/* Date de naissance */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-              Date de naissance
+              {t('form.birthDate')}
             </label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal-400" />
@@ -892,13 +892,13 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           {/* Genre */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-              Genre <span className="text-charcoal-400 text-xs">(facultatif)</span>
+              {t('form.gender')} <span className="text-charcoal-400 text-xs">({t('form.optional')})</span>
             </label>
             <div className="flex gap-3">
               {[
-                { value: 'female', label: 'Femme' },
-                { value: 'male', label: 'Homme' },
-                { value: 'other', label: 'Autre' },
+                { value: 'female', label: t('form.female') },
+                { value: 'male', label: t('form.male') },
+                { value: 'other', label: t('form.other') },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -927,7 +927,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
                 required
               />
               <span className="text-sm text-charcoal-600">
-                J'accepte les <a href="/terms" className="text-wine-600 underline" target="_blank">conditions générales</a> et la <a href="/privacy" className="text-wine-600 underline" target="_blank">politique de confidentialité</a> <span className="text-wine-500">*</span>
+                {t('form.acceptTermsPre')}<a href="/terms" className="text-wine-600 underline" target="_blank">{t('form.termsOfService')}</a>{t('form.acceptTermsMid')}<a href="/privacy" className="text-wine-600 underline" target="_blank">{t('form.privacyPolicy')}</a> <span className="text-wine-500">*</span>
               </span>
             </label>
 
@@ -939,7 +939,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
                 className="mt-1 w-4 h-4 rounded border-charcoal-300 text-wine-600 focus:ring-wine-500"
               />
               <span className="text-sm text-charcoal-600">
-                J'accepte de recevoir des offres et actualités de Sublym
+                {t('form.marketingConsent')}
               </span>
             </label>
           </div>
@@ -958,11 +958,11 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                {isSmile ? 'Création du compte...' : 'Redirection vers le paiement...'}
+                {isSmile ? t('create.creatingAccount') : t('create.redirectingToPayment')}
               </>
             ) : (
               <>
-                {isSmile ? 'Créer mon compte' : 'Continuer vers le paiement'}
+                {isSmile ? t('create.createAccount') : t('create.proceedToPayment')}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}

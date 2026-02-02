@@ -1,11 +1,14 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import fr from '@/locales/fr.json';
 import en from '@/locales/en.json';
+import it from '@/locales/it.json';
+import de from '@/locales/de.json';
+import es from '@/locales/es.json';
 
-type Locale = 'fr' | 'en';
+type Locale = 'fr' | 'en' | 'it' | 'de' | 'es';
 type Translations = typeof fr;
 
-const translations: Record<Locale, Translations> = { fr, en };
+const translations: Record<Locale, Translations> = { fr, en, it, de, es };
 
 // Fonction pour récupérer une valeur imbriquée par chemin (ex: "landing.title")
 function getNestedValue(obj: Record<string, unknown>, path: string): string {
@@ -41,16 +44,18 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | null>(null);
 
+const SUPPORTED_LOCALES: Locale[] = ['fr', 'en', 'it', 'de', 'es'];
+
 // Détecter la langue du navigateur
 function detectBrowserLocale(): Locale {
-  const browserLang = navigator.language.split('-')[0];
-  return browserLang === 'fr' ? 'fr' : 'en';
+  const browserLang = navigator.language.split('-')[0] as Locale;
+  return SUPPORTED_LOCALES.includes(browserLang) ? browserLang : 'en';
 }
 
 // Récupérer la langue sauvegardée ou détecter
 function getInitialLocale(): Locale {
   const saved = localStorage.getItem('locale') as Locale | null;
-  if (saved && (saved === 'fr' || saved === 'en')) {
+  if (saved && SUPPORTED_LOCALES.includes(saved)) {
     return saved;
   }
   return detectBrowserLocale();
@@ -79,7 +84,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         locale,
         setLocale,
         t,
-        availableLocales: ['fr', 'en'],
+        availableLocales: SUPPORTED_LOCALES,
       }}
     >
       {children}
@@ -107,7 +112,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
     >
       {availableLocales.map((loc) => (
         <option key={loc} value={loc}>
-          {loc === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN'}
+          {{ fr: '🇫🇷 FR', en: '🇬🇧 EN', it: '🇮🇹 IT', de: '🇩🇪 DE', es: '🇪🇸 ES' }[loc]}
         </option>
       ))}
     </select>

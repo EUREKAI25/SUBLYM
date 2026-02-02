@@ -438,7 +438,19 @@ app.post('/invitations', zValidator('json', createInvitationSchema), async (c) =
       createdBy: admin.id,
     },
   });
-  
+
+  // Create Contact record if targetEmail or targetPhone provided
+  if (data.targetEmail || data.targetPhone) {
+    await prisma.contact.create({
+      data: {
+        email: data.targetEmail,
+        phone: data.targetPhone,
+        invitationId: invitation.id,
+        source: 'manual',
+      },
+    });
+  }
+
   await prisma.auditLog.create({
     data: {
       adminId: admin.id,
@@ -447,7 +459,7 @@ app.post('/invitations', zValidator('json', createInvitationSchema), async (c) =
       details: { code },
     },
   });
-  
+
   return c.json({
     success: true,
     invitation,
@@ -499,6 +511,19 @@ app.post('/invitations/:id/send', zValidator('json', sendInvitationSchema), asyn
           sentVia: 'sms',
         },
       });
+      // Upsert Contact for tracking
+      const existing = await prisma.contact.findFirst({
+        where: { invitationId, phone: data.phone },
+      });
+      if (!existing) {
+        await prisma.contact.create({
+          data: {
+            phone: data.phone,
+            invitationId,
+            source: 'sms',
+          },
+        });
+      }
     }
   } else {
     if (!data.email) {
@@ -520,6 +545,19 @@ app.post('/invitations/:id/send', zValidator('json', sendInvitationSchema), asyn
           sentVia: 'email',
         },
       });
+      // Upsert Contact for tracking
+      const existing = await prisma.contact.findFirst({
+        where: { invitationId, email: data.email },
+      });
+      if (!existing) {
+        await prisma.contact.create({
+          data: {
+            email: data.email,
+            invitationId,
+            source: 'email',
+          },
+        });
+      }
     }
   }
 
@@ -537,6 +575,30 @@ app.post('/invitations/:id/send', zValidator('json', sendInvitationSchema), asyn
   return c.json({
     success: sent,
     message: sent ? 'Invitation envoyée' : 'Échec de l\'envoi',
+  });
+});
+
+// ============================================
+// CONTACTS (Conversion tracking)
+// ============================================
+
+app.get('/contacts', async (c) => {
+  const contacts = await prisma.contact.findMany({
+    include: {
+      invitation: {
+        select: { code: true, description: true },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const total = contacts.length;
+  const converted = contacts.filter(c => c.convertedAt !== null).length;
+  const conversionRate = total > 0 ? Math.round((converted / total) * 100) : 0;
+
+  return c.json({
+    contacts,
+    stats: { total, converted, pending: total - converted, conversionRate },
   });
 });
 

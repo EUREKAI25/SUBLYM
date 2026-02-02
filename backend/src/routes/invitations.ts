@@ -174,7 +174,20 @@ app.post('/:code/apply', optionalAuthMiddleware, async (c) => {
       convertedUserId: user.id,
     },
   });
-  
+
+  // Mark matching Contact as converted
+  await prisma.contact.updateMany({
+    where: {
+      invitationId: invitation.id,
+      email: user.email,
+      convertedAt: null,
+    },
+    data: {
+      userId: user.id,
+      convertedAt: new Date(),
+    },
+  });
+
   return c.json({
     success: true,
     message: `You received ${invitation.freeGenerations} free generation(s)!`,

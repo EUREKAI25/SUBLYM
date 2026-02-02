@@ -73,13 +73,13 @@ export function CameraCapture({
       setIsLoading(false);
       
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setErrorMessage('Accès à la caméra refusé. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.');
+        setErrorMessage(t('camera.permissionDenied'));
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        setErrorMessage('Aucune caméra détectée sur cet appareil.');
+        setErrorMessage(t('camera.notFound'));
       } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-        setErrorMessage('La caméra est utilisée par une autre application. Fermez les autres onglets.');
+        setErrorMessage(t('camera.inUse'));
       } else {
-        setErrorMessage('Impossible d\'accéder à la caméra. Veuillez réessayer.');
+        setErrorMessage(t('camera.accessError'));
       }
       setHasPermission(false);
     }
@@ -154,7 +154,7 @@ export function CameraCapture({
     return (
       <div className="text-center py-8">
         <div className="animate-spin w-8 h-8 border-4 border-wine-200 border-t-wine-600 rounded-full mx-auto mb-4" />
-        <p className="text-charcoal-600">Initialisation de la caméra...</p>
+        <p className="text-charcoal-600">{t('camera.initializing')}</p>
       </div>
     );
   }
@@ -163,16 +163,16 @@ export function CameraCapture({
     return (
       <div className="text-center py-8">
         <AlertCircle className="w-12 h-12 text-wine-400 mx-auto mb-4" />
-        <h3 className="font-display text-xl text-charcoal-800 mb-2">Caméra non disponible</h3>
+        <h3 className="font-display text-xl text-charcoal-800 mb-2">{t('camera.noPermissionTitle')}</h3>
         <p className="text-charcoal-600 mb-6 max-w-sm mx-auto text-sm">{errorMessage}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button onClick={initCamera} className="btn-secondary inline-flex items-center justify-center gap-2">
             <RefreshCw className="w-4 h-4" />
-            Réessayer
+            {t('common.retry')}
           </button>
           <button onClick={onSwitchToUpload} className="btn-primary inline-flex items-center justify-center gap-2">
             <Upload className="w-4 h-4" />
-            Importer des photos
+            {t('camera.importPhotos')}
           </button>
         </div>
       </div>

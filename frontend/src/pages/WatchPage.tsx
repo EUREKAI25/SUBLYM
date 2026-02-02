@@ -56,7 +56,7 @@ export function WatchPage() {
         ]);
 
         if (!runRes.ok) {
-          setError('Video introuvable');
+          setError(t('watch.videoNotFound'));
           setPageState('error');
           return;
         }
@@ -83,7 +83,7 @@ export function WatchPage() {
 
         setPageState('watching');
       } catch {
-        setError('Erreur de connexion');
+        setError(t('watch.connectionError'));
         setPageState('error');
       }
     }
@@ -270,7 +270,7 @@ export function WatchPage() {
                       className="mt-1 accent-wine-600 w-4 h-4"
                     />
                     <span className="text-sm text-charcoal-700">
-                      Je ne veux pas que l'enregistrement soit utilise dans mon pays
+                      {t('watch.excludeCountry')}
                     </span>
                   </label>
                 </div>

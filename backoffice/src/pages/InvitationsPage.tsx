@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, Plus, Copy, Check, Link, Eye, UserCheck, X, Send, Mail, Phone } from 'lucide-react';
+import { Loader2, Plus, Copy, Check, Link, Eye, UserCheck, X, Send, Mail, Phone, TrendingUp } from 'lucide-react';
 
 const API_URL = 'http://localhost:8000/api/v1';
 const FRONTEND_URL = 'http://localhost:5173';
@@ -38,6 +38,26 @@ Décrivez votre rêve le plus cher, uploadez quelques photos de vous, et laissez
   },
 };
 
+interface Contact {
+  id: number;
+  email: string | null;
+  phone: string | null;
+  name: string | null;
+  invitationId: number;
+  source: string;
+  userId: number | null;
+  convertedAt: string | null;
+  createdAt: string;
+  invitation: { code: string; description: string | null };
+}
+
+interface ContactStats {
+  total: number;
+  converted: number;
+  pending: number;
+  conversionRate: number;
+}
+
 interface Invitation {
   id: number;
   code: string;
@@ -58,6 +78,8 @@ interface Invitation {
 export function InvitationsPage() {
   const { token } = useAuth();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contactStats, setContactStats] = useState<ContactStats>({ total: 0, converted: 0, pending: 0, conversionRate: 0 });
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -80,28 +102,39 @@ export function InvitationsPage() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    fetchInvitations();
+    fetchData();
   }, [token]);
 
-  async function fetchInvitations() {
+  async function fetchData() {
     if (!token) return;
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/admin/invitations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
+      const [invRes, contactsRes] = await Promise.all([
+        fetch(`${API_URL}/admin/invitations`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`${API_URL}/admin/contacts`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        }),
+      ]);
+      if (invRes.ok) {
+        const data = await invRes.json();
         setInvitations(data.invitations || []);
       }
+      if (contactsRes.ok) {
+        const data = await contactsRes.json();
+        setContacts(data.contacts || []);
+        setContactStats(data.stats || { total: 0, converted: 0, pending: 0, conversionRate: 0 });
+      }
     } catch (err) {
-      console.error('Error fetching invitations:', err);
+      console.error('Error fetching data:', err);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function fetchInvitations() {
+    await fetchData();
   }
 
   async function createInvitation() {
@@ -466,7 +499,7 @@ export function InvitationsPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="card text-center">
           <p className="text-2xl font-bold text-gray-900">{invitations.length}</p>
           <p className="text-sm text-gray-600">Total invitations</p>
@@ -484,12 +517,78 @@ export function InvitationsPage() {
           <p className="text-sm text-gray-600">Utilisations</p>
         </div>
         <div className="card text-center">
-          <p className="text-2xl font-bold text-gray-900">
-            {invitations.reduce((sum, i) => sum + i.freeGenerations * i.currentUses, 0)}
-          </p>
-          <p className="text-sm text-gray-600">Générations offertes</p>
+          <p className="text-2xl font-bold text-gray-900">{contactStats.total}</p>
+          <p className="text-sm text-gray-600">Contacts</p>
+        </div>
+        <div className="card text-center">
+          <div className="flex items-center justify-center gap-1">
+            <TrendingUp className="w-4 h-4 text-green-600" />
+            <p className="text-2xl font-bold text-green-600">{contactStats.conversionRate}%</p>
+          </div>
+          <p className="text-sm text-gray-600">Taux conversion</p>
         </div>
       </div>
+
+      {/* Contacts conversion table */}
+      {contacts.length > 0 && (
+        <div className="card">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Contacts ({contactStats.converted}/{contactStats.total} convertis)
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-2 px-3 text-gray-500 font-medium">Contact</th>
+                  <th className="text-left py-2 px-3 text-gray-500 font-medium">Invitation</th>
+                  <th className="text-left py-2 px-3 text-gray-500 font-medium">Source</th>
+                  <th className="text-left py-2 px-3 text-gray-500 font-medium">Statut</th>
+                  <th className="text-left py-2 px-3 text-gray-500 font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {contacts.map((contact) => (
+                  <tr key={contact.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-2 px-3">
+                      <div>
+                        {contact.name && <p className="font-medium text-gray-900">{contact.name}</p>}
+                        <p className="text-gray-600">{contact.email || contact.phone || '-'}</p>
+                      </div>
+                    </td>
+                    <td className="py-2 px-3">
+                      <code className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded">
+                        {contact.invitation.code}
+                      </code>
+                      {contact.invitation.description && (
+                        <p className="text-xs text-gray-400 mt-0.5">{contact.invitation.description}</p>
+                      )}
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                        {contact.source}
+                      </span>
+                    </td>
+                    <td className="py-2 px-3">
+                      {contact.convertedAt ? (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
+                          Converti
+                        </span>
+                      ) : (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
+                          En attente
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-2 px-3 text-gray-500">
+                      {formatDate(contact.convertedAt || contact.createdAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* List */}
       {invitations.length === 0 ? (

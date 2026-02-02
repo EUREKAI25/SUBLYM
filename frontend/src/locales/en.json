@@ -21,7 +21,8 @@
     "characters": "characters",
     "photos": "photos",
     "minCharacters": "Minimum {{count}} characters",
-    "photoCount": "{{current}}/{{max}} photos"
+    "photoCount": "{{current}}/{{max}} photos",
+    "recommended": "Recommended"
   },
   "landing": {
     "badge": "Activate the law of attraction",
@@ -107,7 +108,34 @@
     "submitting": "Sending...",
     "validationDream": "Describe your dream (min. 20 characters)",
     "validationPhotos": "Add at least 3 photos of yourself",
-    "subliminalLink": "Upgrade to Premium to activate subliminal and boost your results"
+    "subliminalLink": "Upgrade to Premium to activate subliminal and boost your results",
+    "selectPhotosDesc": "Select existing photos from your device.",
+    "preparingVisualization": "Preparing your visualization...",
+    "takesAFewMoments": "This may take a few moments",
+    "paymentValidated": "Payment validated!",
+    "subscriptionActive": "Your subscription is now active. Creating your visualization...",
+    "preparing": "Preparing...",
+    "paymentCancelled": "Payment cancelled",
+    "paymentCancelledMsg": "You cancelled the payment. No worries, your data is saved!",
+    "choosePlan": "Choose a plan",
+    "startOver": "Start over",
+    "paymentDeclined": "Payment declined",
+    "paymentErrorMsg": "An error occurred during payment. Please try again.",
+    "smileOptionFree": "Smile option (free)",
+    "createAccount": "Create my account",
+    "proceedToPayment": "Proceed to payment",
+    "creatingAccount": "Creating account...",
+    "redirectingToPayment": "Redirecting to payment...",
+    "howToAddPhotos": "How would you like to add your photos?",
+    "takePhotos": "Take photos",
+    "takePhotosDesc": "Use your camera to capture 4 guided poses.",
+    "importPhotos": "Import photos",
+    "takePhotosWithCamera": "Take photos with camera",
+    "toAccessVisualizations": "To access your visualizations",
+    "paymentSuccessMsg": "Your payment has been validated!",
+    "generationError": "Error creating your visualization.",
+    "paymentCreationError": "Error creating payment",
+    "registrationError": "Registration error"
   },
   "camera": {
     "yourName": "Your first name",
@@ -129,7 +157,13 @@
     "preferUpload": "I prefer to upload my own photos",
     "noPermissionTitle": "Camera not available",
     "noPermissionDesc": "Please allow camera access or upload your photos",
-    "uploadInstead": "Upload photos"
+    "uploadInstead": "Upload photos",
+    "permissionDenied": "Camera access denied. Please allow camera access in your browser settings.",
+    "notFound": "No camera detected on this device.",
+    "inUse": "Camera is in use by another application. Close other tabs.",
+    "accessError": "Unable to access camera. Please try again.",
+    "initializing": "Initializing camera...",
+    "importPhotos": "Import photos"
   },
   "upload": {
     "dragHere": "Drag your photos here",
@@ -197,7 +231,10 @@
     "commentTitle": "Leave a comment",
     "commentPlaceholder": "Share your feelings...",
     "commentSend": "Send",
-    "commentSaved": "Thank you for your comment!"
+    "commentSaved": "Thank you for your comment!",
+    "videoNotFound": "Video not found",
+    "connectionError": "Connection error",
+    "excludeCountry": "I do not want the recording to be used in my country"
   },
   "progress": {
     "creating": "Creating...",
@@ -272,6 +309,19 @@
   "pricing": {
     "title": "Choose your plan",
     "subtitle": "Find the offer that matches your needs",
+    "selectSubtitle": "Select the offer that matches your needs",
+    "perMonth": "/month",
+    "billedYearly": "Billed {{amount}}/year",
+    "orChoosePlan": "or choose a plan",
+    "chooseSmile": "Choose Smile",
+    "smileDescription": "We record your reaction when you discover the video. Simple and free!",
+    "smileTitle": "Smile Option — {{months}} months {{level}} free",
+    "continueWith": "Continue with {{name}}",
+    "securePayment": "Secure payment",
+    "anytimeCancellation": "Cancel anytime",
+    "moneyBackGuarantee": "Money-back guarantee",
+    "scenesPerVideo": "{{count}} scenes per video",
+    "upToPhotos": "Up to {{count}} photos",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "yearlyDiscount": "-20%",
@@ -288,5 +338,27 @@
     },
     "cta": "Choose",
     "currentPlan": "Current plan"
+  },
+  "plans": {
+    "discovery": "Discovery",
+    "essential": "Essential",
+    "premium": "Premium",
+    "level": "Level"
+  },
+  "form": {
+    "email": "Email",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "birthDate": "Date of birth",
+    "gender": "Gender",
+    "optional": "optional",
+    "female": "Female",
+    "male": "Male",
+    "other": "Other",
+    "acceptTermsPre": "I accept the ",
+    "termsOfService": "terms of service",
+    "acceptTermsMid": " and the ",
+    "privacyPolicy": "privacy policy",
+    "marketingConsent": "I agree to receive offers and news from Sublym"
   }
 }

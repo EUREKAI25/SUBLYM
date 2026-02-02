@@ -332,35 +332,64 @@ model Invitation {
   id              Int       @id @default(autoincrement())
   code            String    @unique
   description     String?   // "Campagne YouTube Janvier 2026"
-  
+
   // Limites
   maxUses         Int       @default(1)
   currentUses     Int       @default(0)
-  
+
   // Avantages accordés
   freeGenerations Int       @default(1)
-  
+
   // Validité
   expiresAt       DateTime?
   enabled         Boolean   @default(true)
-  
+
   // Stats de tracking
   viewCount       Int       @default(0)
-  
+
   // Envoi
   targetEmail     String?   // Email du destinataire (optionnel)
   targetPhone     String?   // Téléphone (optionnel)
   sentAt          DateTime? // Date d'envoi (email/SMS)
   sentVia         String?   // email, sms, manual
-  
+
   createdAt       DateTime  @default(now())
   createdBy       Int?      // Admin ID
-  
+
   users           User[]    // Utilisateurs inscrits via ce code
   views           InvitationView[]
-  
+  contacts        Contact[]
+
   @@index([code])
   @@index([enabled])
+}
+
+// ============================================
+// CONTACTS (Tracking conversion invitations)
+// ============================================
+
+model Contact {
+  id              Int       @id @default(autoincrement())
+  email           String?
+  phone           String?
+  name            String?
+
+  // Lien invitation
+  invitationId    Int
+  invitation      Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  // Source
+  source          String    @default("manual") // email, sms, manual
+
+  // Conversion
+  userId          Int?      // Null tant que pas inscrit
+  convertedAt     DateTime? // Date d'inscription
+
+  createdAt       DateTime  @default(now())
+
+  @@index([invitationId])
+  @@index([email])
+  @@index([convertedAt])
 }
 
 model InvitationView {
