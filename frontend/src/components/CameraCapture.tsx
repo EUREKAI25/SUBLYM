@@ -160,15 +160,6 @@ export function CameraCapture({
     }
   }, [capturedPhotos, onPhotosComplete]);
 
-  if (isLoading) {
-    return (
-      <div className="text-center py-8">
-        <div className="animate-spin w-8 h-8 border-4 border-teal-200 border-t-teal-600 rounded-full mx-auto mb-4" />
-        <p className="text-gray-600">{t('camera.initializing')}</p>
-      </div>
-    );
-  }
-
   if (hasPermission === false) {
     return (
       <div className="text-center py-8">
@@ -185,6 +176,9 @@ export function CameraCapture({
             {t('camera.importPhotos')}
           </button>
         </div>
+        {/* Hidden video element so ref stays available for retry */}
+        <video ref={videoRef} className="hidden" />
+        <canvas ref={canvasRef} className="hidden" />
       </div>
     );
   }
@@ -192,42 +186,46 @@ export function CameraCapture({
   return (
     <div className="space-y-4">
       {/* Progress dots */}
-      <div className="flex justify-center gap-2">
-        {POSES.map((pose, index) => (
-          <button
-            key={pose.key}
-            onClick={() => setCurrentPoseIndex(index)}
-            className={cn(
-              'w-3 h-3 rounded-full transition-all',
-              index === currentPoseIndex
-                ? 'bg-teal-600 scale-125'
-                : capturedPhotos[index]
-                ? 'bg-teal-400'
-                : 'bg-gray-200'
-            )}
-          />
-        ))}
-      </div>
+      {!isLoading && (
+        <div className="flex justify-center gap-2">
+          {POSES.map((pose, index) => (
+            <button
+              key={pose.key}
+              onClick={() => setCurrentPoseIndex(index)}
+              className={cn(
+                'w-3 h-3 rounded-full transition-all',
+                index === currentPoseIndex
+                  ? 'bg-teal-600 scale-125'
+                  : capturedPhotos[index]
+                  ? 'bg-teal-400'
+                  : 'bg-gray-200'
+              )}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Current pose instruction */}
-      <motion.div
-        key={currentPoseIndex}
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center"
-      >
-        <div className="text-3xl mb-1">{currentPose.icon}</div>
-        <h3 className="font-display text-lg text-dark">
-          {t(`camera.${currentPose.labelKey}`)}
-        </h3>
-        <p className="text-gray-600 text-sm">
-          {t(`camera.${currentPose.descKey}`)}
-        </p>
-      </motion.div>
+      {!isLoading && (
+        <motion.div
+          key={currentPoseIndex}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-3xl mb-1">{currentPose.icon}</div>
+          <h3 className="font-display text-lg text-dark">
+            {t(`camera.${currentPose.labelKey}`)}
+          </h3>
+          <p className="text-gray-600 text-sm">
+            {t(`camera.${currentPose.descKey}`)}
+          </p>
+        </motion.div>
+      )}
 
       {/* Camera + Capture Button - Layout horizontal */}
       <div className="flex gap-4 items-center">
-        {/* Camera view */}
+        {/* Camera view — ALWAYS rendered so videoRef is available during init */}
         <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-[4/3] flex-1 max-h-[250px]">
           <video
             ref={videoRef}
@@ -240,6 +238,14 @@ export function CameraCapture({
             )}
           />
           <canvas ref={canvasRef} className="hidden" />
+
+          {/* Loading overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
+              <div className="animate-spin w-8 h-8 border-4 border-teal-200 border-t-teal-600 rounded-full mb-4" />
+              <p className="text-gray-300 text-sm">{t('camera.initializing')}</p>
+            </div>
+          )}
 
           {/* Face guide */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
@@ -281,7 +287,7 @@ export function CameraCapture({
         </div>
 
         {/* Capture button - à côté de la caméra */}
-        <div className="flex flex-col gap-2 w-28 shrink-0">
+        <div className={cn("flex flex-col gap-2 w-28 shrink-0", isLoading && "invisible")}>
           {capturedPhotos[currentPoseIndex] ? (
             <>
               <button
