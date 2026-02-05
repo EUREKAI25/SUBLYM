@@ -60,11 +60,16 @@ export function CameraCapture({
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await new Promise<void>((resolve) => {
-          if (videoRef.current) {
-            videoRef.current.onloadedmetadata = () => resolve();
-          }
-        });
+        // Wait for metadata — handle race condition where event already fired
+        if (videoRef.current.readyState < 1) {
+          await new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => resolve(), 3000); // fallback timeout
+            videoRef.current!.addEventListener('loadedmetadata', () => {
+              clearTimeout(timeout);
+              resolve();
+            }, { once: true });
+          });
+        }
         try {
           await videoRef.current.play();
         } catch (playErr) {
