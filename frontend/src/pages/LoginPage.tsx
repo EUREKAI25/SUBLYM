@@ -21,11 +21,23 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const inviteParam = searchParams.get('invite');
+
+  // Store invite code in localStorage so it survives the magic link email round-trip
+  useEffect(() => {
+    if (inviteParam) {
+      localStorage.setItem('pendingInvite', inviteParam);
+    }
+  }, [inviteParam]);
+
+  const inviteCode = inviteParam || localStorage.getItem('pendingInvite');
+  const redirectAfterLogin = inviteCode ? `/invite/${inviteCode}` : '/create';
+
   useEffect(() => {
     if (user) {
-      navigate('/create');
+      navigate(redirectAfterLogin);
     }
-  }, [user, navigate]);
+  }, [user, navigate, redirectAfterLogin]);
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -34,7 +46,7 @@ export function LoginPage() {
       setStep('verifying');
       verifyToken(token).then((success) => {
         if (success) {
-          navigate('/create');
+          navigate(redirectAfterLogin);
         } else {
           setStep('error');
           setError(t('login.invalidLinkMessage'));

@@ -53,6 +53,7 @@ export function InvitePage() {
 
       if (data.success) {
         setApplied(true);
+        localStorage.removeItem('pendingInvite');
       } else if (data.redirectTo) {
         navigate(`/login`);
       } else {
