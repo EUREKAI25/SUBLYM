@@ -153,8 +153,8 @@ export function CameraCapture({
   if (isLoading) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin w-8 h-8 border-4 border-wine-200 border-t-wine-600 rounded-full mx-auto mb-4" />
-        <p className="text-charcoal-600">{t('camera.initializing')}</p>
+        <div className="animate-spin w-8 h-8 border-4 border-teal-200 border-t-teal-600 rounded-full mx-auto mb-4" />
+        <p className="text-gray-600">{t('camera.initializing')}</p>
       </div>
     );
   }
@@ -162,9 +162,9 @@ export function CameraCapture({
   if (hasPermission === false) {
     return (
       <div className="text-center py-8">
-        <AlertCircle className="w-12 h-12 text-wine-400 mx-auto mb-4" />
-        <h3 className="font-display text-xl text-charcoal-800 mb-2">{t('camera.noPermissionTitle')}</h3>
-        <p className="text-charcoal-600 mb-6 max-w-sm mx-auto text-sm">{errorMessage}</p>
+        <AlertCircle className="w-12 h-12 text-teal-400 mx-auto mb-4" />
+        <h3 className="font-display text-xl text-gray-800 mb-2">{t('camera.noPermissionTitle')}</h3>
+        <p className="text-gray-600 mb-6 max-w-sm mx-auto text-sm">{errorMessage}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button onClick={initCamera} className="btn-secondary inline-flex items-center justify-center gap-2">
             <RefreshCw className="w-4 h-4" />
@@ -190,10 +190,10 @@ export function CameraCapture({
             className={cn(
               'w-3 h-3 rounded-full transition-all',
               index === currentPoseIndex
-                ? 'bg-wine-600 scale-125'
+                ? 'bg-teal-600 scale-125'
                 : capturedPhotos[index]
-                ? 'bg-wine-400'
-                : 'bg-charcoal-200'
+                ? 'bg-teal-400'
+                : 'bg-gray-200'
             )}
           />
         ))}
@@ -207,10 +207,10 @@ export function CameraCapture({
         className="text-center"
       >
         <div className="text-3xl mb-1">{currentPose.icon}</div>
-        <h3 className="font-display text-lg text-charcoal-800">
+        <h3 className="font-display text-lg text-gray-800">
           {t(`camera.${currentPose.labelKey}`)}
         </h3>
-        <p className="text-charcoal-600 text-sm">
+        <p className="text-gray-600 text-sm">
           {t(`camera.${currentPose.descKey}`)}
         </p>
       </motion.div>
@@ -218,7 +218,7 @@ export function CameraCapture({
       {/* Camera + Capture Button - Layout horizontal */}
       <div className="flex gap-4 items-center">
         {/* Camera view */}
-        <div className="relative rounded-2xl overflow-hidden bg-charcoal-900 aspect-[4/3] flex-1 max-h-[250px]">
+        <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-[4/3] flex-1 max-h-[250px]">
           <video
             ref={videoRef}
             autoPlay
@@ -235,7 +235,7 @@ export function CameraCapture({
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
             <div className={cn(
               'w-28 h-36 border-3 border-dashed rounded-full opacity-50',
-              currentPose.key.includes('profile') ? 'border-wine-400' : 'border-white'
+              currentPose.key.includes('profile') ? 'border-teal-400' : 'border-white'
             )} />
           </div>
 
@@ -307,7 +307,7 @@ export function CameraCapture({
               className="btn-primary flex flex-col items-center justify-center gap-1 py-6"
             >
               <Camera className="w-8 h-8" />
-              <span className="text-sm">{isCapturing ? 'Capture...' : 'Photo'}</span>
+              <span className="text-sm">{isCapturing ? t('camera.capturing') : t('camera.photo')}</span>
             </button>
           )}
         </div>
@@ -322,17 +322,17 @@ export function CameraCapture({
             className={cn(
               'w-12 h-12 rounded-lg overflow-hidden border-2 transition-all',
               index === currentPoseIndex
-                ? 'border-wine-600 ring-2 ring-wine-200'
+                ? 'border-teal-600 ring-2 ring-teal-200'
                 : capturedPhotos[index]
-                ? 'border-wine-300'
-                : 'border-charcoal-200'
+                ? 'border-teal-300'
+                : 'border-gray-200'
             )}
           >
             {photo ? (
               <img src={URL.createObjectURL(photo)} alt={`Pose ${index + 1}`} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-charcoal-100 flex items-center justify-center">
-                <span className="text-charcoal-400 text-xs">{index + 1}</span>
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <span className="text-gray-400 text-xs">{index + 1}</span>
               </div>
             )}
           </button>
@@ -343,10 +343,10 @@ export function CameraCapture({
       <div className="text-center pt-2">
         <button
           onClick={onSwitchToUpload}
-          className="text-wine-600 hover:text-wine-800 text-sm font-medium inline-flex items-center gap-1"
+          className="text-teal-600 hover:text-teal-800 text-sm font-medium inline-flex items-center gap-1"
         >
           <Upload className="w-4 h-4" />
-          Préférer importer des photos
+          {t('camera.preferUpload')}
         </button>
       </div>
     </div>

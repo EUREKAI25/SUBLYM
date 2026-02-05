@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Check, X, Play, FileText, Video, Loader2, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 interface Testimonial {
   id: number;

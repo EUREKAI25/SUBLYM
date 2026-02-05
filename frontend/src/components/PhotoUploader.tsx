@@ -9,6 +9,7 @@ interface PhotoUploaderProps {
   photos: File[];
   onChange: (files: File[]) => void;
   max?: number;
+  min?: number;
   required?: boolean;
   type?: 'character' | 'decor';
   characterName?: string;
@@ -21,6 +22,7 @@ export function PhotoUploader({
   photos,
   onChange,
   max = 5,
+  min,
   required = false,
   type = 'character',
   characterName,
@@ -71,14 +73,18 @@ export function PhotoUploader({
     <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-wine-600" />
-          <label className="font-display text-lg text-charcoal-800">
-            {label}
-            {required && <span className="text-wine-500 ml-1">*</span>}
-          </label>
-        </div>
-        <span className="text-sm text-charcoal-500">
+        {label ? (
+          <div className="flex items-center gap-2">
+            <Icon className="w-4 h-4 text-teal-600" />
+            <label className="font-display text-lg text-gray-800">
+              {label}
+              {required && <span className="text-teal-500 ml-1">*</span>}
+            </label>
+          </div>
+        ) : (
+          <div />
+        )}
+        <span className="text-sm text-gray-500">
           {t('common.photoCount', { current: photos.length.toString(), max: max.toString() })}
         </span>
       </div>
@@ -95,7 +101,7 @@ export function PhotoUploader({
       )}
 
       {description && (
-        <p className="text-sm text-charcoal-500 italic">{description}</p>
+        <p className="text-sm text-gray-500 italic">{description}</p>
       )}
 
       {/* Upload zone */}
@@ -117,12 +123,14 @@ export function PhotoUploader({
         />
 
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="w-12 h-12 rounded-full bg-wine-100 flex items-center justify-center">
-            <Upload className="w-5 h-5 text-wine-600" />
+          <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center">
+            <Upload className="w-5 h-5 text-teal-600" />
           </div>
           <div>
-            <p className="text-charcoal-700 font-medium">{t('upload.dragHere')}</p>
-            <p className="text-sm text-charcoal-500">{t('upload.orClick')}</p>
+            <p className="text-gray-700 font-medium">
+              {min ? t('upload.dragPhotosHere', { min: min.toString(), max: max.toString() }) : t('upload.dragHere')}
+            </p>
+            <p className="text-sm text-gray-500">{t('upload.orClick')}</p>
           </div>
         </div>
       </div>
@@ -150,9 +158,9 @@ export function PhotoUploader({
             <button
               type="button"
               onClick={() => document.getElementById(`upload-${label}`)?.click()}
-              className="aspect-square rounded-xl border-2 border-dashed border-wine-200 flex items-center justify-center hover:border-wine-400 hover:bg-wine-50 transition-colors"
+              className="aspect-square rounded-xl border-2 border-dashed border-teal-200 flex items-center justify-center hover:border-teal-400 hover:bg-teal-50 transition-colors"
             >
-              <ImageIcon className="w-5 h-5 text-wine-300" />
+              <ImageIcon className="w-5 h-5 text-teal-300" />
             </button>
           )}
         </div>

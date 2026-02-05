@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Users, DollarSign, Video, Smile, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 interface DashboardStats {
   users: { total: number; today: number };
@@ -113,9 +113,9 @@ export function DashboardPage() {
       color: 'bg-blue-500',
     },
     {
-      label: 'Revenus (total)',
+      label: 'Chiffre d\'affaires',
       value: `${stats?.revenue.total?.toLocaleString() || '0'} €`,
-      change: stats?.revenue.today ? `+${stats.revenue.today}€ aujourd'hui` : '',
+      change: stats?.revenue.today ? `+${stats.revenue.today}€ aujourd'hui` : 'Cumul depuis le lancement',
       trend: 'up',
       icon: DollarSign,
       color: 'bg-green-500',

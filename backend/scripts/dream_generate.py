@@ -30,7 +30,9 @@ GENERATION_DIR = Path(__file__).resolve().parent.parent.parent / "generation"
 sys.path.insert(0, str(GENERATION_DIR))
 
 from pipeline import DreamPipeline
-from config.settings import PRESETS, DEFAULT_CONFIG, DEFAULT_MODELS
+from config.settings import PRESETS, DEFAULT_CONFIG, DEFAULT_MODELS, SCENE_TYPES
+import config.settings as settings_module
+import prompts.templates as templates_module
 
 
 def emit_progress(progress: int, step: str, message: str):
@@ -103,6 +105,20 @@ def main():
             "vision": DEFAULT_MODELS["vision"],
             "video": gen_config.get("model_video", DEFAULT_MODELS["video"]),
         }
+        # Scene types from database (overrides hardcoded SCENE_TYPES)
+        if "scene_types" in gen_config:
+            config["scene_types"] = gen_config["scene_types"]
+            # Patch the settings module so services importing SCENE_TYPES get DB values
+            settings_module.SCENE_TYPES = gen_config["scene_types"]
+
+        # Prompt templates from database (overrides hardcoded PROMPT_*)
+        if "prompts" in gen_config:
+            config["prompts"] = gen_config["prompts"]
+            # Patch the templates module so services importing PROMPT_* get DB values
+            for code, template in gen_config["prompts"].items():
+                attr_name = f"PROMPT_{code}"
+                if hasattr(templates_module, attr_name):
+                    setattr(templates_module, attr_name, template)
 
     # Create pipeline with progress callback
     pipeline = DreamPipeline(

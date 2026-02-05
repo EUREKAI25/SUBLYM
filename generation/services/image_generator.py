@@ -71,17 +71,19 @@ class ImageGenerator:
         return self._call_gemini(prompt, reference_images, output_path, is_pov)
     
     def _build_standard_prompt(self, desc: Dict, shooting: Dict, palette: List[str], is_same_day: bool, allows_camera_look: bool = False) -> str:
-        """Construit le prompt qui PART de la photo de référence."""
+        """Construit le prompt de modification d'image directe."""
 
         same_day_rules = PROMPT_IMAGE_SAME_DAY_RULES if is_same_day else ""
 
         # Ajuster la direction du regard si camera look autorisé
         gaze = desc.get("gaze_direction", "away_left")
         if allows_camera_look:
-            gaze = "toward_camera"
+            gaze = "toward_camera, warm satisfied smile"
+            camera_look_rule = "Look directly at camera with a warm, satisfied smile"
+        else:
+            camera_look_rule = "Never look at camera"
 
         prompt = PROMPT_IMAGE_GENERATE.format(
-            strict_prefix=self.strict_prefix,
             description=desc.get("description", ""),
             location=desc.get("location", ""),
             pose=desc.get("pose", ""),
@@ -98,19 +100,15 @@ class ImageGenerator:
             depth_of_field=shooting.get("depth_of_field", "shallow"),
             focus_on=shooting.get("focus_on", "face"),
             same_day_rules=same_day_rules,
-            strict_suffix=self.strict_suffix
+            camera_look_rule=camera_look_rule,
         )
-
-        if allows_camera_look:
-            prompt += "\n\nGAZE EXCEPTION: For this scene (final scene), the character MAY look toward the camera with a warm, satisfied smile. A direct, happy gaze is allowed and encouraged."
 
         return prompt
     
     def _build_pov_prompt(self, desc: Dict, shooting: Dict, palette: List[str]) -> str:
         """Construit le prompt POV (pas de personnage visible)."""
-        
+
         return PROMPT_IMAGE_POV.format(
-            strict_prefix=self.strict_prefix,
             description=desc.get("description", ""),
             foreground=desc.get("foreground", ""),
             midground=desc.get("midground", ""),
@@ -119,7 +117,6 @@ class ImageGenerator:
             scene_palette=", ".join(palette) if palette else "non spécifiée",
             depth_of_field=shooting.get("depth_of_field", "shallow"),
             lighting_temperature=shooting.get("lighting_temperature", "warm"),
-            strict_suffix=self.strict_suffix
         )
     
     def _call_gemini(self, prompt: str, image_paths: List[str], output_path: Optional[str], is_pov: bool = False) -> Dict:
@@ -136,6 +133,8 @@ class ImageGenerator:
         contents = []
 
         # Ajouter les images de référence (sauf POV)
+        # !!! NE JAMAIS remplacer "THIS person" par "same person" !!!
+        # !!! Voir commentaire dans prompts/templates.py — testé 2026-02-05 !!!
         if not is_pov and image_paths:
             for img_path in image_paths[:5]:
                 if Path(img_path).exists():
@@ -145,14 +144,14 @@ class ImageGenerator:
                     mime = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}.get(suffix, "image/png")
                     contents.append(types.Part.from_bytes(data=img_data, mime_type=mime))
                     print(f"      Ref: {Path(img_path).name}")
-            contents.append("ABOVE: Reference photos of the person. The generated image MUST show this EXACT SAME person - same face, same features, same body type.")
+            contents.append("ABOVE: Reference photos of THIS person. Put THIS person into the scene below.")
 
         # Ajouter le prompt
         contents.append(prompt)
 
         # Rappel final après le prompt
         if not is_pov and image_paths:
-            contents.append("CRITICAL REMINDER: The person's face in the generated image must be IDENTICAL to the reference photos above. Same person, not just similar.")
+            contents.append("CRITICAL: The output must show THIS person from the reference photos.")
         
         print(f"   [Gemini] Génération image...")
         print(f"   - Modèle: {self.model}")
@@ -211,6 +210,142 @@ class ImageGenerator:
             print(f"   [Gemini] ❌ {e}")
             return {"success": False, "error": str(e)}
     
+    def generate_switch(
+        self,
+        source_image: str,
+        prompt: str,
+        output_path: str,
+    ) -> Dict:
+        """Génère l'image switchée via Gemini (background swap).
+
+        Envoie l'image source + prompt de modification du décor.
+        Le prompt dit: "Keep EXACTLY the same person, change ONLY the environment."
+        """
+        if self.verbose:
+            print(f"\n--- PROMPT SWITCH ---\n{prompt}\n---")
+
+        if self.dry_run:
+            return self._mock_generate(output_path)
+
+        return self._call_gemini_switch(prompt, source_image, output_path)
+
+    def _call_gemini_switch(self, prompt: str, source_image: str, output_path: str) -> Dict:
+        """Appel Gemini pour le switch (source image + prompt de modification)."""
+
+        try:
+            from google.genai import types
+        except ImportError:
+            raise ImportError("Installez le SDK: pip install google-genai")
+
+        client = self._get_client()
+
+        contents = []
+
+        # Image source en premier
+        if Path(source_image).exists():
+            with open(source_image, "rb") as f:
+                img_data = f.read()
+            suffix = Path(source_image).suffix.lower()
+            mime = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}.get(suffix, "image/png")
+            contents.append(types.Part.from_bytes(data=img_data, mime_type=mime))
+            print(f"      Source: {Path(source_image).name}")
+        else:
+            return {"success": False, "error": f"Source image not found: {source_image}"}
+
+        contents.append("ABOVE: Source image. Put THIS person into the new environment. Keep exactly the same face, hair, clothes, pose, expression, and body position.")
+        contents.append(prompt)
+        contents.append(
+            "CRITICAL: THIS person from the source image. "
+            "ONLY the environment changes. Everything about the person stays identical."
+        )
+
+        print(f"   [Gemini] Switch image generation...")
+        print(f"   - Modèle: {self.model}")
+
+        config = types.GenerateContentConfig(
+            response_modalities=['IMAGE', 'TEXT'],
+            image_config=types.ImageConfig(
+                aspect_ratio="16:9"
+            )
+        )
+
+        try:
+            response = client.models.generate_content(
+                model=self.model,
+                contents=contents,
+                config=config
+            )
+
+            if not response.candidates:
+                raise ValueError("Gemini n'a pas retourné de candidats (possible safety filter)")
+
+            candidate = response.candidates[0]
+            if not candidate.content or not candidate.content.parts:
+                finish_reason = getattr(candidate, 'finish_reason', None)
+                raise ValueError(f"Gemini n'a pas retourné de contenu. Finish reason: {finish_reason}")
+
+            image_data = None
+            text_response = ""
+
+            for part in candidate.content.parts:
+                if hasattr(part, 'inline_data') and part.inline_data:
+                    image_data = part.inline_data.data
+                elif hasattr(part, 'text') and part.text:
+                    text_response = part.text
+
+            if not image_data:
+                raise ValueError(f"Pas d'image dans la réponse. Texte: {text_response}")
+
+            if output_path:
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+                with open(output_path, "wb") as f:
+                    f.write(image_data)
+
+            self.costs_real["images"] += 1
+            print(f"   [Gemini] ✓ Switch image generated")
+            return {"success": True, "image_path": output_path, "text_response": text_response}
+
+        except Exception as e:
+            print(f"   [Gemini] ❌ {e}")
+            return {"success": False, "error": str(e)}
+
+    def generate_pose_edit(
+        self,
+        source_image: str,
+        new_pose: str,
+        new_expression: str,
+        new_gaze: str,
+        output_path: str,
+        extra_instructions: str = "",
+    ) -> Dict:
+        """Modifie UNIQUEMENT la pose/expression du personnage, garde le fond identique.
+
+        Utilisé quand start et end doivent avoir le MÊME décor (ex: scènes D, E).
+        """
+        prompt = (
+            f"Modify ONLY the character in this image. "
+            f"Keep the EXACT SAME background, environment, lighting, and camera angle. "
+            f"DO NOT change, move, or regenerate any background element.\n\n"
+            f"Change the character to:\n"
+            f"- Pose: {new_pose}\n"
+            f"- Expression: {new_expression}\n"
+            f"- Gaze: {new_gaze}\n"
+            f"{extra_instructions}\n\n"
+            f"CRITICAL RULES:\n"
+            f"- Same person, same face, same clothes, same hair\n"
+            f"- Background MUST be pixel-identical to the source image\n"
+            f"- Only the character's body position, facial expression, and gaze direction change\n"
+            f"- Photorealistic quality, cinematic lighting"
+        )
+
+        if self.verbose:
+            print(f"\n--- PROMPT POSE EDIT ---\n{prompt}\n---")
+
+        if self.dry_run:
+            return self._mock_generate(output_path)
+
+        return self._call_gemini_switch(prompt, source_image, output_path)
+
     def _mock_generate(self, output_path: Optional[str]) -> Dict:
         print(f"   [DRY RUN] Image simulée")
         if output_path:

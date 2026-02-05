@@ -33,9 +33,12 @@ const createSessionSchema = z.object({
 app.post('/create-session', authMiddleware, zValidator('json', createSessionSchema), async (c) => {
   const { user } = getAuthContext(c);
   const data = c.req.valid('json');
-  
-  // Check if user already has this subscription level
-  if (user.subscriptionLevel >= data.level) {
+
+  // Check if user already has this subscription level (only if subscription is still active)
+  const hasActiveSubscription = user.subscriptionEnd && new Date(user.subscriptionEnd) > new Date();
+  const effectiveLevel = hasActiveSubscription ? user.subscriptionLevel : 0;
+
+  if (effectiveLevel >= data.level) {
     throw new ValidationError('You already have this subscription level or higher');
   }
   
@@ -133,12 +136,12 @@ app.post('/webhook', async (c) => {
 app.get('/status/:sessionId', authMiddleware, async (c) => {
   const { user } = getAuthContext(c);
   const sessionId = c.req.param('sessionId');
-  
+
   const stripe = await getStripeClient();
-  
+
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
+
     // Verify this session belongs to this user
     if (session.metadata?.userId !== user.id.toString()) {
       return c.json({
@@ -146,7 +149,7 @@ app.get('/status/:sessionId', authMiddleware, async (c) => {
         message: 'This session does not belong to you',
       }, 403);
     }
-    
+
     return c.json({
       status: session.status,
       paymentStatus: session.payment_status,
@@ -157,6 +160,52 @@ app.get('/status/:sessionId', authMiddleware, async (c) => {
       error: 'SESSION_NOT_FOUND',
       message: 'Session not found',
     }, 404);
+  }
+});
+
+// ============================================
+// POST /payment/complete-checkout
+// Fallback for when webhook doesn't arrive (dev/testing)
+// ============================================
+
+app.post('/complete-checkout', authMiddleware, async (c) => {
+  const { user } = getAuthContext(c);
+  const body = await c.req.json();
+  const sessionId = body.sessionId;
+
+  if (!sessionId) {
+    return c.json({ error: 'Missing sessionId' }, 400);
+  }
+
+  const stripe = await getStripeClient();
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // Verify this session belongs to this user
+    if (session.metadata?.userId !== user.id.toString()) {
+      return c.json({ error: 'This session does not belong to you' }, 403);
+    }
+
+    // Check if payment was successful
+    if (session.payment_status !== 'paid') {
+      return c.json({ error: 'Payment not completed', status: session.payment_status }, 400);
+    }
+
+    // Check if user already has subscription activated
+    const freshUser = await prisma.user.findUnique({ where: { id: user.id } });
+    if (freshUser && freshUser.subscriptionLevel >= parseInt(session.metadata?.level || '0')) {
+      // Already activated (webhook arrived first)
+      return c.json({ success: true, alreadyActivated: true });
+    }
+
+    // Activate the subscription manually
+    await handleCheckoutComplete(session);
+
+    return c.json({ success: true, activated: true });
+  } catch (err: any) {
+    console.error('Complete checkout error:', err);
+    return c.json({ error: err.message || 'Failed to complete checkout' }, 500);
   }
 });
 

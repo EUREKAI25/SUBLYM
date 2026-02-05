@@ -2,21 +2,44 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
+    fontFamily: {
+      display: ['Raleway', 'sans-serif'],
+      script: ['Dancing Script', 'cursive'],
+      body: ['Raleway', 'sans-serif'],
+      serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+      sans: ['Raleway', 'sans-serif'],
+    },
     extend: {
       colors: {
-        // Palette marron/doré/crème élégante
+        // Dark teal for text
+        dark: '#013833',
+        // New teal/turquoise color palette
+        teal: {
+          50: '#f0f9fa',
+          100: '#d9f0f3',
+          200: '#b6e1e7',
+          300: '#83ccd6',
+          400: '#4aafbe',
+          500: '#2a7a8c',
+          600: '#1a5f6e',
+          700: '#0f4a57',
+          800: '#0d3d48',
+          900: '#0a323c',
+          950: '#051e24',
+        },
+        // Keep wine for backwards compatibility but update usage
         wine: {
-          50: '#fdfbf7',
-          100: '#f9f3e8',
-          200: '#f0e4cc',
-          300: '#e4ceaa',
-          400: '#d4b078',
-          500: '#c49a5c',
-          600: '#a67c3d',
-          700: '#8b6533',
-          800: '#6d4f2a',
-          900: '#5a4125',
-          950: '#3d2a18',
+          50: '#f0f9fa',
+          100: '#d9f0f3',
+          200: '#b6e1e7',
+          300: '#83ccd6',
+          400: '#4aafbe',
+          500: '#2a7a8c',
+          600: '#1a5f6e',
+          700: '#0f4a57',
+          800: '#0d3d48',
+          900: '#0a323c',
+          950: '#051e24',
         },
         blush: {
           50: '#fefdfb',
@@ -57,7 +80,6 @@ export default {
           900: '#4a3e38',
           950: '#2a2320',
         },
-        // Couleur or/doré pour accents
         gold: {
           50: '#fffef5',
           100: '#fffbe6',
@@ -72,13 +94,8 @@ export default {
           950: '#472b00',
         },
       },
-      fontFamily: {
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        script: ['Dancing Script', 'cursive'],
-        body: ['Lato', 'sans-serif'],
-      },
       backgroundImage: {
-        'gradient-romantic': 'linear-gradient(135deg, #8b6533 0%, #a67c3d 50%, #c49a5c 100%)',
+        'gradient-teal': 'linear-gradient(135deg, #1a5f6e 0%, #2a7a8c 50%, #3d8a9a 100%)',
         'gradient-blush': 'linear-gradient(180deg, #fefdfb 0%, #f8f1e6 100%)',
         'gradient-warm': 'radial-gradient(ellipse at top, #fffefb 0%, #fefdfb 100%)',
       },
@@ -98,9 +115,9 @@ export default {
         },
       },
       boxShadow: {
-        'romantic': '0 4px 30px rgba(139, 101, 51, 0.15)',
+        'romantic': '0 4px 30px rgba(26, 95, 110, 0.15)',
         'card': '0 2px 20px rgba(0, 0, 0, 0.06)',
-        'elevated': '0 10px 40px rgba(139, 101, 51, 0.12)',
+        'elevated': '0 10px 40px rgba(26, 95, 110, 0.12)',
       },
     },
   },

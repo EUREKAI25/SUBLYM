@@ -14,6 +14,10 @@ import { InvitationsPage } from '@/pages/InvitationsPage';
 import { GeneratePubPage } from '@/pages/GeneratePubPage';
 import { SublymPage } from '@/pages/SublymPage';
 import { PagesPage } from '@/pages/PagesPage';
+import { SceneTypesPage } from '@/pages/SceneTypesPage';
+import { PromptsPage } from '@/pages/PromptsPage';
+import { ValidationPage } from '@/pages/ValidationPage';
+import { RunsPage } from '@/pages/RunsPage';
 import { Loader2 } from 'lucide-react';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -56,6 +60,10 @@ export default function App() {
         <Route path="generate-pub" element={<GeneratePubPage />} />
         <Route path="sublym" element={<SublymPage />} />
         <Route path="pages" element={<PagesPage />} />
+        <Route path="scene-types" element={<SceneTypesPage />} />
+        <Route path="prompts" element={<PromptsPage />} />
+        <Route path="validation" element={<ValidationPage />} />
+        <Route path="runs" element={<RunsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

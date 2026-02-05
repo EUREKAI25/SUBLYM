@@ -10,6 +10,7 @@ interface RunData {
   status: string;
   videoUrl?: string;
   teaserUrl?: string;
+  keyframesUrls?: string[];
 }
 
 interface SmileStatus {
@@ -18,6 +19,8 @@ interface SmileStatus {
   status?: string;
   premiumGranted: boolean;
   premiumUntil?: string;
+  premiumLevel?: number;
+  premiumMonths?: number;
 }
 
 type PageState = 'loading' | 'smile-recording' | 'uploading' | 'watching' | 'error' | 'not-ready';
@@ -161,14 +164,14 @@ export function WatchPage() {
   }, [comment]);
 
   return (
-    <div className="min-h-screen bg-charcoal-50">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="pt-24 sm:pt-28 pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           {/* Back button */}
           <Link
             to="/gallery"
-            className="inline-flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-teal-700 mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('common.back')}
@@ -177,18 +180,18 @@ export function WatchPage() {
           {/* Loading */}
           {pageState === 'loading' && (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 text-wine-500 animate-spin" />
+              <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
             </div>
           )}
 
           {/* Not ready */}
           {pageState === 'not-ready' && (
             <div className="card text-center py-12">
-              <Loader2 className="w-12 h-12 text-wine-400 mx-auto mb-4 animate-spin" />
-              <h2 className="font-display text-xl text-charcoal-800 mb-2">
+              <Loader2 className="w-12 h-12 text-teal-400 mx-auto mb-4 animate-spin" />
+              <h2 className="font-display text-xl text-gray-800 mb-2">
                 {t('watch.notReady')}
               </h2>
-              <p className="text-charcoal-600">
+              <p className="text-gray-600">
                 {t('watch.notReadyHint')}
               </p>
             </div>
@@ -198,7 +201,7 @@ export function WatchPage() {
           {pageState === 'error' && (
             <div className="card text-center py-12">
               <p className="text-red-600 mb-4">{error}</p>
-              <Link to="/gallery" className="text-wine-600 hover:text-wine-800 font-medium">
+              <Link to="/gallery" className="text-teal-600 hover:text-teal-800 font-medium">
                 {t('common.back')}
               </Link>
             </div>
@@ -208,19 +211,22 @@ export function WatchPage() {
           {pageState === 'smile-recording' && run?.videoUrl && (
             <SmileRecording
               videoUrl={run.videoUrl}
+              thumbnailUrl={run.keyframesUrls && run.keyframesUrls.length > 0 ? run.keyframesUrls[run.keyframesUrls.length - 1] : undefined}
               onComplete={handleSmileComplete}
               onSkip={handleSmileSkip}
+              premiumMonths={smileStatus?.premiumMonths || 3}
+              premiumLevelName={smileStatus?.premiumLevel ? `Premium ${smileStatus.premiumLevel === 3 ? 'Gold' : smileStatus.premiumLevel === 2 ? 'Silver' : 'Bronze'}` : 'Premium'}
             />
           )}
 
           {/* Uploading */}
           {pageState === 'uploading' && (
             <div className="card text-center py-12">
-              <Loader2 className="w-12 h-12 text-wine-500 animate-spin mx-auto mb-4" />
-              <h2 className="font-display text-xl text-charcoal-800 mb-2">
+              <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
+              <h2 className="font-display text-xl text-gray-800 mb-2">
                 {t('watch.uploadingReaction')}
               </h2>
-              <p className="text-charcoal-600">{t('watch.uploadingHint')}</p>
+              <p className="text-gray-600">{t('watch.uploadingHint')}</p>
             </div>
           )}
 
@@ -232,15 +238,15 @@ export function WatchPage() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="card bg-gradient-to-r from-wine-50 to-blush-50 border-wine-200"
+                  className="card bg-gradient-to-r from-teal-50 to-blush-50 border-teal-200"
                 >
                   <div className="flex items-center gap-3">
-                    <Heart className="w-6 h-6 text-wine-600 fill-wine-500" />
+                    <Heart className="w-6 h-6 text-teal-600 fill-teal-500" />
                     <div>
-                      <p className="font-medium text-wine-800">
+                      <p className="font-medium text-teal-800">
                         {t('watch.premiumActive')}
                       </p>
-                      <p className="text-wine-600 text-sm">
+                      <p className="text-teal-600 text-sm">
                         {t('watch.premiumActiveHint')}
                       </p>
                     </div>
@@ -249,7 +255,7 @@ export function WatchPage() {
               )}
 
               {/* Video player */}
-              <div className="rounded-2xl overflow-hidden bg-charcoal-900 shadow-xl">
+              <div className="rounded-2xl overflow-hidden bg-gray-900 shadow-xl">
                 <video
                   src={run.videoUrl}
                   controls
@@ -267,9 +273,9 @@ export function WatchPage() {
                       checked={excludeCountry}
                       onChange={(e) => handleConsentChange(e.target.checked)}
                       disabled={consentSaving}
-                      className="mt-1 accent-wine-600 w-4 h-4"
+                      className="mt-1 accent-teal-600 w-4 h-4"
                     />
-                    <span className="text-sm text-charcoal-700">
+                    <span className="text-sm text-gray-700">
                       {t('watch.excludeCountry')}
                     </span>
                   </label>
@@ -279,8 +285,8 @@ export function WatchPage() {
               {/* Comment section (for Smile users) */}
               {smileStatus?.hasStarted && (
                 <div className="card">
-                  <h3 className="font-display text-lg text-charcoal-800 mb-3 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-wine-600" />
+                  <h3 className="font-display text-lg text-gray-800 mb-3 flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-teal-600" />
                     {t('watch.commentTitle')}
                   </h3>
                   {commentSaved ? (
@@ -295,17 +301,17 @@ export function WatchPage() {
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={t('watch.commentPlaceholder')}
                         rows={3}
-                        className="w-full rounded-xl border border-charcoal-200 px-4 py-3 text-charcoal-800 placeholder-charcoal-400 focus:border-wine-400 focus:ring-2 focus:ring-wine-200 outline-none resize-none transition-colors"
+                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-200 outline-none resize-none transition-colors"
                         maxLength={1000}
                       />
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-charcoal-400">
+                        <span className="text-sm text-gray-400">
                           {comment.length}/1000
                         </span>
                         <button
                           onClick={handleCommentSubmit}
                           disabled={comment.trim().length < 5 || commentSaving}
-                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-wine-600 text-white font-medium hover:bg-wine-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 text-white font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           {commentSaving ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

@@ -50,15 +50,16 @@ export function PhoneInput({ value, onChange, className, placeholder }: PhoneInp
   };
 
   return (
-    <div className={`flex gap-2 ${className || ''}`}>
+    <div className={`flex gap-2 ${className || ''}`} style={{ minWidth: 0 }}>
       <select
         value={prefix}
         onChange={(e) => handlePrefixChange(e.target.value)}
-        className="input w-44 flex-shrink-0"
+        className="input flex-shrink-0"
+        style={{ width: '140px', minWidth: '140px' }}
       >
         {COUNTRY_CODES.map((cc) => (
           <option key={cc.code} value={cc.code}>
-            {cc.label}
+            {cc.country} {cc.code}
           </option>
         ))}
       </select>
@@ -66,7 +67,8 @@ export function PhoneInput({ value, onChange, className, placeholder }: PhoneInp
         type="tel"
         value={number}
         onChange={(e) => handleNumberChange(e.target.value)}
-        className="input flex-1"
+        className="input"
+        style={{ flex: '1 1 auto', minWidth: 0 }}
         placeholder={placeholder || '6 12 34 56 78'}
       />
     </div>

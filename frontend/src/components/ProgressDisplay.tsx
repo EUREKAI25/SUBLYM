@@ -35,9 +35,9 @@ export function ProgressDisplay({ status, error, onRetry }: ProgressDisplayProps
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="w-20 h-20 mx-auto rounded-full bg-green-50 flex items-center justify-center"
+            className="w-20 h-20 mx-auto rounded-full bg-teal-50 flex items-center justify-center"
           >
-            <CheckCircle className="w-10 h-10 text-green-500" />
+            <CheckCircle className="w-10 h-10 text-teal-500" />
           </motion.div>
         ) : (
           <div className="relative w-20 h-20 mx-auto">
@@ -46,22 +46,31 @@ export function ProgressDisplay({ status, error, onRetry }: ProgressDisplayProps
               transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <Heart className="w-12 h-12 text-wine-500 fill-wine-500" />
+              <Heart className="w-12 h-12 text-teal-500 fill-teal-500" />
             </motion.div>
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               className="absolute inset-0"
             >
-              <Sparkles className="w-4 h-4 text-wine-300 absolute top-0 left-1/2 -translate-x-1/2" />
-              <Film className="w-4 h-4 text-wine-300 absolute bottom-0 left-1/2 -translate-x-1/2" />
+              <Sparkles className="w-4 h-4 text-teal-300 absolute top-0 left-1/2 -translate-x-1/2" />
+              <Film className="w-4 h-4 text-teal-300 absolute bottom-0 left-1/2 -translate-x-1/2" />
             </motion.div>
           </div>
         )}
       </div>
 
+      {/* Message about creation time - only during processing */}
+      {!hasError && !isComplete && (
+        <div className="mb-6 p-3 rounded-xl bg-teal-50 border border-teal-200">
+          <p className="text-teal-800 text-sm">
+            {t('create.creationTimeInfo')}
+          </p>
+        </div>
+      )}
+
       {/* Title */}
-      <h3 className="font-display text-2xl text-charcoal-800 mb-2">
+      <h3 className="font-display text-2xl text-gray-800 mb-2">
         {hasError
           ? t('progress.error')
           : isComplete
@@ -70,7 +79,7 @@ export function ProgressDisplay({ status, error, onRetry }: ProgressDisplayProps
       </h3>
 
       {/* Message */}
-      <p className="text-charcoal-600 mb-6">
+      <p className="text-gray-600 mb-6">
         {hasError
           ? error || status.error || t('progress.errorMessage')
           : isComplete
@@ -89,7 +98,7 @@ export function ProgressDisplay({ status, error, onRetry }: ProgressDisplayProps
               transition={{ duration: 0.5 }}
             />
           </div>
-          <p className="text-sm text-charcoal-500">{status.progress}%</p>
+          <p className="text-sm text-gray-500">{status.progress}%</p>
         </div>
       )}
 

@@ -3,7 +3,7 @@ import { API_ENDPOINTS, fetchWithAuth } from '@/lib/config';
 import type { User, AuthState } from '@/types';
 
 interface AuthContextType extends AuthState {
-  requestMagicLink: (email: string) => Promise<{ success: boolean; error?: string }>;
+  requestMagicLink: (email: string) => Promise<{ success: boolean; error?: string; devLoginUrl?: string }>;
   verifyToken: (token: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -54,12 +54,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email }),
       });
 
+      const data = await response.json();
       if (response.ok) {
-        return { success: true };
+        return { success: true, devLoginUrl: data.devLoginUrl };
       }
 
-      const error = await response.json();
-      return { success: false, error: error.message || 'Erreur lors de l\'envoi' };
+      return { success: false, error: data.message || 'Erreur lors de l\'envoi' };
     } catch {
       return { success: false, error: 'Erreur de connexion au serveur' };
     }

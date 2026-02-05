@@ -7,10 +7,21 @@ import * as path from 'path';
 import { prisma } from '../db';
 import { sendGenerationReadyEmail } from './brevo';
 
-const STORAGE_PATH = process.env.STORAGE_PATH || './storage';
-const SCRIPTS_PATH = process.env.SCRIPTS_PATH || './scripts';
+const STORAGE_PATH = path.resolve(process.env.STORAGE_PATH || './storage');
+const SCRIPTS_PATH = path.resolve(process.env.SCRIPTS_PATH || './scripts');
 const PYTHON_PATH = process.env.PYTHON_PATH || 'python';
 const DEFAULT_GENERATION_TIMEOUT = 25 * 60 * 1000; // 25 minutes fallback
+
+function getFrontendUrl(): string {
+  const env = process.env.NODE_ENV || 'development';
+  if (env === 'production') {
+    return process.env.FRONTEND_URL_PROD || 'https://sublym.org';
+  }
+  if (env === 'preprod') {
+    return process.env.FRONTEND_URL_PREPROD || 'https://preprod.sublym.org';
+  }
+  return process.env.FRONTEND_URL_DEV || 'http://localhost:5173';
+}
 
 async function getGenerationConfig(): Promise<Record<string, string>> {
   const configs = await prisma.config.findMany({
@@ -27,6 +38,12 @@ async function getGenerationConfig(): Promise<Record<string, string>> {
 // GENERATION OPTIONS
 // ============================================
 
+interface SceneConfig {
+  type: string;
+  allowsCameraLook?: boolean;
+  description?: string;
+}
+
 interface GenerationOptions {
   description: string;
   reject: string[];
@@ -39,6 +56,7 @@ interface GenerationOptions {
   characterGender?: string;
   mode?: 'scenario' | 'free_scenes' | 'scenario_pub';
   dailyContext?: string;
+  scenesConfig?: SceneConfig[];
 }
 
 // ============================================
@@ -60,14 +78,54 @@ export async function startGeneration(
   await fs.mkdir(outputDir, { recursive: true });
   await fs.mkdir(path.join(outputDir, 'keyframes'), { recursive: true });
 
+  // Read scene types and prompt templates from database
+  const [sceneTypes, promptTemplates] = await Promise.all([
+    prisma.sceneType.findMany({ where: { enabled: true }, orderBy: { displayOrder: 'asc' } }),
+    prisma.promptTemplate.findMany({ where: { enabled: true } }),
+  ]);
+
   // Write generation config as JSON for the Python bridge script to read
-  const pipelineConfig = {
+  const pipelineConfig: Record<string, any> = {
     max_attempts: parseInt(genConfig['generation_max_attempts'] || '5'),
     max_video_attempts: parseInt(genConfig['generation_max_video_attempts'] || '4'),
     model_scenario: genConfig['generation_model_scenario'] || 'gpt-4o',
     model_image: genConfig['generation_model_image'] || 'gemini-3-pro-image-preview',
     model_video: genConfig['generation_model_video'] || 'fal-ai/minimax/hailuo-02/standard/image-to-video',
   };
+
+  // Add scene types from database (if any)
+  if (sceneTypes.length > 0) {
+    pipelineConfig.scene_types = Object.fromEntries(
+      sceneTypes.map(st => [st.code, {
+        description: st.description,
+        min_ratio: st.minRatio,
+        max_ratio: st.maxRatio,
+        examples: st.examples,
+        mode: st.mode,
+        position: st.position,
+        allows_camera_look: st.allowsCameraLook,
+      }])
+    );
+  }
+
+  // Add prompt templates from database (if any)
+  // Prefer English translations (templateEn) for better LLM performance, fallback to French
+  if (promptTemplates.length > 0) {
+    pipelineConfig.prompts = Object.fromEntries(
+      promptTemplates.map(p => [p.code, p.templateEn || p.template])
+    );
+  }
+
+  // Add custom scenes config if provided (for flexible scenario composition)
+  if (options.scenesConfig && options.scenesConfig.length > 0) {
+    pipelineConfig.scenes_config = options.scenesConfig;
+  }
+
+  // Add daily context for transition scenes
+  if (options.dailyContext) {
+    pipelineConfig.daily_context = options.dailyContext;
+  }
+
   const configFile = path.join(outputDir, 'generation_config.json');
   await fs.writeFile(configFile, JSON.stringify(pipelineConfig, null, 2));
 
@@ -87,7 +145,7 @@ export async function startGeneration(
 
   // Prepare arguments
   const args = [
-    path.join(SCRIPTS_PATH, 'dream_generate.py'),
+    'dream_generate.py',
     '--dream', options.description,
     '--photos', options.photoPaths.map(p => path.join(STORAGE_PATH, p)).join(','),
     '--trace-id', traceId,
@@ -257,14 +315,17 @@ async function handleGenerationSuccess(
     
     // Send notification email
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    const dream = await prisma.dream.findUnique({ where: { id: dreamId } });
-    
-    if (user && dream) {
+
+    if (user) {
+      // Build the gallery URL for the user to see their video
+      const galleryUrl = `${getFrontendUrl()}/gallery`;
+
       await sendGenerationReadyEmail(
         user.email,
         user.firstName,
-        dream.description.substring(0, 50) + '...',
-        user.lang
+        galleryUrl,
+        user.lang,
+        user.gender || 'neutral'
       );
     }
     

@@ -6,20 +6,27 @@ import { cn } from '@/lib/utils';
 
 interface SmileRecordingProps {
   videoUrl: string;
+  thumbnailUrl?: string; // Keyframe de fin (sera floutée pendant l'enregistrement)
   onComplete: (reactionVideo: Blob) => void;
   onSkip: () => void;
+  premiumMonths?: number;
+  premiumLevelName?: string;
 }
 
 export function SmileRecording({
   videoUrl,
+  thumbnailUrl,
   onComplete,
   onSkip,
+  premiumMonths = 3,
+  premiumLevelName = 'Premium',
 }: SmileRecordingProps) {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
   const webcamRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const mimeTypeRef = useRef<string>('video/webm');
 
   const [step, setStep] = useState<'intro' | 'ready' | 'playing' | 'done'>('intro');
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -39,9 +46,19 @@ export function SmileRecording({
         }
         setHasPermission(true);
 
-        // Setup MediaRecorder
+        // Setup MediaRecorder with fallback mimeTypes
+        const mimeTypes = [
+          'video/webm;codecs=vp9',
+          'video/webm;codecs=vp8',
+          'video/webm',
+          'video/mp4',
+        ];
+        const supportedMimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || 'video/webm';
+        mimeTypeRef.current = supportedMimeType;
+        console.log('[SmileRecording] Using mimeType:', supportedMimeType);
+
         const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: 'video/webm;codecs=vp9',
+          mimeType: supportedMimeType,
         });
         mediaRecorder.ondataavailable = (e) => {
           if (e.data.size > 0) {
@@ -49,7 +66,8 @@ export function SmileRecording({
           }
         };
         mediaRecorder.onstop = () => {
-          const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+          const blob = new Blob(chunksRef.current, { type: mimeTypeRef.current });
+          console.log('[SmileRecording] Recording complete, blob size:', blob.size);
           setRecordedBlob(blob);
           chunksRef.current = [];
         };
@@ -72,17 +90,18 @@ export function SmileRecording({
     };
   }, [step]);
 
-  // Start recording and play video
+  // Start recording and switch to playing step
   const startExperience = useCallback(() => {
-    if (!videoRef.current || !mediaRecorderRef.current) return;
+    if (!mediaRecorderRef.current) {
+      console.error('[SmileRecording] MediaRecorder not ready');
+      return;
+    }
 
+    console.log('[SmileRecording] Starting experience...');
     // Start recording
     mediaRecorderRef.current.start();
     setIsRecording(true);
     setStep('playing');
-
-    // Play the video
-    videoRef.current.play();
   }, []);
 
   // Handle video end
@@ -90,14 +109,27 @@ export function SmileRecording({
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+
+      // Stop webcam when recording is done
+      if (webcamRef.current?.srcObject) {
+        const stream = webcamRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+        webcamRef.current.srcObject = null;
+        console.log('[SmileRecording] Webcam stopped');
+      }
+
       setStep('done');
     }
   }, [isRecording]);
 
   // Submit reaction
   const handleSubmit = useCallback(() => {
+    console.log('[SmileRecording] handleSubmit called, blob:', recordedBlob?.size);
     if (recordedBlob) {
+      console.log('[SmileRecording] Calling onComplete with blob size:', recordedBlob.size);
       onComplete(recordedBlob);
+    } else {
+      console.error('[SmileRecording] No recorded blob available!');
     }
   }, [recordedBlob, onComplete]);
 
@@ -105,11 +137,11 @@ export function SmileRecording({
   if (hasPermission === false) {
     return (
       <div className="card text-center py-12">
-        <AlertCircle className="w-12 h-12 text-wine-400 mx-auto mb-4" />
-        <h3 className="font-display text-xl text-charcoal-800 mb-2">
+        <AlertCircle className="w-12 h-12 text-teal-400 mx-auto mb-4" />
+        <h3 className="font-display text-xl text-gray-800 mb-2">
           {t('smile.noPermissionTitle')}
         </h3>
-        <p className="text-charcoal-600 mb-6">
+        <p className="text-gray-600 mb-6">
           {t('smile.noPermissionDesc')}
         </p>
         <button onClick={onSkip} className="btn-secondary">
@@ -131,21 +163,21 @@ export function SmileRecording({
             exit={{ opacity: 0, y: -20 }}
             className="text-center space-y-6"
           >
-            <div className="w-20 h-20 rounded-full bg-gradient-romantic flex items-center justify-center mx-auto">
+            <div className="w-20 h-20 rounded-full bg-gradient-teal flex items-center justify-center mx-auto">
               <Heart className="w-10 h-10 text-white fill-white heart-beat" />
             </div>
 
             <div>
-              <h2 className="font-display text-2xl sm:text-3xl text-charcoal-900 mb-3">
+              <h2 className="font-display text-2xl sm:text-3xl text-gray-900 mb-3">
                 {t('smile.introTitle')}
               </h2>
-              <p className="text-charcoal-600 max-w-md mx-auto leading-relaxed">
+              <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
                 {t('smile.introText')}
               </p>
             </div>
 
-            <div className="card bg-gradient-to-br from-wine-50 to-blush-50 border-wine-100 max-w-md mx-auto">
-              <p className="text-wine-700 italic text-sm leading-relaxed">
+            <div className="card bg-gradient-to-br from-teal-50 to-blush-50 border-teal-100 max-w-md mx-auto">
+              <p className="text-teal-700 italic text-sm leading-relaxed">
                 "{t('smile.quote')}"
               </p>
             </div>
@@ -160,7 +192,7 @@ export function SmileRecording({
 
             <button
               onClick={onSkip}
-              className="block mx-auto text-sm text-charcoal-500 hover:text-charcoal-700"
+              className="block mx-auto text-sm text-gray-500 hover:text-gray-700"
             >
               {t('smile.preferPayLink')}
             </button>
@@ -177,16 +209,16 @@ export function SmileRecording({
             className="space-y-6"
           >
             <div className="text-center">
-              <h2 className="font-display text-2xl text-charcoal-900 mb-2">
+              <h2 className="font-display text-2xl text-gray-900 mb-2">
                 {t('smile.readyTitle')}
               </h2>
-              <p className="text-charcoal-600">
+              <p className="text-gray-600">
                 {t('smile.readyText')}
               </p>
             </div>
 
             {/* Webcam preview */}
-            <div className="relative rounded-2xl overflow-hidden bg-charcoal-900 aspect-video">
+            <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video">
               <video
                 ref={webcamRef}
                 autoPlay
@@ -211,7 +243,7 @@ export function SmileRecording({
           </motion.div>
         )}
 
-        {/* Playing step */}
+        {/* Playing step - shows blurred thumbnail while recording reaction */}
         {step === 'playing' && (
           <motion.div
             key="playing"
@@ -220,14 +252,41 @@ export function SmileRecording({
             exit={{ opacity: 0 }}
             className="space-y-4"
           >
-            {/* Main video */}
-            <div className="relative rounded-2xl overflow-hidden bg-charcoal-900">
+            {/* Blurred thumbnail preview (video plays for timing but visually hidden) */}
+            <div className="relative rounded-2xl overflow-hidden bg-gray-900">
+              {/* Video plays but is visually hidden behind the blurred thumbnail */}
               <video
                 ref={videoRef}
                 src={videoUrl}
+                autoPlay
+                playsInline
+                muted
                 onEnded={handleVideoEnd}
-                className="w-full aspect-video object-cover"
+                onCanPlay={() => {
+                  console.log('[SmileRecording] Video can play, starting...');
+                  videoRef.current?.play().catch(err => {
+                    console.error('[SmileRecording] Video play error:', err);
+                  });
+                }}
+                className="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none"
               />
+
+              {/* Blurred thumbnail as visible teaser (covers the video) */}
+              {thumbnailUrl ? (
+                <img
+                  src={thumbnailUrl}
+                  alt=""
+                  className="w-full aspect-video object-cover blur-xl scale-110"
+                />
+              ) : (
+                <div className="w-full aspect-video bg-gradient-to-br from-teal-900 to-gray-900" />
+              )}
+
+              {/* Overlay with text */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
+                <Heart className="w-16 h-16 text-white/80 mb-4 heart-beat" />
+                <p className="text-white text-lg font-medium">{t('smile.recordingYourReaction')}</p>
+              </div>
 
               {/* Recording indicator */}
               <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-red-500 text-white text-sm flex items-center gap-2 animate-pulse">
@@ -247,8 +306,8 @@ export function SmileRecording({
               </div>
             </div>
 
-            <p className="text-center text-charcoal-500 text-sm">
-              {t('smile.watchingHint')}
+            <p className="text-center text-gray-500 text-sm">
+              {t('smile.smileAtCamera')}
             </p>
           </motion.div>
         )}
@@ -261,25 +320,30 @@ export function SmileRecording({
             animate={{ opacity: 1, y: 0 }}
             className="text-center space-y-6"
           >
-            <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-              <Check className="w-10 h-10 text-green-600" />
+            <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center mx-auto">
+              <Check className="w-10 h-10 text-teal-600" />
             </div>
 
             <div>
-              <h2 className="font-display text-2xl text-charcoal-900 mb-2">
+              <h2 className="font-display text-2xl text-gray-900 mb-2">
                 {t('smile.doneTitle')}
               </h2>
-              <p className="text-charcoal-600">
+              <p className="text-gray-600">
                 {t('smile.doneText')}
               </p>
             </div>
 
             <button
               onClick={handleSubmit}
-              className="btn-primary inline-flex items-center gap-2 py-4 px-8"
+              className="btn-primary flex flex-col items-center gap-1 py-4 px-8"
             >
-              <Heart className="w-5 h-5" />
-              {t('smile.submitButton')}
+              <span className="flex items-center gap-2">
+                <Heart className="w-5 h-5" />
+                {t('smile.submitButton')}
+              </span>
+              <span className="text-xs opacity-80">
+                {t('smile.submitActivate', { months: premiumMonths, level: premiumLevelName })}
+              </span>
             </button>
           </motion.div>
         )}

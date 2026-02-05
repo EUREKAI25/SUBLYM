@@ -18,6 +18,7 @@ interface PricingLevel {
     generationsPerMonth: number;
     subliminalEnabled: boolean;
   };
+  featureLines: string[];
   price: {
     monthly: number;
     yearly: number;
@@ -124,7 +125,7 @@ export function PaymentChoice({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-8 h-8 text-wine-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
       </div>
     );
   }
@@ -144,10 +145,10 @@ export function PaymentChoice({
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Title */}
       <div className="text-center">
-        <h2 className="font-display text-2xl sm:text-3xl text-charcoal-900 mb-3">
+        <h2 className="font-display text-2xl sm:text-3xl text-gray-900 mb-3">
           {t('pricing.title')}
         </h2>
-        <p className="text-charcoal-600 max-w-md mx-auto">
+        <p className="text-gray-600 max-w-md mx-auto">
           {t('pricing.selectSubtitle')}
         </p>
       </div>
@@ -159,7 +160,7 @@ export function PaymentChoice({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl bg-gradient-to-r from-wine-600 to-blush-500 p-5 sm:p-6"
+          className="rounded-2xl bg-gradient-to-r from-teal-600 to-blush-500 p-5 sm:p-6"
         >
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center gap-4 flex-1">
@@ -177,7 +178,7 @@ export function PaymentChoice({
             </div>
             <button
               onClick={handleConfirmSmile}
-              className="w-full sm:w-auto py-3 px-6 bg-white text-wine-700 font-bold rounded-xl hover:bg-white/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+              className="w-full sm:w-auto py-3 px-6 bg-white text-teal-700 font-bold rounded-xl hover:bg-white/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <Gift className="w-4 h-4" />
               {t('pricing.chooseSmile')}
@@ -189,23 +190,23 @@ export function PaymentChoice({
       {/* Separator */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-charcoal-200" />
+          <div className="w-full border-t border-gray-200" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-charcoal-500">{t('pricing.orChoosePlan')}</span>
+          <span className="px-4 bg-white text-gray-500">{t('pricing.orChoosePlan')}</span>
         </div>
       </div>
 
       {/* Billing toggle */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center gap-2 p-1 bg-charcoal-100 rounded-full">
+        <div className="inline-flex items-center gap-2 p-1 bg-gray-100 rounded-full">
           <button
             onClick={() => setBillingPeriod('monthly')}
             className={cn(
               "px-4 py-2 rounded-full text-sm font-medium transition-all",
               billingPeriod === 'monthly'
-                ? "bg-white text-wine-700 shadow-sm"
-                : "text-charcoal-600 hover:text-charcoal-800"
+                ? "bg-white text-teal-700 shadow-sm"
+                : "text-gray-600 hover:text-gray-800"
             )}
           >
             {t('pricing.monthly')}
@@ -215,8 +216,8 @@ export function PaymentChoice({
             className={cn(
               "px-4 py-2 rounded-full text-sm font-medium transition-all",
               billingPeriod === 'yearly'
-                ? "bg-white text-wine-700 shadow-sm"
-                : "text-charcoal-600 hover:text-charcoal-800"
+                ? "bg-white text-teal-700 shadow-sm"
+                : "text-gray-600 hover:text-gray-800"
             )}
           >
             {t('pricing.yearly')}
@@ -242,21 +243,21 @@ export function PaymentChoice({
               className={cn(
                 'relative p-5 rounded-2xl border-2 text-left transition-all flex flex-col',
                 selectedPlan === plan.level
-                  ? 'border-wine-500 bg-wine-50 ring-2 ring-wine-200'
-                  : 'border-charcoal-200 bg-white hover:border-wine-300',
-                isPopular && 'ring-2 ring-wine-400'
+                  ? 'border-teal-500 bg-teal-50 ring-2 ring-teal-200'
+                  : 'border-gray-200 bg-white hover:border-teal-300',
+                isPopular && 'ring-2 ring-teal-400'
               )}
             >
               {/* Badge */}
               {plan.badgeText && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-wine-600 text-white text-xs font-bold rounded-full whitespace-nowrap">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-teal-600 text-white text-xs font-bold rounded-full whitespace-nowrap">
                   {plan.badgeText}
                 </div>
               )}
 
               {/* Selected indicator */}
               {selectedPlan === plan.level && (
-                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-wine-600 flex items-center justify-center">
+                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
                 </div>
               )}
@@ -265,56 +266,41 @@ export function PaymentChoice({
               <div className={cn(
                 'w-12 h-12 rounded-xl flex items-center justify-center mb-3',
                 isPopular
-                  ? 'bg-gradient-romantic text-white'
-                  : 'bg-wine-100 text-wine-600'
+                  ? 'bg-gradient-teal text-white'
+                  : 'bg-teal-100 text-teal-600'
               )}>
                 {PLAN_ICONS[plan.level] || <Star className="w-6 h-6" />}
               </div>
 
               {/* Name & Description */}
-              <h3 className="font-display text-lg text-charcoal-800 mb-1">
+              <h3 className="font-display text-lg text-gray-800 mb-1">
                 {plan.name}
               </h3>
-              <p className="text-sm text-charcoal-500 mb-3 line-clamp-2">
+              <p className="text-sm text-gray-500 mb-3 line-clamp-2">
                 {plan.description}
               </p>
 
               {/* Price */}
               <div className="mb-4">
-                <span className="text-2xl font-bold text-wine-700">
+                <span className="text-2xl font-bold text-teal-700">
                   {price.toFixed(2)}€
                 </span>
-                <span className="text-charcoal-500 text-sm">{t('pricing.perMonth')}</span>
+                <span className="text-gray-500 text-sm">{t('pricing.perMonth')}</span>
                 {billingPeriod === 'yearly' && (
-                  <span className="block text-xs text-charcoal-400">
+                  <span className="block text-xs text-gray-400">
                     {t('pricing.billedYearly', { amount: `${plan.price.yearly.toFixed(2)}€` })}
                   </span>
                 )}
               </div>
 
-              {/* Features */}
+              {/* Features - from API data */}
               <ul className="space-y-2 flex-1 text-sm">
-                <li className="flex items-center gap-2 text-charcoal-700">
-                  <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                  {plan.features.generationsPerMonth === -1
-                    ? t('pricing.features.unlimitedGenerations')
-                    : t('pricing.features.generations', { count: plan.features.generationsPerMonth })
-                  }
-                </li>
-                <li className="flex items-center gap-2 text-charcoal-700">
-                  <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                  {t('pricing.scenesPerVideo', { count: plan.features.scenesCount })}
-                </li>
-                <li className="flex items-center gap-2 text-charcoal-700">
-                  <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                  {t('pricing.upToPhotos', { count: plan.features.photosMax })}
-                </li>
-                {plan.features.subliminalEnabled && (
-                  <li className="flex items-center gap-2 text-charcoal-700">
-                    <Check className="w-4 h-4 text-wine-500 shrink-0" />
-                    {t('pricing.features.subliminal')}
+                {plan.featureLines.map((line, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-gray-700">
+                    <Check className="w-4 h-4 text-teal-500 shrink-0" />
+                    {line}
                   </li>
-                )}
+                ))}
               </ul>
             </motion.button>
           );
@@ -339,7 +325,7 @@ export function PaymentChoice({
       )}
 
       {/* Trust badges */}
-      <div className="flex flex-wrap justify-center gap-6 text-sm text-charcoal-500 pt-4">
+      <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500 pt-4">
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-green-500" />
           {t('pricing.securePayment')}
@@ -347,10 +333,6 @@ export function PaymentChoice({
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-green-500" />
           {t('pricing.anytimeCancellation')}
-        </div>
-        <div className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-green-500" />
-          {t('pricing.moneyBackGuarantee')}
         </div>
       </div>
     </div>

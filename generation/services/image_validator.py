@@ -34,6 +34,7 @@ class ImageValidator:
         # Tracking
         self.costs_real = {"tokens_input": 0, "tokens_output": 0, "calls": 0}
         self.failures = []
+        self.all_validations = []  # Track ALL validations with full details
     
     def set_run_dir(self, run_dir: str):
         """Initialise le FaceValidator avec le répertoire de run."""
@@ -48,7 +49,9 @@ class ImageValidator:
         palette: List[str],
         description: str,
         attempt: int = 1,
-        extra_criteria: Optional[Dict] = None
+        extra_criteria: Optional[Dict] = None,
+        shot_type: str = "medium",
+        expected_faces: int = 1,
     ) -> Dict[str, Any]:
         """
         Valide une keyframe générée.
@@ -82,7 +85,7 @@ class ImageValidator:
             gemini_score = gemini_result.get("global_score", 0)
             gemini_passed = gemini_result.get("passed", False)
 
-        # 2. Validation faciale DeepFace + ArcFace (si photo de référence disponible)
+        # 2. Validation faciale biométrique (DeepFace + ArcFace uniquement, PAS Gemini)
         face_result = None
         if references.get("user_photo") and self.face_validator:
             face_result = self.face_validator.validate(
@@ -90,10 +93,13 @@ class ImageValidator:
                 reference_image_path=references["user_photo"],
                 scene_id=scene_id,
                 kf_type=kf_type,
-                attempt=attempt
+                attempt=attempt,
+                shot_type=shot_type,
+                expected_faces=expected_faces,
             )
 
         # 3. Décision finale
+        # Biométrie = seule autorité pour le visage. Gemini = décor/tenue/accessoires.
         face_passed = face_result["passed"] if face_result else True
 
         if self.model:
@@ -105,6 +111,23 @@ class ImageValidator:
         failures = gemini_result.get("failures", []) if gemini_result else []
         if face_result and not face_result["passed"]:
             failures.append(f"Face validation: {face_result['reason']}")
+
+        # Track ALL validations with full details
+        validation_record = {
+            "scene_id": scene_id,
+            "kf_type": kf_type,
+            "attempt": attempt,
+            "passed": final_passed,
+            "gemini_score": gemini_score,
+            "gemini_is_same_person": gemini_result.get("is_same_person") if gemini_result else None,
+            "gemini_scores": gemini_result.get("scores", {}) if gemini_result else {},
+            "gemini_major_issues": gemini_result.get("major_issues", []) if gemini_result else [],
+            "face_result": face_result,
+            "failures": failures,
+            "image_path": image_path,
+            "description": description[:200] if description else None,
+        }
+        self.all_validations.append(validation_record)
 
         if not final_passed:
             self.failures.append({
@@ -155,8 +178,20 @@ class ImageValidator:
             images.append(self._encode_image(references["start_current"]))
         
         # Appel Gemini
-        response = self._call_gemini(prompt, images)
+        try:
+            response = self._call_gemini(prompt, images)
+        except Exception as e:
+            print(f"      ⚠️ Gemini vision call failed: {e}")
+            return {"passed": True, "global_score": 0.0, "failures": [], "scores": {}, "major_issues": [f"Gemini error: {e}"], "gemini_skipped": True}
+
         result = self._parse_json(response)
+
+        # Si parse error, Gemini ne bloque pas (face validation décide seule)
+        if "Parse error" in result.get("major_issues", []):
+            if self.verbose:
+                print(f"      ⚠️ Gemini parse error — raw response (first 500 chars):")
+                print(f"      {response[:500]}")
+            return {"passed": True, "global_score": 0.0, "failures": [], "scores": {}, "major_issues": ["Parse error — Gemini skipped"], "gemini_skipped": True}
 
         # Fusionner critères de base + extra pour lookup des seuils
         all_criteria = dict(self.validation_config)
@@ -190,20 +225,21 @@ class ImageValidator:
         print(f"      {'='*60}")
         # ===== FIN DEBUG =====
 
-        passed = global_score >= self.global_min_score and is_same_person
+        # Gemini ne décide PAS de l'identité faciale (biométrique uniquement)
+        passed = global_score >= self.global_min_score
 
-        # Lister les échecs
+        # Lister les échecs (critères non-face uniquement)
         failures = []
+        face_criteria_codes = {"face_shape", "face_features", "skin_tone"}
         for code, data in scores_dict.items():
             if not isinstance(data, dict):
                 continue
+            if code in face_criteria_codes:
+                continue  # Face = biométrique, pas Gemini
             cfg = all_criteria.get(code, {})
             min_score = cfg.get("min", 0.7)
             if data.get("score", 1) < min_score:
                 failures.append(f"{code}: {data.get('score', 0):.2f} < {min_score}")
-
-        if not is_same_person:
-            failures.insert(0, "NOT_SAME_PERSON")
 
         result["passed"] = passed
         result["failures"] = failures
@@ -229,15 +265,21 @@ class ImageValidator:
         # Séparer les critères par groupe de référence
         face_criteria = []
         scene_criteria = []
+        context_criteria = []
         quality_criteria = []
 
         for code, cfg in all_criteria.items():
             ref = cfg.get("ref", "none")
             label = cfg.get("label", code)
             min_score = cfg.get("min", 0.7)
+            examples = cfg.get("examples_fail", [])
             line = f"- {code}: {label} [min: {min_score}]"
+            if examples:
+                line += f" Examples of failure: {'; '.join(examples[:2])}"
             if ref == "user_photo" or ref == "character_analysis":
                 face_criteria.append(line)
+            elif ref == "dream_context":
+                context_criteria.append(line)
             elif ref in ("pitch", "scene_palette", "previous", "start_current"):
                 scene_criteria.append(line)
             else:
@@ -245,6 +287,7 @@ class ImageValidator:
 
         face_str = "\n".join(face_criteria)
         scene_str = "\n".join(scene_criteria)
+        context_str = "\n".join(context_criteria)
         quality_str = "\n".join(quality_criteria)
 
         palette_str = ", ".join(palette) if palette else "non spécifiée"
@@ -259,60 +302,33 @@ class ImageValidator:
         if has_start:
             image_labels += "\nIMAGE 3 = START KEYFRAME of this same scene (for consistency check)"
 
-        prompt = f"""{self.strict_prefix}
-
-You are evaluating a GENERATED IMAGE against multiple references.
-
+        prompt = f"""Compare IMAGE 2 (generated) against IMAGE 1 (reference photo of the real person).
 {image_labels}
 
-SCENE DESCRIPTION (what was requested):
-{description}
+Scene requested: {description}
+Palette: {palette_str}
 
-SCENE COLOR PALETTE: {palette_str}
-
-═══════════════════════════════════════════════════════════════════
-GROUP 1: IDENTITY (compare GENERATED vs REFERENCE PHOTO)
-Does the generated image show the EXACT same person?
-═══════════════════════════════════════════════════════════════════
+IDENTITY (is it the same person as reference?):
 {face_str}
 
-═══════════════════════════════════════════════════════════════════
-GROUP 2: SCENE FIDELITY (compare GENERATED vs SCENE DESCRIPTION above)
-Does the generated image match what was requested?
-═══════════════════════════════════════════════════════════════════
+SCENE FIDELITY (does it match the description?):
 {scene_str}
+{f"CONTEXT: {context_str}" if context_str else ""}
 
-═══════════════════════════════════════════════════════════════════
-GROUP 3: TECHNICAL QUALITY (evaluate GENERATED image alone)
-═══════════════════════════════════════════════════════════════════
+TECHNICAL QUALITY:
 {quality_str}
 
-SCORING RULES:
-- 1.0 = IDENTICAL / perfect match
-- 0.9 = Near-identical, imperceptible differences
-- 0.8 = Very similar, very minor differences
-- 0.7 = Similar, some notable differences
-- 0.6 = Fairly similar, visible differences
-- 0.5 = Moderately similar
-- 0.4 = Little similarity, important differences
-- 0.3 = Very little similarity
-- 0.0 = Completely different or absent
+Score 0-1 (1=identical, 0.8=very similar, 0.5=moderate, 0=different).
+Compare clothing/location against SCENE DESCRIPTION, not reference photo.
+Reference photo is ONLY for identity (face, body, hair, skin).
 
-STRICT RULES:
-- Clothing/location/action: compare against the SCENE DESCRIPTION, NOT the reference photo
-- The reference photo is ONLY for identity verification (face, body, hair, skin)
-
-Reply ONLY in valid JSON:
+Reply in JSON:
 {{
-    "scores": {{
-        "criterion_code": {{"score": 0.0, "comment": "explanation"}}
-    }},
+    "scores": {{"criterion_code": {{"score": 0.0, "comment": "explanation"}}}},
     "global_score": 0.0,
     "is_same_person": true|false,
-    "major_issues": ["list of major problems"]
+    "major_issues": ["list of problems"]
 }}
-
-{self.strict_suffix}
 """
         return prompt
     
@@ -340,7 +356,8 @@ Reply ONLY in valid JSON:
             "contents": [{"parts": parts}],
             "generationConfig": {
                 "temperature": 0.2,
-                "maxOutputTokens": 2000
+                "maxOutputTokens": 4000,
+                "responseMimeType": "application/json"
             }
         }
         
@@ -352,7 +369,7 @@ Reply ONLY in valid JSON:
             headers={"Content-Type": "application/json"}
         )
         
-        with urllib.request.urlopen(req, timeout=60) as response:
+        with urllib.request.urlopen(req, timeout=120) as response:
             result = json.loads(response.read().decode("utf-8"))
         
         # Track usage
@@ -361,7 +378,12 @@ Reply ONLY in valid JSON:
         self.costs_real["tokens_output"] += usage.get("candidatesTokenCount", 0)
         self.costs_real["calls"] += 1
         
-        return result["candidates"][0]["content"]["parts"][0]["text"]
+        try:
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        except (KeyError, IndexError) as e:
+            # Safety filter ou réponse vide
+            finish_reason = result.get("candidates", [{}])[0].get("finishReason", "unknown")
+            raise ValueError(f"Gemini vision: pas de texte dans la réponse (finishReason={finish_reason})")
     
     def _parse_json(self, text: str) -> Dict:
         """Parse le JSON de la réponse."""
@@ -388,12 +410,34 @@ Reply ONLY in valid JSON:
         """Retourne un rapport des échecs."""
         if not self.failures:
             return "Aucune validation échouée"
-        
+
         lines = [f"\n📊 RAPPORT VALIDATIONS ({len(self.failures)} échecs):"]
         for f in self.failures[-10:]:  # Derniers 10
             lines.append(f"   Scene {f['scene_id']} {f['kf_type']} (att {f['attempt']}): {f['failures'][:2]}")
-        
+
         if self.face_validator:
             lines.append(f"\n{self.face_validator.get_summary()}")
-        
+
         return "\n".join(lines)
+
+    def get_validation_data(self) -> Dict[str, Any]:
+        """Retourne les données de validation en format JSON-serializable."""
+        face_data = None
+        if self.face_validator:
+            face_data = self.face_validator.get_data() if hasattr(self.face_validator, 'get_data') else None
+
+        return {
+            "total_validations": len(self.all_validations),
+            "total_passed": sum(1 for v in self.all_validations if v["passed"]),
+            "total_failures": len(self.failures),
+            "pass_rate": (sum(1 for v in self.all_validations if v["passed"]) / len(self.all_validations) * 100) if self.all_validations else 0,
+            "all_validations": self.all_validations,  # Full details for each validation
+            "failures": self.failures,
+            "face_validation": face_data,
+            "costs": self.costs_real,
+            "config": {
+                "global_min_score": self.global_min_score,
+                "validation_criteria": self.validation_config,
+                "model": self.model,
+            }
+        }

@@ -4,8 +4,15 @@ import { prisma } from '../db';
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const BREVO_API_URL = 'https://api.brevo.com/v3';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 const IS_DEV = process.env.ENVIRONMENT !== 'production';
+
+function getFrontendUrl(origin?: string): string {
+  return origin || process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
+}
+// Sender must be verified in Brevo dashboard (https://app.brevo.com/senders)
+// Important: freemail domains (gmail, yahoo) are rejected by Brevo for transactional emails
+const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'noreply@sublym.org';
+const SENDER_NAME = process.env.BREVO_SENDER_NAME || 'SUBLYM';
 
 interface SendEmailParams {
   to: string;
@@ -38,8 +45,8 @@ async function sendEmail(params: SendEmailParams): Promise<boolean> {
       },
       body: JSON.stringify({
         sender: {
-          name: 'SUBLYM',
-          email: 'noreply@sublym.org',
+          name: SENDER_NAME,
+          email: SENDER_EMAIL,
         },
         to: [{ email: params.to }],
         subject: params.subject,
@@ -50,7 +57,15 @@ async function sendEmail(params: SendEmailParams): Promise<boolean> {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Brevo error:', error);
+      console.error('Brevo email error:', JSON.stringify(error, null, 2));
+      console.error(`  Sender: ${SENDER_EMAIL}`);
+      console.error(`  To: ${params.to}`);
+      console.error(`  Subject: ${params.subject}`);
+      if (error.code === 'unauthorized' || error.message?.includes('not validated') || error.message?.includes('not found')) {
+        console.error('  → Le domaine expéditeur doit être vérifié dans Brevo.');
+        console.error('  → Vérifiez les enregistrements DNS (TXT/DKIM) pour sublym.org');
+        console.error('  → Dashboard: https://app.brevo.com/senders/domain/list');
+      }
       return false;
     }
 
@@ -61,8 +76,8 @@ async function sendEmail(params: SendEmailParams): Promise<boolean> {
   }
 }
 
-export async function sendMagicLink(email: string, token: string, lang: string = 'fr'): Promise<boolean> {
-  const loginUrl = `${FRONTEND_URL}/login?token=${token}`;
+export async function sendMagicLink(email: string, token: string, lang: string = 'fr', origin?: string): Promise<boolean> {
+  const loginUrl = `${getFrontendUrl(origin)}/login?token=${token}`;
   
   // TOUJOURS afficher le lien en mode dev
   if (IS_DEV) {
@@ -227,12 +242,31 @@ export async function sendWelcomeEmail(email: string, firstName: string, lang: s
   });
 }
 
-export async function sendVideoReadyEmail(email: string, firstName: string, videoUrl: string, lang: string = 'fr'): Promise<boolean> {
+export async function sendVideoReadyEmail(
+  email: string,
+  firstName: string,
+  videoUrl: string,
+  lang: string = 'fr',
+  gender: string = 'neutral'
+): Promise<boolean> {
+  // Gender-specific words by language
+  const genderWords: Record<string, Record<string, string>> = {
+    fr: { male: 'prêt', female: 'prête', neutral: 'prêt(e)' },
+    it: { male: 'pronto', female: 'pronta', neutral: 'pronto/a' },
+    es: { male: 'listo', female: 'lista', neutral: 'listo/a' },
+  };
+
+  const getGenderedWord = (language: string): string => {
+    const words = genderWords[language];
+    if (!words) return '';  // No gendered words for this language
+    return words[gender] || words.neutral;
+  };
+
   const translations: Record<string, { subject: string; title: string; message: string; button: string }> = {
     fr: {
       subject: 'Votre vidéo SUBLYM est prête ! 🎬',
       title: 'Votre rêve prend vie',
-      message: `${firstName}, votre vidéo personnalisée est prête à être visionnée.`,
+      message: `${firstName}, votre vidéo personnalisée est ${getGenderedWord('fr')} à être visionnée.`,
       button: 'Voir ma vidéo',
     },
     en: {
@@ -242,10 +276,22 @@ export async function sendVideoReadyEmail(email: string, firstName: string, vide
       button: 'Watch my video',
     },
     it: {
-      subject: 'Il tuo video SUBLYM è pronto! 🎬',
+      subject: `Il tuo video SUBLYM è ${getGenderedWord('it')}! 🎬`,
       title: 'Il tuo sogno prende vita',
-      message: `${firstName}, il tuo video personalizzato è pronto per essere visto.`,
+      message: `${firstName}, il tuo video personalizzato è ${getGenderedWord('it')} per essere visto.`,
       button: 'Guarda il mio video',
+    },
+    de: {
+      subject: 'Dein SUBLYM-Video ist fertig! 🎬',
+      title: 'Dein Traum wird wahr',
+      message: `${firstName}, dein personalisiertes Video ist bereit.`,
+      button: 'Mein Video ansehen',
+    },
+    es: {
+      subject: `¡Tu vídeo SUBLYM está ${getGenderedWord('es')}! 🎬`,
+      title: 'Tu sueño cobra vida',
+      message: `${firstName}, tu vídeo personalizado está ${getGenderedWord('es')} para ver.`,
+      button: 'Ver mi vídeo',
     },
   };
 
@@ -286,9 +332,10 @@ export async function sendInvitationEmail(
   inviteCode: string,
   freeGenerations: number,
   customMessage: string = '',
-  lang: string = 'fr'
+  lang: string = 'fr',
+  origin?: string
 ): Promise<boolean> {
-  const inviteUrl = `${FRONTEND_URL}/invite/${inviteCode}`;
+  const inviteUrl = `${getFrontendUrl(origin)}/invite/${inviteCode}`;
 
   const translations: Record<string, {
     subject: string;
@@ -474,9 +521,10 @@ export async function sendInvitationSMS(
   inviteCode: string,
   freeGenerations: number,
   customMessage: string = '',
-  lang: string = 'fr'
+  lang: string = 'fr',
+  origin?: string
 ): Promise<boolean> {
-  const inviteUrl = `${FRONTEND_URL}/invite/${inviteCode}`;
+  const inviteUrl = `${getFrontendUrl(origin)}/invite/${inviteCode}`;
 
   const templates: Record<string, string> = {
     fr: `SUBLYM - ${freeGenerations} génération${freeGenerations > 1 ? 's' : ''} offerte${freeGenerations > 1 ? 's' : ''} ! ${customMessage ? customMessage + ' ' : ''}Découvrez votre rêve en vidéo : ${inviteUrl}`,

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { FileText, Save, History, Globe, Loader2, Plus, Eye, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 const LANGS = ['fr', 'en', 'de', 'es', 'it'];
 const LANG_LABELS: Record<string, string> = { fr: 'Français', en: 'English', de: 'Deutsch', es: 'Español', it: 'Italiano' };
@@ -131,8 +131,8 @@ export function PagesPage() {
           lang: activeLang,
           title: editData.title,
           content: editData.content,
-          metaTitle: editData.metaTitle,
-          metaDescription: editData.metaDescription,
+          metaTitle: editData.metaTitle || '',
+          metaDescription: editData.metaDescription || '',
         }),
       });
 
@@ -143,7 +143,8 @@ export function PagesPage() {
         if (showVersions) fetchVersions();
       } else {
         const err = await response.json().catch(() => ({}));
-        setMessage({ type: 'error', text: err.message || 'Erreur lors de la sauvegarde' });
+        const errorMsg = err.message || err.error?.issues?.[0]?.message || `Erreur lors de la sauvegarde (${response.status})`;
+        setMessage({ type: 'error', text: errorMsg });
       }
     } catch {
       setMessage({ type: 'error', text: 'Erreur réseau' });

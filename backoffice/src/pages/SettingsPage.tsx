@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Save, AlertTriangle, CheckCircle, Globe, CreditCard, DollarSign, RefreshCw, Loader2, Clapperboard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 interface Config {
   key: string;
@@ -56,10 +56,12 @@ export function SettingsPage() {
         setConfigs(configMap);
       }
 
-      // Fetch smile configs (mock for now)
-      setSmileConfigs([
-        { id: 1, country: 'ALL', threshold: 1000, currentCount: 0, premiumLevel: 3, premiumMonths: 3, isActive: true }
-      ]);
+      // Fetch smile configs
+      const smileRes = await fetchWithAuth(`${API_URL}/admin/smile-configs`);
+      if (smileRes.ok) {
+        const smileData = await smileRes.json();
+        setSmileConfigs(smileData.configs || []);
+      }
 
     } catch (err) {
       console.error('Error fetching settings:', err);
@@ -468,7 +470,34 @@ export function SettingsPage() {
         </p>
 
         {smileConfigs.length === 0 ? (
-          <p className="text-gray-500">Aucune configuration Smile</p>
+          <div className="text-center py-6">
+            <p className="text-gray-500 mb-4">Aucune configuration Smile</p>
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetchWithAuth(`${API_URL}/admin/smile-configs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      country: 'ALL',
+                      threshold: 1000,
+                      premiumLevel: 3,
+                      premiumMonths: 3,
+                      isActive: true,
+                    }),
+                  });
+                  if (res.ok) {
+                    fetchSettings();
+                  }
+                } catch (err) {
+                  console.error('Error creating smile config:', err);
+                }
+              }}
+              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+            >
+              Créer une configuration globale
+            </button>
+          </div>
         ) : (
           <div className="space-y-4">
             {smileConfigs.map((config) => (
@@ -509,6 +538,30 @@ export function SettingsPage() {
                     Niveau {config.premiumLevel}, {config.premiumMonths} mois
                   </p>
                 </div>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await fetchWithAuth(`${API_URL}/admin/smile-configs/${config.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...config, isActive: !config.isActive }),
+                      });
+                      if (res.ok) {
+                        fetchSettings();
+                      }
+                    } catch (err) {
+                      console.error('Error toggling smile config:', err);
+                    }
+                  }}
+                  className={`px-3 py-1 text-xs rounded-lg ${
+                    config.isActive
+                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                      : 'bg-green-100 text-green-700 hover:bg-green-200'
+                  }`}
+                >
+                  {config.isActive ? 'Désactiver' : 'Activer'}
+                </button>
               </div>
             ))}
           </div>

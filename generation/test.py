@@ -16,40 +16,30 @@ from config.settings import PRESETS
 CHARACTER_NAME = "Julien"
 CHARACTER_GENDER = "male"
 
-# Chemins via variable d'env ou defaut relatif
-AVATARS_BASE = os.environ.get("SUBLYM_AVATARS_DIR",
-    str(Path(__file__).resolve().parent.parent.parent / "SUBLYM_APP_PUB" / "Avatars"))
+# Photos de Julien
+JULIEN_PHOTOS_DIR = Path("/Users/nathalie/Dropbox/____BIG_BOFF___/PROJETS/PRO/SUBLYM_APP_PUB/Avatars/Julien36/Julien")
+USER_PHOTOS = [
+    str(JULIEN_PHOTOS_DIR / "Julien_laughing.png"),
+    str(JULIEN_PHOTOS_DIR / "Julien_souriant.png"),
+    str(JULIEN_PHOTOS_DIR / "scene03_start_att2_193548.jpg"),
+]
+USER_PHOTOS_DIR = JULIEN_PHOTOS_DIR
 
-CLAIRE_DIR = os.path.join(AVATARS_BASE, "Claire48", "Claire")
-SOPHIE_DIR = os.path.join(AVATARS_BASE, "Sophie42", "Sophie")
-JULIEN_DIR = os.path.join(AVATARS_BASE, "Julien36", "Julien")
+DREAM_STATEMENT = "I would love to live and work in NewYork. Living in a big loft with a terrace to see the skyline, and work at home or in an open workspace. I would travel a lot all around the world but always come back in NYC"
 
-USER_PHOTOS_DIR = Path(JULIEN_DIR)
-IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff"}
-USER_PHOTOS = [str(p) for p in sorted(USER_PHOTOS_DIR.iterdir())
-               if p.is_file() and not p.name.startswith('.') and p.suffix.lower() in IMAGE_EXTENSIONS]
+OUTPUT_DIR = JULIEN_PHOTOS_DIR / "output" / "dreams"
 
-DREAM_FILE = USER_PHOTOS_DIR / "dream.txt"
-if DREAM_FILE.exists():
-    DREAM_STATEMENT = DREAM_FILE.read_text(encoding="utf-8")
-else:
-    DREAM_STATEMENT = """
-    Je rêve de partir vivre au bord de la mer Méditerranée.
-    Une maison lumineuse avec une grande terrasse qui donne sur l'eau.
-    """
-
-OUTPUT_DIR = USER_PHOTOS_DIR / "output" / "dreams"
-
-NB_SCENES = 4
-NB_POV_SCENES = 1
-MODE = "scenario"
+NB_SCENES = 0          # 0 dream scenes — After = D (choc) + E (explore) uniquement
+NB_POV_SCENES = 0
+MODE = "scenario_pub"
+NB_SCENES_AVANT = 1    # 1 scène quotidien
 IMPOSED_SCENES = None
 
 
 CUSTOM_PALETTE = None
 PALETTE_MUST_COMPLEMENT_SKIN = True
 
-SHOT_TYPES = ["close_up", "medium", "medium_full", "full", "wide"]
+SHOT_TYPES = ["close_up", "medium", "medium_full", "full", "wide", "profile", "back_three_quarter", "far"]
 CAMERA_ANGLES = ["eye_level", "low_angle", "high_angle"]
 CAMERA_MOVEMENTS = ["static", "slow_pan_left", "slow_pan_right", "slow_zoom_in", "slow_zoom_out", "tracking"]
 LIGHTING_DIRECTIONS = ["front", "side", "back", "rim"]
@@ -108,45 +98,37 @@ MAX_ATTEMPTS = 5
 
 MODELS = {
     "scenario": "gpt-4o",
+    "scenario_validation": "gpt-4o-mini",
     "image": "gemini-3-pro-image-preview",
-    "vision": None,  # Désactivé: DeepFace + ArcFace suffisent pour la validation faciale
+    "vision": "gemini-2.5-flash",  # Validation visuelle (tenue, accessoires, action, décor)
     "video": "fal-ai/minimax/hailuo-02/standard/image-to-video",
 }
 
-PROMPT_STRICT_PREFIX = """
-STRICT INSTRUCTIONS - NO IMPROVISATION ALLOWED.
-You MUST follow EVERY indication below TO THE LETTER.
-Take NO creative liberty. Follow the specs EXACTLY.
-"""
-
-PROMPT_STRICT_SUFFIX = """
-FINAL CHECKLIST - VERIFY BEFORE GENERATING:
-- Person from the reference photo EXACTLY reproduced
-- IDENTICAL face (same person, not just resembling)
-- IDENTICAL body type as reference
-- IDENTICAL outfit/accessories if same_day
-- Scene color palette RESPECTED
-- Framing/lighting/depth of field RESPECTED
-- Emotion CLEAR but NEVER exaggerated
-- Gaze NEVER toward camera (unless explicitly allowed)
-- NO mirror, NO text, NO deformation
-ANY DEVIATION = FAILURE.
-"""
+PROMPT_STRICT_PREFIX = ""
+PROMPT_STRICT_SUFFIX = ""
 
 # =============================================================================
 # ÉTAPES À EXÉCUTER
 # =============================================================================
 
-STEPS = PRESETS["full"]
-# STEPS = PRESETS["scenario_only"]
-# STEPS = PRESETS["keyframes_only"]
+STEPS = {
+    "extract_dream_elements": True,
+    "analyze_character": True,
+    "generate_palette": False,
+    "generate_scenario": True,   # Régénérer scénario avec D+E
+    "generate_scenes": False,
+    "generate_keyframes": True,
+    "validate_keyframes": True,
+    "generate_videos": True,
+    "generate_montage": True,
+}
 
 DRY_RUN = False
 VERBOSE = True
 
 KEYFRAMES_DIR = None
 VIDEOS_DIR = None
-SCENARIO_JSON = None
+SCENARIO_JSON = None  # Pas de scénario existant — régénérer
 
 # =============================================================================
 # LANCEMENT
@@ -156,19 +138,21 @@ if __name__ == "__main__":
     if not USER_PHOTOS_DIR.exists():
         print(f"❌ Répertoire non trouvé: {USER_PHOTOS_DIR}")
         sys.exit(1)
-    
+
     if not USER_PHOTOS:
         print(f"❌ Aucune photo dans: {USER_PHOTOS_DIR}")
         sys.exit(1)
-    
+
     print(f"📷 {len(USER_PHOTOS)} photos")
-    
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     # Configuration complète
     config = {
         "nb_scenes": NB_SCENES,
         "nb_pov_scenes": NB_POV_SCENES,
+        "nb_scenes_avant": NB_SCENES_AVANT,
+        "duree_scene": 6,
         "mode": MODE,
         "imposed_scenes": IMPOSED_SCENES,
         "custom_palette": CUSTOM_PALETTE,
@@ -188,8 +172,43 @@ if __name__ == "__main__":
         "models": MODELS,
         "prompt_strict_prefix": PROMPT_STRICT_PREFIX,
         "prompt_strict_suffix": PROMPT_STRICT_SUFFIX,
+        "face_validation": {
+            "tolerance": 0.3,
+            "threshold": 0.8,
+        },
+        # Tolérance faciale adaptée au type de plan
+        "face_tolerance_by_shot": {
+            "close_up": 0.2,
+            "medium": 0.3,
+            "medium_full": 0.4,
+            "full": 0.5,
+            "wide": 0.6,
+            "far": 0.6,
+            "profile": 0.4,
+            "back_three_quarter": None,
+        },
+        # V7 config
+        "validation": {
+            "enable_v1": True,
+            "enable_v2": True,
+            "enable_v3": True,
+            "score_min_pass": 0.8,
+        },
+        "llm": {
+            "max_retries": 3,
+            "timeout": 120,
+            "temperature_generation": 0.7,
+            "temperature_validation": 0.2,
+        },
+        "costs": {
+            "video_per_second": 0.045,
+            "scenario_input_per_1k": 0.005,
+            "scenario_output_per_1k": 0.015,
+            "validation_input_per_1k": 0.00015,
+            "validation_output_per_1k": 0.0006,
+        },
     }
-    
+
     # Pipeline avec config (PAS MAX_ATTEMPTS directement !)
     pipeline = DreamPipeline(
         output_dir=str(OUTPUT_DIR),
@@ -197,7 +216,7 @@ if __name__ == "__main__":
         verbose=VERBOSE,
         config=config
     )
-    
+
     results = pipeline.run(
         steps=STEPS,
         dream_statement=DREAM_STATEMENT,
@@ -208,17 +227,24 @@ if __name__ == "__main__":
         videos_dir=VIDEOS_DIR,
         scenario_json=SCENARIO_JSON,
     )
-    
+
     print("\n" + "=" * 70)
     if results.get("success"):
         print("🎉 Terminé avec succès!")
     else:
         print("⚠️ Terminé avec des problèmes")
-    
+
+    if results.get("final_video_avant"):
+        print(f"\n🎬 Montage AVANT: {results['final_video_avant']}")
+    if results.get("final_video_apres"):
+        print(f"🎬 Montage APRÈS: {results['final_video_apres']}")
+    if results.get("final_video"):
+        print(f"🎬 Vidéo finale: {results['final_video']}")
+
     if results.get("costs_real"):
         print(f"\n💰 COÛTS RÉELS:")
         for service, cost in results["costs_real"].items():
             print(f"   - {service}: {cost:.4f}€")
         print(f"   TOTAL: {sum(results['costs_real'].values()):.4f}€")
-    
+
     sys.exit(0 if results.get("success") else 1)

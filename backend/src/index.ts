@@ -6,6 +6,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { rateLimiter } from 'hono-rate-limiter';
+import { serveStatic } from '@hono/node-server/serve-static';
 
 // Routes
 import { authRoutes } from './routes/auth';
@@ -50,6 +51,9 @@ const allowedOrigins = [
   'https://sublym.org',
   'https://www.sublym.org',
   'https://admin.sublym.org',
+  'http://212.227.80.241',
+  'https://preprod.sublym.org',
+  'http://preprod.sublym.org',
 ];
 
 if (process.env.NODE_ENV === 'development') {
@@ -89,6 +93,13 @@ app.get('/', (c) => {
 app.get('/health', (c) => {
   return c.json({ status: 'ok' });
 });
+
+// ============================================
+// STATIC FILE SERVING
+// ============================================
+
+// Static file serving for storage (photos, videos, etc.)
+app.use('/storage/*', serveStatic({ root: './' }));
 
 // ============================================
 // API ROUTES
@@ -139,7 +150,6 @@ app.notFound((c) => {
 // EXPORT
 // ============================================
 
-export default app;
 export { app };
 
 // ============================================

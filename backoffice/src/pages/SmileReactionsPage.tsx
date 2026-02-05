@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Play, Download, Star, Loader2, CheckCircle, Clock, XCircle, MessageSquare, ShieldX } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const STORAGE_URL = API_URL.replace('/api/v1', '/storage');
 
 interface SmileReaction {
   id: number;
@@ -221,7 +222,7 @@ export function SmileReactionsPage() {
                 {reaction.videoPath ? (
                   playingId === reaction.id ? (
                     <video
-                      src={`/storage/${reaction.videoPath}`}
+                      src={`${STORAGE_URL}/${reaction.videoPath}`}
                       autoPlay
                       controls
                       className="w-full h-full object-cover"
@@ -297,7 +298,7 @@ export function SmileReactionsPage() {
                 <div className="flex items-center gap-2">
                   {reaction.videoPath && (
                     <a
-                      href={`/storage/${reaction.videoPath}`}
+                      href={`${STORAGE_URL}/${reaction.videoPath}`}
                       download
                       className="p-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
                       title="Télécharger"

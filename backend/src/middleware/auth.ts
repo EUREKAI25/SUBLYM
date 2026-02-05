@@ -23,8 +23,8 @@ export async function authMiddleware(c: Context, next: Next) {
   const token = authHeader.substring(7);
   
   try {
-    const payload = await verify(token, process.env.JWT_SECRET!) as JWTPayload;
-    
+    const payload = await verify(token, process.env.JWT_SECRET!, 'HS256') as JWTPayload;
+
     // Check token type
     if (payload.type !== 'access') {
       return c.json({
@@ -98,7 +98,7 @@ export async function adminMiddleware(c: Context, next: Next) {
   const token = authHeader.substring(7);
   
   try {
-    const payload = await verify(token, process.env.JWT_SECRET!) as AdminJWTPayload;
+    const payload = await verify(token, process.env.JWT_SECRET!, 'HS256') as AdminJWTPayload;
     
     // Check token type
     if (payload.type !== 'admin_access') {
@@ -189,8 +189,8 @@ export async function optionalAuthMiddleware(c: Context, next: Next) {
   const token = authHeader.substring(7);
   
   try {
-    const payload = await verify(token, process.env.JWT_SECRET!) as JWTPayload;
-    
+    const payload = await verify(token, process.env.JWT_SECRET!, 'HS256') as JWTPayload;
+
     if (payload.type === 'access') {
       const revoked = await prisma.revokedToken.findUnique({
         where: { jti: payload.jti },

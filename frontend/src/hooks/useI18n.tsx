@@ -48,19 +48,37 @@ const I18nContext = createContext<I18nContextType | null>(null);
 
 const SUPPORTED_LOCALES: Locale[] = ['fr', 'en', 'it', 'de', 'es'];
 
-// Détecter la langue du navigateur
+// Détecter la langue du navigateur (priorité 1)
 function detectBrowserLocale(): Locale {
-  const browserLang = navigator.language.split('-')[0] as Locale;
-  return SUPPORTED_LOCALES.includes(browserLang) ? browserLang : 'en';
+  // Essayer navigator.language puis navigator.languages
+  const languages = [navigator.language, ...(navigator.languages || [])];
+  for (const lang of languages) {
+    const code = lang.split('-')[0] as Locale;
+    if (SUPPORTED_LOCALES.includes(code)) {
+      return code;
+    }
+  }
+  return 'fr'; // Défaut français
 }
 
-// Récupérer la langue sauvegardée ou détecter
+// La langue du navigateur a toujours la priorité
+// localStorage ne sert que si l'utilisateur change manuellement la langue
 function getInitialLocale(): Locale {
+  // Toujours utiliser la langue du navigateur par défaut
+  const browserLocale = detectBrowserLocale();
+
+  // Ne garder le localStorage que si l'utilisateur a explicitement choisi une autre langue
   const saved = localStorage.getItem('locale') as Locale | null;
-  if (saved && SUPPORTED_LOCALES.includes(saved)) {
+  const userExplicitlyChanged = localStorage.getItem('locale_explicit') === 'true';
+
+  if (saved && userExplicitlyChanged && SUPPORTED_LOCALES.includes(saved)) {
     return saved;
   }
-  return detectBrowserLocale();
+
+  // Sinon utiliser la langue du navigateur et la sauvegarder
+  localStorage.setItem('locale', browserLocale);
+  localStorage.removeItem('locale_explicit');
+  return browserLocale;
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -70,6 +88,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
     localStorage.setItem('locale', newLocale);
+    localStorage.setItem('locale_explicit', 'true'); // Marquer que l'utilisateur a choisi
     document.documentElement.lang = newLocale;
   }, []);
 
@@ -132,7 +151,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
     <select
       value={locale}
       onChange={(e) => setLocale(e.target.value as Locale)}
-      className={className || 'px-2 py-1 rounded border border-charcoal-200 text-sm bg-white'}
+      className={className || 'px-2 py-1 rounded border border-gray-200 text-sm bg-white'}
     >
       {availableLocales.map((loc) => (
         <option key={loc} value={loc}>

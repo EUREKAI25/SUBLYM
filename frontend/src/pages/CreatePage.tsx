@@ -11,7 +11,7 @@ import {
   CreationPending,
 } from '@/components';
 import { useAuth, useGeneration, useI18n } from '@/hooks';
-import { API_BASE_URL } from '@/lib/config';
+import { API_BASE_URL, API_ENDPOINTS, fetchWithAuth } from '@/lib/config';
 
 type FlowStep = 'photos' | 'dream' | 'payment' | 'register' | 'processing' | 'pending' | 'payment-success' | 'payment-cancelled' | 'payment-error';
 type PhotoMode = 'choice' | 'camera' | 'upload';
@@ -23,6 +23,7 @@ interface RegisterData {
   lastName: string;
   birthDate: string;
   gender?: 'male' | 'female' | 'other';
+  country: string;
   rgpdConsent: boolean;
   marketingConsent: boolean;
 }
@@ -33,6 +34,7 @@ interface StoredCreationData {
   photosBase64: { name: string; type: string; data: string }[];
   selectedPlan: string | null;
   billingPeriod: 'monthly' | 'yearly';
+  useExistingPhotos?: boolean;
   timestamp: number;
 }
 
@@ -77,20 +79,81 @@ export function CreatePage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [smileConsent, setSmileConsent] = useState<SmileConsent | null>(null);
+
+  // Existing user photos (from profile)
+  const [existingPhotos, setExistingPhotos] = useState<{ id: string; path: string; verified: boolean }[]>([]);
+  const [useExisting, setUseExisting] = useState(false);
   const [registerData, setRegisterData] = useState<RegisterData>({
     email: '',
     firstName: '',
     lastName: '',
     birthDate: '',
     gender: undefined,
+    country: '',
     rgpdConsent: false,
     marketingConsent: false,
   });
+
+  // Auto-detect country from browser locale
+  useEffect(() => {
+    const detectCountry = () => {
+      const lang = navigator.language || 'fr';
+      const parts = lang.split('-');
+      // If format is 'fr-FR', take the country part
+      if (parts.length > 1) return parts[1].toUpperCase();
+      // Otherwise map language to most common country
+      const langToCountry: Record<string, string> = {
+        fr: 'FR', en: 'GB', de: 'DE', es: 'ES', it: 'IT',
+        pt: 'PT', nl: 'NL', pl: 'PL', sv: 'SE', da: 'DK',
+        fi: 'FI', no: 'NO', ja: 'JP', ko: 'KR', zh: 'CN',
+      };
+      return langToCountry[parts[0]] || 'FR';
+    };
+    if (!registerData.country) {
+      setRegisterData(prev => ({ ...prev, country: detectCountry() }));
+    }
+  }, []);
+
   const [registerError, setRegisterError] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState('');
 
-  const isValid = dream.trim().length >= 20 && photosUser.length >= 1;
+  // Pricing config: dynamic photo limits from backend
+  const [pricingLimits, setPricingLimits] = useState({ photosMin: 3, photosMax: 10 });
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/config/pricing`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.levels?.length) {
+          const levels = data.levels as Array<{ features: { photosMin: number; photosMax: number } }>;
+          const minPhotos = Math.min(...levels.map(l => l.features.photosMin));
+          const maxPhotos = Math.max(...levels.map(l => l.features.photosMax));
+          setPricingLimits({
+            photosMin: minPhotos > 0 ? minPhotos : 1,
+            photosMax: maxPhotos > 0 ? maxPhotos : 10,
+          });
+        }
+      })
+      .catch(() => {}); // fallback to defaults
+  }, []);
+
+  // Fetch existing user photos when logged in
+  useEffect(() => {
+    if (token) {
+      fetchWithAuth(API_ENDPOINTS.photos)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data?.photos) setExistingPhotos(data.photos);
+        })
+        .catch(() => {});
+    }
+  }, [token]);
+
+  const verifiedExistingCount = existingPhotos.filter(p => p.verified).length;
+  const hasEnoughExisting = verifiedExistingCount >= pricingLimits.photosMin;
+  const hasEnoughPhotos = useExisting ? hasEnoughExisting : photosUser.length >= pricingLimits.photosMin;
+  const isValid = dream.trim().length >= 20 && hasEnoughPhotos;
   const isProcessing = isSubmitting || isPolling;
 
   // ============================================
@@ -99,7 +162,7 @@ export function CreatePage() {
 
   const saveDataBeforeStripe = async () => {
     try {
-      const photosBase64 = await Promise.all(
+      const photosBase64 = useExisting ? [] : await Promise.all(
         photosUser.map(async (file) => ({
           name: file.name,
           type: file.type,
@@ -113,6 +176,7 @@ export function CreatePage() {
         photosBase64,
         selectedPlan,
         billingPeriod,
+        useExistingPhotos: useExisting,
         timestamp: Date.now(),
       };
 
@@ -141,10 +205,13 @@ export function CreatePage() {
       setRejectText(data.rejectText || '');
       setSelectedPlan(data.selectedPlan);
       setBillingPeriod(data.billingPeriod);
+      setUseExisting(data.useExistingPhotos || false);
 
-      // Convertir les photos base64 en Files
-      const files = data.photosBase64.map((p) => base64ToFile(p.data, p.name, p.type));
-      setPhotosUser(files);
+      // Convertir les photos base64 en Files (sauf si on utilise les photos existantes)
+      if (!data.useExistingPhotos && data.photosBase64.length > 0) {
+        const files = data.photosBase64.map((p) => base64ToFile(p.data, p.name, p.type));
+        setPhotosUser(files);
+      }
 
       console.log('Creation data restored after Stripe return');
       return true;
@@ -165,22 +232,51 @@ export function CreatePage() {
   useEffect(() => {
     const handlePaymentReturn = async () => {
       if (paymentProcessedRef.current) return;
-      
+
       const paymentStatus = searchParams.get('payment');
-      
+      const sessionId = searchParams.get('session_id');
+
       if (paymentStatus === 'success') {
         paymentProcessedRef.current = true;
         setStep('payment-success');
         setPaymentMessage(t('create.paymentSuccessMsg'));
-        
+
         // Charger les données sauvegardées
         const hasData = await loadDataAfterStripe();
-        
+
         // Nettoyer l'URL
         setSearchParams({});
-        
+
         // Si on a les données, lancer la génération automatiquement après 2s
-        if (hasData && token) {
+        if (hasData && token && sessionId) {
+          setTimeout(async () => {
+            try {
+              // Activer l'abonnement manuellement (fallback si webhook pas arrivé)
+              const completeRes = await fetchWithAuth(`${API_BASE_URL}/payment/complete-checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId }),
+              });
+
+              if (!completeRes.ok) {
+                const errData = await completeRes.json();
+                console.error('Complete checkout error:', errData);
+                setStep('payment-error');
+                setPaymentMessage(errData.error || t('create.subscriptionActivationError'));
+                return;
+              }
+
+              // Abonnement activé, lancer la génération
+              setStep('processing');
+              await submitGenerationFromStorage();
+            } catch (err) {
+              console.error('Payment completion error:', err);
+              setStep('payment-error');
+              setPaymentMessage(t('create.subscriptionActivationError'));
+            }
+          }, 2000);
+        } else if (hasData && token) {
+          // Pas de sessionId (ancien lien ou erreur), tenter quand même
           setTimeout(() => {
             setStep('processing');
             submitGenerationFromStorage();
@@ -190,7 +286,7 @@ export function CreatePage() {
         paymentProcessedRef.current = true;
         setStep('payment-cancelled');
         setPaymentMessage(t('create.paymentCancelledMsg'));
-        
+
         // Restaurer les données pour permettre de réessayer
         await loadDataAfterStripe();
         setSearchParams({});
@@ -209,7 +305,8 @@ export function CreatePage() {
       }
 
       const data: StoredCreationData = JSON.parse(stored);
-      const files = data.photosBase64.map((p) => base64ToFile(p.data, p.name, p.type));
+      const isExisting = data.useExistingPhotos || false;
+      const files = isExisting ? [] : data.photosBase64.map((p) => base64ToFile(p.data, p.name, p.type));
 
       const reject = data.rejectText
         ? data.rejectText.split(',').map((s: string) => s.trim()).filter(Boolean)
@@ -218,7 +315,8 @@ export function CreatePage() {
       await generate({
         dream: data.dream,
         reject,
-        photosUser: files,
+        photosUser: isExisting ? undefined : files,
+        useExistingPhotos: isExisting,
         plan: data.selectedPlan || undefined,
       });
       
@@ -237,8 +335,13 @@ export function CreatePage() {
 
   const handleCameraPhotosComplete = useCallback((photos: File[]) => {
     setPhotosUser(photos);
-    setStep('dream');
-  }, []);
+    if (photos.length >= pricingLimits.photosMin) {
+      setStep('dream');
+    } else {
+      // Not enough photos from camera, switch to upload to add more
+      setPhotoMode('upload');
+    }
+  }, [pricingLimits.photosMin]);
 
   const handleDreamSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -246,11 +349,36 @@ export function CreatePage() {
     setStep('payment');
   }, [isValid]);
 
+  const parseReject = (text: string): string[] =>
+    text.split(',').map(s => s.trim()).filter(Boolean);
+
+  const submitGeneration = useCallback(async (plan?: string, consent?: SmileConsent) => {
+    const effectivePlan = plan || selectedPlan || undefined;
+    console.log('[CREATE] submitGeneration called:', { plan: effectivePlan, consent: consent || smileConsent, dream: dream.substring(0, 30), photosCount: photosUser.length, useExisting, user: !!user });
+    try {
+      setStep('processing');
+      await generate({
+        dream,
+        reject: parseReject(rejectText),
+        photosUser: useExisting ? undefined : photosUser,
+        useExistingPhotos: useExisting,
+        plan: effectivePlan,
+        smileConsent: consent || smileConsent || undefined,
+      });
+      console.log('[CREATE] Generation started successfully');
+      setStep('pending');
+    } catch (err) {
+      console.error('[CREATE] Generation error:', err);
+      setStep('payment');
+    }
+  }, [dream, rejectText, photosUser, useExisting, selectedPlan, smileConsent, generate, user]);
+
   const handleSelectPlan = useCallback((planId: string, period: 'monthly' | 'yearly') => {
+    console.log('[CREATE] handleSelectPlan:', { planId, period, user: !!user });
     setSelectedPlan(planId);
     setBillingPeriod(period);
     setSmileConsent(null);
-    
+
     if (user) {
       // Utilisateur existant - créer checkout Stripe directement
       createStripeCheckout(planId, period);
@@ -261,17 +389,20 @@ export function CreatePage() {
   }, [user]);
 
   const handleChooseSmile = useCallback((consent: SmileConsent) => {
+    console.log('[CREATE] handleChooseSmile:', { consent, user: !!user, dream: dream.substring(0, 30) });
     setSelectedPlan('smile');
     setSmileConsent(consent);
-    
+
     if (user) {
       // Utilisateur existant avec Smile - lancer génération directement
+      console.log('[CREATE] User exists, calling submitGeneration(smile)');
       submitGeneration('smile', consent);
     } else {
       // Nouvel utilisateur - aller à l'inscription
+      console.log('[CREATE] No user, going to register step');
       setStep('register');
     }
-  }, [user]);
+  }, [user, submitGeneration, dream]);
 
   const createStripeCheckout = async (planId: string, period: 'monthly' | 'yearly') => {
     const level = parseInt(planId.replace('level_', ''));
@@ -289,7 +420,7 @@ export function CreatePage() {
         body: JSON.stringify({
           level,
           period,
-          successUrl: `${window.location.origin}/create?payment=success`,
+          successUrl: `${window.location.origin}/create?payment=success&session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${window.location.origin}/create?payment=cancelled`,
         }),
       });
@@ -348,7 +479,7 @@ export function CreatePage() {
             ...registerData,
             planLevel: level,
             billingPeriod,
-            successUrl: `${window.location.origin}/create?payment=success`,
+            successUrl: `${window.location.origin}/create?payment=success&session_id={CHECKOUT_SESSION_ID}`,
             cancelUrl: `${window.location.origin}/create?payment=cancelled`,
           }),
         });
@@ -374,26 +505,6 @@ export function CreatePage() {
     }
   };
 
-  const parseReject = (text: string): string[] =>
-    text.split(',').map(s => s.trim()).filter(Boolean);
-
-  const submitGeneration = useCallback(async (plan?: string, consent?: SmileConsent) => {
-    try {
-      setStep('processing');
-      await generate({
-        dream,
-        reject: parseReject(rejectText),
-        photosUser,
-        plan: plan || selectedPlan || undefined,
-        smileConsent: consent || smileConsent || undefined,
-      });
-      setStep('pending');
-    } catch (err) {
-      console.error('Generation error:', err);
-      setStep('payment');
-    }
-  }, [dream, rejectText, photosUser, selectedPlan, smileConsent, generate]);
-
   const handleNewCreation = useCallback(() => {
     reset();
     clearStoredData();
@@ -403,6 +514,7 @@ export function CreatePage() {
     setDream('');
     setRejectText('');
     setPhotosUser([]);
+    setUseExisting(false);
     setSelectedPlan(null);
     setSmileConsent(null);
     setPaymentMessage('');
@@ -420,8 +532,15 @@ export function CreatePage() {
   if (isProcessing && status) {
     return (
       <div className="min-h-screen">
+        {/* Video Background */}
+        <div className="video-background">
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+            <source src="/background.mp4" type="video/mp4" />
+          </video>
+        </div>
         <Header />
-        <main className="pt-24 sm:pt-28 pb-16 px-4 sm:px-6">
+        <div className="h-[85px] sm:h-[100px]" />
+        <main className="relative bg-white/90 min-h-screen pt-12 sm:pt-16 pb-16 px-4 sm:px-6">
           <div className="max-w-4xl mx-auto">
             <ProgressDisplay status={status} error={error} onRetry={handleNewCreation} />
           </div>
@@ -432,58 +551,99 @@ export function CreatePage() {
 
   return (
     <div className="min-h-screen">
+      {/* Video Background */}
+      <div className="video-background">
+        <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+          <source src="/background.mp4" type="video/mp4" />
+        </video>
+      </div>
       <Header />
-      <main className="pt-24 sm:pt-28 pb-16 px-4 sm:px-6">
+      {/* Spacer - shows video through gap */}
+      <div className="h-[85px] sm:h-[100px]" />
+      {/* White content area */}
+      <main className="relative bg-white/90 min-h-screen pt-12 sm:pt-16 pb-16 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           <AnimatePresence mode="wait">
             {/* STEP: PHOTOS */}
             {step === 'photos' && (
               <motion.div key="photos" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-3xl mx-auto">
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-wine-100 text-wine-700 text-sm font-medium mb-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-100 text-teal-700 text-sm font-medium mb-6">
                     <Sparkles className="w-4 h-4" />
                     {t('create.badge')}
                   </div>
-                  <h1 className="font-display text-3xl sm:text-4xl text-charcoal-900 mb-4">{t('create.photoStepTitle')}</h1>
-                  <p className="text-charcoal-600 max-w-lg mx-auto">{t('create.photoStepSubtitle')}</p>
+                  <h1 className="font-serif text-3xl sm:text-4xl text-dark mb-4">{t('create.photoStepTitle')}</h1>
+                  <p className="text-gray-600 max-w-lg mx-auto">{t('create.photoStepSubtitle')}</p>
+                  <p className="text-gray-500 text-sm mt-2">{t('create.photosRequired', { min: pricingLimits.photosMin, max: pricingLimits.photosMax })}</p>
+                </div>
+
+                {/* Webcam recommendation */}
+                <div className="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 text-sm text-teal-800 flex items-start gap-3">
+                  <Camera className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium">{t('create.webcamRecommended')}</p>
+                    <p className="text-teal-700 mt-1">{t('create.webcamRecommendedDesc')}</p>
+                  </div>
                 </div>
 
                 {photoMode === 'choice' && (
                   <div className="card">
-                    <h2 className="font-display text-xl text-charcoal-800 text-center mb-6">
+                    <h2 className="font-serif text-xl text-dark text-center mb-6">
                       {t('create.howToAddPhotos')}
                     </h2>
-                    
-                    <div className="grid sm:grid-cols-2 gap-4">
+
+                    <div className={`grid gap-4 ${token && hasEnoughExisting ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+                      {/* Option: Use existing profile photos */}
+                      {token && hasEnoughExisting && (
+                        <button
+                          onClick={() => { setUseExisting(true); setStep('dream'); }}
+                          className="group relative p-6 rounded-2xl border-2 border-gray-200 hover:border-teal-300 hover:shadow-lg transition-all text-left"
+                        >
+                          <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
+                            <CheckCircle className="w-7 h-7 text-teal-600" />
+                          </div>
+                          <h3 className="font-display text-lg text-gray-900 mb-2">
+                            {t('create.useExistingPhotos')}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {t('create.existingPhotosDesc')}
+                          </p>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-100 text-teal-700 text-xs font-medium">
+                            <Check className="w-3 h-3" />
+                            {t('create.existingPhotosCount', { count: verifiedExistingCount })}
+                          </span>
+                        </button>
+                      )}
+
                       <button
-                        onClick={() => setPhotoMode('camera')}
-                        className="group relative p-6 rounded-2xl border-2 border-wine-200 bg-gradient-to-br from-wine-50 to-blush-50 hover:border-wine-400 hover:shadow-lg transition-all text-left"
+                        onClick={() => { setUseExisting(false); setPhotoMode('camera'); }}
+                        className="group relative p-6 rounded-2xl border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-blush-50 hover:border-teal-400 hover:shadow-lg transition-all text-left"
                       >
-                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-wine-600 text-white text-xs font-medium">
+                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-teal-600 text-white text-xs font-medium">
                           {t('common.recommended')}
                         </div>
-                        <div className="w-14 h-14 rounded-full bg-wine-100 flex items-center justify-center mb-4 group-hover:bg-wine-200 transition-colors">
-                          <Camera className="w-7 h-7 text-wine-600" />
+                        <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
+                          <Camera className="w-7 h-7 text-teal-600" />
                         </div>
-                        <h3 className="font-display text-lg text-charcoal-900 mb-2">
+                        <h3 className="font-display text-lg text-gray-900 mb-2">
                           {t('create.takePhotos')}
                         </h3>
-                        <p className="text-sm text-charcoal-600">
+                        <p className="text-sm text-gray-600">
                           {t('create.takePhotosDesc')}
                         </p>
                       </button>
 
                       <button
-                        onClick={() => setPhotoMode('upload')}
-                        className="group p-6 rounded-2xl border-2 border-charcoal-200 hover:border-wine-300 hover:shadow-lg transition-all text-left"
+                        onClick={() => { setUseExisting(false); setPhotoMode('upload'); }}
+                        className="group p-6 rounded-2xl border-2 border-gray-200 hover:border-teal-300 hover:shadow-lg transition-all text-left"
                       >
-                        <div className="w-14 h-14 rounded-full bg-charcoal-100 flex items-center justify-center mb-4 group-hover:bg-wine-100 transition-colors">
-                          <Image className="w-7 h-7 text-charcoal-600 group-hover:text-wine-600 transition-colors" />
+                        <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
+                          <Image className="w-7 h-7 text-gray-600 group-hover:text-teal-600 transition-colors" />
                         </div>
-                        <h3 className="font-display text-lg text-charcoal-900 mb-2">
+                        <h3 className="font-display text-lg text-gray-900 mb-2">
                           {t('create.importPhotos')}
                         </h3>
-                        <p className="text-sm text-charcoal-600">
+                        <p className="text-sm text-gray-600">
                           {t('create.selectPhotosDesc')}
                         </p>
                       </button>
@@ -495,7 +655,7 @@ export function CreatePage() {
                   <div className="card">
                     <button
                       onClick={() => setPhotoMode('choice')}
-                      className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-4"
+                      className="flex items-center gap-2 text-gray-600 hover:text-teal-700 mb-4"
                     >
                       <ArrowLeft className="w-4 h-4" />
                       {t('common.back')}
@@ -511,22 +671,26 @@ export function CreatePage() {
                   <div className="card">
                     <button
                       onClick={() => setPhotoMode('choice')}
-                      className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-4"
+                      className="flex items-center gap-2 text-gray-600 hover:text-teal-700 mb-4"
                     >
                       <ArrowLeft className="w-4 h-4" />
                       {t('common.back')}
                     </button>
                     <div className="space-y-6">
                       <PhotoUploader
-                        label={t('create.photosYouLabel')}
-                        description={t('create.photosYouHelp')}
+                        label=""
                         photos={photosUser}
                         onChange={setPhotosUser}
-                        max={5}
-                        required
+                        max={pricingLimits.photosMax}
+                        min={pricingLimits.photosMin}
                         type="character"
                       />
-                      {photosUser.length > 0 && (
+                      {photosUser.length > 0 && photosUser.length < pricingLimits.photosMin && (
+                        <p className="text-center text-teal-600 text-sm">
+                          {t('create.photosMinRequired', { count: pricingLimits.photosMin })} ({photosUser.length}/{pricingLimits.photosMin})
+                        </p>
+                      )}
+                      {photosUser.length >= pricingLimits.photosMin && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                           <button
                             onClick={() => setStep('dream')}
@@ -538,10 +702,10 @@ export function CreatePage() {
                         </motion.div>
                       )}
                       
-                      <div className="text-center pt-4 border-t border-charcoal-100">
+                      <div className="text-center pt-4 border-t border-gray-100">
                         <button
                           onClick={() => setPhotoMode('camera')}
-                          className="text-wine-600 hover:text-wine-800 text-sm font-medium inline-flex items-center gap-2"
+                          className="text-teal-600 hover:text-teal-800 text-sm font-medium inline-flex items-center gap-2"
                         >
                           <Camera className="w-4 h-4" />
                           {t('create.takePhotosWithCamera')}
@@ -556,22 +720,22 @@ export function CreatePage() {
             {/* STEP: DREAM */}
             {step === 'dream' && (
               <motion.div key="dream" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-3xl mx-auto">
-                <button onClick={() => setStep('photos')} className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-6">
+                <button onClick={() => setStep('photos')} className="flex items-center gap-2 text-gray-600 hover:text-teal-700 mb-6">
                   <ArrowLeft className="w-4 h-4" />
                   {t('common.back')}
                 </button>
                 <div className="text-center mb-10">
-                  <h1 className="font-display text-3xl sm:text-4xl text-charcoal-900 mb-4">{t('create.dreamStepTitle')}</h1>
-                  <p className="text-charcoal-600 max-w-lg mx-auto">{t('create.dreamStepSubtitle')}</p>
+                  <h1 className="font-display text-3xl sm:text-4xl text-gray-900 mb-4">{t('create.dreamStepTitle')}</h1>
+                  <p className="text-gray-600 max-w-lg mx-auto">{t('create.dreamStepSubtitle')}</p>
                 </div>
                 <form onSubmit={handleDreamSubmit} className="space-y-6">
                   <div className="card">
-                    <label className="flex items-center gap-2 font-display text-lg text-charcoal-800 mb-3">
-                      <Heart className="w-5 h-5 text-wine-600 fill-wine-200" />
+                    <label className="flex items-center gap-2 font-display text-lg text-gray-800 mb-3">
+                      <Heart className="w-5 h-5 text-teal-600 fill-teal-200" />
                       {t('create.dreamLabel')}
-                      <span className="text-wine-500">*</span>
+                      <span className="text-teal-500">*</span>
                     </label>
-                    <p className="text-sm text-charcoal-500 mb-4">{t('create.dreamHelp')}</p>
+                    <p className="text-sm text-gray-500 mb-4">{t('create.dreamHelp')}</p>
                     <textarea
                       value={dream}
                       onChange={(e) => setDream(e.target.value)}
@@ -581,18 +745,18 @@ export function CreatePage() {
                       minLength={20}
                     />
                     <div className="flex justify-between mt-2 text-sm">
-                      <span className={dream.length < 20 ? 'text-wine-500' : 'text-charcoal-400'}>
+                      <span className={dream.length < 20 ? 'text-teal-500' : 'text-gray-400'}>
                         {t('common.minCharacters', { count: '20' })}
                       </span>
-                      <span className="text-charcoal-400">{dream.length} {t('common.characters')}</span>
+                      <span className="text-gray-400">{dream.length} {t('common.characters')}</span>
                     </div>
                   </div>
 
                   <div className="card">
-                    <label className="block font-display text-lg text-charcoal-800 mb-2">
+                    <label className="block font-display text-lg text-gray-800 mb-2">
                       {t('create.rejectLabel')}
                     </label>
-                    <p className="text-sm text-charcoal-500 mb-3">
+                    <p className="text-sm text-gray-500 mb-3">
                       {t('create.rejectHelp')}
                     </p>
                     <input
@@ -608,7 +772,10 @@ export function CreatePage() {
                     <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">{error}</div>
                   )}
                   
-                  <div className="flex justify-end">
+                  <div className="flex flex-col items-end gap-2">
+                    {dream.trim().length > 0 && dream.trim().length < 20 && (
+                      <p className="text-teal-500 text-sm">{t('common.minCharacters', { count: '20' })} ({dream.trim().length}/20)</p>
+                    )}
                     <button
                       type="submit"
                       disabled={!isValid}
@@ -625,7 +792,7 @@ export function CreatePage() {
             {/* STEP: PAYMENT CHOICE */}
             {step === 'payment' && (
               <motion.div key="payment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <button onClick={() => setStep('dream')} className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-6">
+                <button onClick={() => setStep('dream')} className="flex items-center gap-2 text-gray-600 hover:text-teal-700 mb-6">
                   <ArrowLeft className="w-4 h-4" />
                   {t('common.back')}
                 </button>
@@ -655,16 +822,41 @@ export function CreatePage() {
             {/* STEP: PROCESSING */}
             {step === 'processing' && (
               <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
-                <Loader2 className="w-12 h-12 text-wine-600 animate-spin mx-auto mb-4" />
-                <h2 className="font-display text-2xl text-charcoal-900 mb-2">{t('create.preparingVisualization')}</h2>
-                <p className="text-charcoal-600">{t('create.takesAFewMoments')}</p>
+                {/* Message about creation time */}
+                <div className="max-w-md mx-auto mb-8 p-4 rounded-xl bg-teal-50 border border-teal-200">
+                  <p className="text-teal-800 text-sm">
+                    {t('create.creationTimeInfo')}
+                  </p>
+                </div>
+
+                <Loader2 className="w-10 h-10 text-teal-600 animate-spin mx-auto mb-6" />
+
+                <h2 className="font-display text-xl text-gray-900 mb-6">
+                  {status?.currentStep
+                    ? `${t(`create.steps.${status.currentStep}`) || status.currentStep} ${status?.progress || 0}%`
+                    : t('create.preparingVisualization')}
+                </h2>
+
+                {/* Progress bar */}
+                <div className="max-w-sm mx-auto">
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-teal-500 to-teal-600"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${status?.progress || 0}%` }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-gray-500 text-sm mt-4">{t('create.takesAFewMoments')}</p>
               </motion.div>
             )}
 
             {/* STEP: PENDING */}
             {step === 'pending' && (
               <motion.div key="pending" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <CreationPending email={registerData.email || user?.email || ''} traceId={status?.runId} onCreateAnother={handleNewCreation} />
+                <CreationPending email={registerData.email || user?.email || ''} onCreateAnother={handleNewCreation} />
               </motion.div>
             )}
 
@@ -672,19 +864,19 @@ export function CreatePage() {
             {step === 'payment-success' && (
               <motion.div key="payment-success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-lg mx-auto">
                 <div className="card text-center">
-                  <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="w-10 h-10 text-green-600" />
+                  <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-10 h-10 text-teal-600" />
                   </div>
-                  <h2 className="font-display text-2xl text-charcoal-900 mb-3">
+                  <h2 className="font-display text-2xl text-gray-900 mb-3">
                     {t('create.paymentValidated')}
                   </h2>
-                  <p className="text-charcoal-600 mb-2">
+                  <p className="text-gray-600 mb-2">
                     {paymentMessage}
                   </p>
-                  <p className="text-charcoal-500 text-sm mb-6">
+                  <p className="text-gray-500 text-sm mb-6">
                     {t('create.subscriptionActive')}
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-wine-600">
+                  <div className="flex items-center justify-center gap-2 text-teal-600">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span>{t('create.preparing')}</span>
                   </div>
@@ -699,10 +891,10 @@ export function CreatePage() {
                   <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-6">
                     <XCircle className="w-10 h-10 text-orange-600" />
                   </div>
-                  <h2 className="font-display text-2xl text-charcoal-900 mb-3">
+                  <h2 className="font-display text-2xl text-gray-900 mb-3">
                     {t('create.paymentCancelled')}
                   </h2>
-                  <p className="text-charcoal-600 mb-6">
+                  <p className="text-gray-600 mb-6">
                     {paymentMessage || t('create.paymentCancelledMsg')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -731,32 +923,49 @@ export function CreatePage() {
                   <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
                     <AlertCircle className="w-10 h-10 text-red-600" />
                   </div>
-                  <h2 className="font-display text-2xl text-charcoal-900 mb-3">
+                  <h2 className="font-display text-2xl text-gray-900 mb-3">
                     {t('create.paymentDeclined')}
                   </h2>
-                  <p className="text-charcoal-600 mb-6">
+                  <p className="text-gray-600 mb-6">
                     {paymentMessage || t('create.paymentErrorMsg')}
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                      onClick={handleRetryPayment}
-                      className="btn-primary inline-flex items-center justify-center gap-2"
-                    >
-                      {t('common.retry')}
-                    </button>
+                  <button
+                    onClick={handleRetryPayment}
+                    className="btn-primary inline-flex items-center justify-center gap-2"
+                  >
+                    {t('common.retry')}
+                  </button>
+                  <p className="text-sm text-gray-500 mt-4">
                     <button
                       onClick={handleNewCreation}
-                      className="btn-secondary inline-flex items-center justify-center gap-2"
+                      className="text-teal-600 hover:text-teal-800 underline"
                     >
-                      {t('create.startOver')}
+                      {t('create.createNewVisualization')}
                     </button>
-                  </div>
+                  </p>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="relative py-8 px-4 sm:px-6" style={{ background: 'rgba(3, 40, 36, 0.9)' }}>
+        <div className="max-w-5xl mx-auto text-center space-y-3">
+          <div className="flex justify-center gap-6 text-sm">
+            <Link to="/contact" className="text-white/60 hover:text-white transition-colors">
+              {t('contact.title')}
+            </Link>
+            <Link to="/terms" className="text-white/60 hover:text-white transition-colors">
+              {t('terms.title')}
+            </Link>
+          </div>
+          <p className="text-white/30" style={{ fontSize: '0.75rem' }}>
+            {t('landing.copyright', { year: new Date().getFullYear().toString() })}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -802,24 +1011,24 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
 
   return (
     <div className="max-w-lg mx-auto">
-      <button onClick={onBack} className="flex items-center gap-2 text-charcoal-600 hover:text-wine-700 mb-6">
+      <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-teal-700 mb-6">
         <ArrowLeft className="w-4 h-4" />
         {t('common.back')}
       </button>
 
       <div className="card">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-gradient-romantic flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-teal flex items-center justify-center mx-auto mb-4">
             <User className="w-8 h-8 text-white" />
           </div>
-          <h2 className="font-display text-2xl text-charcoal-900 mb-2">
+          <h2 className="font-display text-2xl text-gray-900 mb-2">
             {t('create.createAccount')}
           </h2>
-          <p className="text-charcoal-600">
+          <p className="text-gray-600">
             {t('create.toAccessVisualizations')}
           </p>
           {selectedPlan && (
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-wine-100 text-wine-700 text-sm font-medium">
+            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-100 text-teal-700 text-sm font-medium">
               <Check className="w-4 h-4" />
               {getPlanLabel()}
             </div>
@@ -829,8 +1038,8 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
         <form onSubmit={onSubmit} className="space-y-4">
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-              {t('form.email')} <span className="text-wine-500">*</span>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              {t('form.email')} <span className="text-teal-500">*</span>
             </label>
             <input
               type="email"
@@ -845,8 +1054,8 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           {/* Nom / Prénom */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-                {t('form.firstName')} <span className="text-wine-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('form.firstName')} <span className="text-teal-500">*</span>
               </label>
               <input
                 type="text"
@@ -858,8 +1067,8 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-                {t('form.lastName')} <span className="text-wine-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('form.lastName')} <span className="text-teal-500">*</span>
               </label>
               <input
                 type="text"
@@ -874,16 +1083,16 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
 
           {/* Date de naissance */}
           <div>
-            <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               {t('form.birthDate')}
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal-400" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="date"
                 value={data.birthDate}
                 onChange={(e) => updateField('birthDate', e.target.value)}
-                className="input-romantic pl-10"
+                className="input-romantic with-icon-left"
                 max={new Date().toISOString().split('T')[0]}
               />
             </div>
@@ -891,8 +1100,8 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
 
           {/* Genre */}
           <div>
-            <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
-              {t('form.gender')} <span className="text-charcoal-400 text-xs">({t('form.optional')})</span>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              {t('form.gender')} <span className="text-gray-400 text-xs">({t('form.optional')})</span>
             </label>
             <div className="flex gap-3">
               {[
@@ -906,8 +1115,8 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
                   onClick={() => updateField('gender', option.value as any)}
                   className={`flex-1 py-2.5 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
                     data.gender === option.value
-                      ? 'border-wine-500 bg-wine-50 text-wine-700'
-                      : 'border-charcoal-200 text-charcoal-600 hover:border-wine-300'
+                      ? 'border-teal-500 bg-teal-50 text-teal-700'
+                      : 'border-gray-200 text-gray-600 hover:border-teal-300'
                   }`}
                 >
                   {option.label}
@@ -916,18 +1125,45 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
             </div>
           </div>
 
+          {/* Pays */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              {t('form.country')} <span className="text-gray-400 text-xs">({t('form.optional')})</span>
+            </label>
+            <select
+              value={data.country}
+              onChange={(e) => updateField('country', e.target.value)}
+              className="input-romantic"
+            >
+              <option value="">--</option>
+              <option value="FR">🇫🇷 France</option>
+              <option value="DE">🇩🇪 Deutschland</option>
+              <option value="ES">🇪🇸 España</option>
+              <option value="IT">🇮🇹 Italia</option>
+              <option value="GB">🇬🇧 United Kingdom</option>
+              <option value="BE">🇧🇪 Belgique</option>
+              <option value="CH">🇨🇭 Suisse</option>
+              <option value="LU">🇱🇺 Luxembourg</option>
+              <option value="AT">🇦🇹 Österreich</option>
+              <option value="NL">🇳🇱 Nederland</option>
+              <option value="PT">🇵🇹 Portugal</option>
+              <option value="US">🇺🇸 United States</option>
+              <option value="CA">🇨🇦 Canada</option>
+            </select>
+          </div>
+
           {/* Consentements */}
-          <div className="space-y-3 pt-4 border-t border-charcoal-100">
+          <div className="space-y-3 pt-4 border-t border-gray-100">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={data.rgpdConsent}
                 onChange={(e) => updateField('rgpdConsent', e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-charcoal-300 text-wine-600 focus:ring-wine-500"
+                className="mt-1 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                 required
               />
-              <span className="text-sm text-charcoal-600">
-                {t('form.acceptTermsPre')}<a href="/terms" className="text-wine-600 underline" target="_blank">{t('form.termsOfService')}</a>{t('form.acceptTermsMid')}<a href="/privacy" className="text-wine-600 underline" target="_blank">{t('form.privacyPolicy')}</a> <span className="text-wine-500">*</span>
+              <span className="text-sm text-gray-600">
+                {t('form.acceptTermsPre')}<a href="/terms" className="text-teal-600 underline" target="_blank">{t('form.termsOfService')}</a>{t('form.acceptTermsMid')}<a href="/privacy" className="text-teal-600 underline" target="_blank">{t('form.privacyPolicy')}</a> <span className="text-teal-500">*</span>
               </span>
             </label>
 
@@ -936,9 +1172,9 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
                 type="checkbox"
                 checked={data.marketingConsent}
                 onChange={(e) => updateField('marketingConsent', e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-charcoal-300 text-wine-600 focus:ring-wine-500"
+                className="mt-1 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
               />
-              <span className="text-sm text-charcoal-600">
+              <span className="text-sm text-gray-600">
                 {t('form.marketingConsent')}
               </span>
             </label>
@@ -969,9 +1205,9 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           </button>
 
           {/* Lien "J'ai deja un compte" */}
-          <p className="text-center text-sm text-charcoal-600 mt-6">
+          <p className="text-center text-sm text-gray-600 mt-6">
             {t('login.alreadyHaveAccount')}{' '}
-            <Link to="/login" className="text-wine-600 hover:text-wine-800 font-medium underline underline-offset-4">
+            <Link to="/login" className="text-teal-600 hover:text-teal-800 font-medium underline underline-offset-4">
               {t('login.loginHere')}
             </Link>
           </p>

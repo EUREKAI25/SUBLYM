@@ -80,6 +80,30 @@ async function main() {
     { key: 'soft_delete_purge_days', value: '30', type: 'number', category: 'cleanup' },
     { key: 'failed_runs_cleanup_days', value: '7', type: 'number', category: 'cleanup' },
 
+    // Validation
+    { key: 'validation_global_min_score', value: '0.75', type: 'number', category: 'validation' },
+    { key: 'validation_face', value: JSON.stringify({ geminiMin: 0.7, tolerance: 0.4, threshold: 0.8 }), type: 'json', category: 'validation' },
+    { key: 'validation_criteria', value: JSON.stringify({
+      face_similarity: { min: 0.8, ref: 'user_photo', label: 'Ressemblance faciale avec la photo de référence' },
+      body_type: { min: 0.7, ref: 'user_photo', label: 'Morphologie corporelle cohérente' },
+      skin_tone: { min: 0.8, ref: 'user_photo', label: 'Teint de peau identique' },
+      hair_consistency: { min: 0.7, ref: 'character_analysis', label: 'Coiffure cohérente avec l\'analyse' },
+      scene_match: { min: 0.7, ref: 'pitch', label: 'Correspondance avec la description de scène' },
+      palette_adherence: { min: 0.6, ref: 'scene_palette', label: 'Respect de la palette de couleurs' },
+      no_anatomical_errors: { min: 0.8, ref: 'none', label: 'Absence d\'erreurs anatomiques' },
+      no_text: { min: 0.9, ref: 'none', label: 'Absence de texte visible' },
+      no_mirror: { min: 0.9, ref: 'none', label: 'Absence de miroir ou surface réfléchissante' },
+      expression_natural: { min: 0.7, ref: 'none', label: 'Expression naturelle, non exagérée' },
+      location_coherence: { min: 0.7, ref: 'dream_context', label: 'Le décor correspond-il au lieu décrit dans le rêve ?', examples_fail: ['Rêve Afrique → parc européen', 'Rêve plage → forêt de sapins'] },
+      outfit_coherence: { min: 0.7, ref: 'dream_context', label: 'La tenue est-elle adaptée au contexte et à l\'activité ?', examples_fail: ['S\'occuper d\'enfants en brousse → chemise habillée', 'Randonnée → talons hauts'] },
+      secondary_characters_coherence: { min: 0.7, ref: 'dream_context', label: 'Les personnages secondaires sont-ils cohérents avec le contexte ?', examples_fail: ['Enfants africains → enfants européens en pulls', 'Village mexicain → foule scandinave'] },
+    }), type: 'json', category: 'validation' },
+    { key: 'validation_criteria_pub', value: JSON.stringify({
+      transition_smoothness: { min: 0.7, ref: 'previous', label: 'Transition fluide entre les deux états' },
+      emotion_authenticity: { min: 0.7, ref: 'pitch', label: 'Authenticité de l\'émotion (pas d\'exagération)' },
+      no_special_effects: { min: 0.9, ref: 'none', label: 'Absence d\'effets spéciaux fantaisistes' },
+    }), type: 'json', category: 'validation' },
+
     // Sublym (company data)
     { key: 'sublym_email_webmaster', value: 'webmaster@sublym.org', type: 'string', category: 'sublym' },
     { key: 'sublym_email_contact', value: 'contact@sublym.org', type: 'string', category: 'sublym' },
@@ -172,7 +196,7 @@ async function main() {
       priceYearly: 199.99,
       enabled: true,
       displayOrder: 3,
-      badgeText: 'Best value',
+      badgeText: null,
     },
   ];
 
@@ -341,6 +365,159 @@ async function main() {
     }
     console.log(`✅ Texts (${lang.toUpperCase()}) seeded: ${entries.length} entries`);
   }
+
+  // ============================================
+  // SCENE TYPES
+  // ============================================
+
+  const sceneTypes = [
+    {
+      code: 'ACTION',
+      mode: 'all',
+      description: 'Le personnage FAIT quelque chose de visible et dynamique',
+      minRatio: 0.5,
+      maxRatio: 0.7,
+      examples: ['marche', 'travaille', 'cuisine', 'joue musique', 'écrit'],
+      position: null,
+      allowsCameraLook: false,
+      displayOrder: 0,
+    },
+    {
+      code: 'INTERACTION',
+      mode: 'all',
+      description: 'Échange avec quelqu\'un (Character B, animal, commerçant)',
+      minRatio: 0,
+      maxRatio: 0.3,
+      examples: ['discussion', 'collaboration', 'moment partagé'],
+      position: null,
+      allowsCameraLook: false,
+      displayOrder: 1,
+    },
+    {
+      code: 'IMMERSION',
+      mode: 'all',
+      description: 'Découverte d\'un lieu, absorption dans l\'environnement',
+      minRatio: 0,
+      maxRatio: 0.3,
+      examples: ['arrive dans un lieu', 'observe paysage', 'explore'],
+      position: null,
+      allowsCameraLook: false,
+      displayOrder: 2,
+    },
+    {
+      code: 'INTROSPECTION',
+      mode: 'all',
+      description: 'Moment de réflexion, contemplation (à utiliser avec modération)',
+      minRatio: 0,
+      maxRatio: 0.2,
+      examples: ['contemple', 'réfléchit', 'apprécie'],
+      position: null,
+      allowsCameraLook: false,
+      displayOrder: 3,
+    },
+    {
+      code: 'ACCOMPLISSEMENT',
+      mode: 'all',
+      description: 'Réservé à la scène finale - le personnage a réalisé son rêve',
+      minRatio: 0,
+      maxRatio: 1,
+      examples: ['satisfaction', 'fierté', 'regard caméra possible'],
+      position: null,
+      allowsCameraLook: true,
+      displayOrder: 4,
+    },
+    {
+      code: 'TRANSITION_AWAKENING',
+      mode: 'scenario_pub',
+      description: 'Le quotidien ennuyeux se transforme en environnement de rêve. Le personnage passe de la lassitude à l\'émerveillement.',
+      minRatio: 0,
+      maxRatio: 1,
+      examples: ['bureau gris → atelier lumineux', 'file d\'attente → plage dorée'],
+      position: '1A',
+      allowsCameraLook: false,
+      displayOrder: 5,
+    },
+    {
+      code: 'TRANSITION_ACTION',
+      mode: 'scenario_pub',
+      description: 'Suite immédiate de l\'éveil : le personnage commence à explorer le monde de rêve.',
+      minRatio: 0,
+      maxRatio: 1,
+      examples: ['premier pas dans le rêve', 'découverte émerveillée de l\'environnement'],
+      position: '1B',
+      allowsCameraLook: false,
+      displayOrder: 6,
+    },
+  ];
+
+  for (const st of sceneTypes) {
+    await prisma.sceneType.upsert({
+      where: { code_mode: { code: st.code, mode: st.mode } },
+      update: { ...st },
+      create: { ...st },
+    });
+  }
+  console.log('✅ Scene types seeded');
+
+  // ============================================
+  // PROMPT TEMPLATES
+  // ============================================
+
+  // Read prompt templates from Python templates file
+  const templatesPath = path.resolve(__dirname, '../../generation/prompts/templates.py');
+  let promptTemplates: { code: string; name: string; description: string; template: string; category: string }[] = [];
+
+  if (fs.existsSync(templatesPath)) {
+    const content = fs.readFileSync(templatesPath, 'utf-8');
+
+    // Extract each PROMPT_* variable
+    const promptDefs: { varName: string; code: string; name: string; description: string; category: string }[] = [
+      { varName: 'PROMPT_ANALYZE_CHARACTER', code: 'ANALYZE_CHARACTER', name: 'Analyse personnage', description: 'Analyse les caractéristiques physiques du personnage depuis la photo', category: 'generation' },
+      { varName: 'PROMPT_EXTRACT_DREAM_ELEMENTS', code: 'EXTRACT_DREAM_ELEMENTS', name: 'Extraction éléments du rêve', description: 'Extrait et priorise les éléments du rêve de l\'utilisateur', category: 'generation' },
+      { varName: 'PROMPT_GENERATE_PALETTE', code: 'GENERATE_PALETTE', name: 'Génération palette couleurs', description: 'Crée une palette de 4 couleurs adaptée au rêve', category: 'generation' },
+      { varName: 'PROMPT_SCENE_PALETTE', code: 'SCENE_PALETTE', name: 'Palette par scène', description: 'Décline la palette principale pour une scène spécifique', category: 'generation' },
+      { varName: 'PROMPT_SCENARIO_GLOBAL', code: 'SCENARIO_GLOBAL', name: 'Scénario global', description: 'Génère le scénario complet avec distribution des scènes', category: 'generation' },
+      { varName: 'PROMPT_FREE_SCENES', code: 'FREE_SCENES', name: 'Scènes libres', description: 'Génère les scènes en mode free_scenes', category: 'generation' },
+      { varName: 'PROMPT_SCENARIO_VIDEO', code: 'SCENARIO_VIDEO', name: 'Scénario vidéo par scène', description: 'Génère les keyframes start/end pour une scène vidéo', category: 'generation' },
+      { varName: 'PROMPT_SCENARIO_VIDEO_POV', code: 'SCENARIO_VIDEO_POV', name: 'Scénario vidéo POV', description: 'Génère les keyframes pour une scène POV (vue subjective)', category: 'generation' },
+      { varName: 'PROMPT_IMAGE_GENERATE', code: 'IMAGE_GENERATE', name: 'Génération image', description: 'Prompt principal pour la génération d\'images avec préservation du visage', category: 'generation' },
+      { varName: 'PROMPT_IMAGE_SAME_DAY_RULES', code: 'IMAGE_SAME_DAY_RULES', name: 'Règles même journée', description: 'Règles de continuité vestimentaire pour les scènes d\'une même journée', category: 'generation' },
+      { varName: 'PROMPT_IMAGE_POV', code: 'IMAGE_POV', name: 'Image POV', description: 'Génération d\'image en vue subjective (pas de personnage visible)', category: 'generation' },
+      { varName: 'PROMPT_VALIDATION', code: 'VALIDATION', name: 'Validation image', description: 'Compare l\'image générée avec la référence selon des critères stricts', category: 'validation' },
+      { varName: 'PROMPT_VIDEO', code: 'VIDEO', name: 'Vidéo transition', description: 'Prompt pour la génération vidéo entre deux keyframes', category: 'video' },
+      { varName: 'PROMPT_SCENARIO_PUB_VIDEO_1A', code: 'SCENARIO_PUB_VIDEO_1A', name: 'Spot pub scène 1A', description: 'Transition quotidien → rêve pour le mode scenario_pub', category: 'generation' },
+      { varName: 'PROMPT_SCENARIO_PUB_VIDEO_1B', code: 'SCENARIO_PUB_VIDEO_1B', name: 'Spot pub scène 1B', description: 'Premiers pas dans le rêve pour le mode scenario_pub', category: 'generation' },
+      { varName: 'PROMPT_SCENARIO_PUB', code: 'SCENARIO_PUB', name: 'Scénario pub complet', description: 'Scénario complet pour le mode spot publicitaire', category: 'generation' },
+      { varName: 'PROMPT_VIDEO_POV', code: 'VIDEO_POV', name: 'Vidéo POV', description: 'Prompt vidéo pour les scènes en vue subjective', category: 'video' },
+    ];
+
+    for (const def of promptDefs) {
+      // Extract the template content between triple quotes
+      // Pattern: VARNAME = """content""" or VARNAME = """{prefix}...{suffix}"""
+      const regex = new RegExp(`${def.varName}\\s*=\\s*"""([\\s\\S]*?)"""`, 'm');
+      const match = content.match(regex);
+      if (match) {
+        promptTemplates.push({
+          code: def.code,
+          name: def.name,
+          description: def.description,
+          template: match[1].trim(),
+          category: def.category,
+        });
+      }
+    }
+  } else {
+    console.log('⚠️  Templates file not found, seeding with placeholders');
+  }
+
+  for (const pt of promptTemplates) {
+    await prisma.promptTemplate.upsert({
+      where: { code: pt.code },
+      update: { name: pt.name, description: pt.description, template: pt.template, category: pt.category },
+      create: { ...pt },
+    });
+  }
+  console.log(`✅ Prompt templates seeded: ${promptTemplates.length} entries`);
 
   // ============================================
   // STATIC PAGES

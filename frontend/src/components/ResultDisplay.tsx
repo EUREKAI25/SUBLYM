@@ -40,7 +40,7 @@ export function ResultDisplay({ result, onNewCreation }: ResultDisplayProps) {
           animate={{ opacity: 1, y: 0 }}
           className="card overflow-hidden"
         >
-          <div className="relative aspect-video rounded-2xl overflow-hidden bg-charcoal-950">
+          <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-950">
             <video
               src={result.video_url}
               controls
@@ -70,11 +70,11 @@ export function ResultDisplay({ result, onNewCreation }: ResultDisplayProps) {
           transition={{ delay: 0.1 }}
           className="card"
         >
-          <h3 className="font-display text-xl text-wine-800 mb-4 flex items-center gap-2">
-            <Heart className="w-5 h-5 fill-wine-200" />
+          <h3 className="font-display text-xl text-teal-800 mb-4 flex items-center gap-2">
+            <Heart className="w-5 h-5 fill-teal-200" />
             {t('result.storyTitle')}
           </h3>
-          <p className="text-charcoal-700 leading-relaxed whitespace-pre-line">
+          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
             {result.scenario}
           </p>
         </motion.div>
@@ -87,7 +87,7 @@ export function ResultDisplay({ result, onNewCreation }: ResultDisplayProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h3 className="font-display text-xl text-wine-800 mb-4">
+          <h3 className="font-display text-xl text-teal-800 mb-4">
             {t('result.keyMoments')}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">

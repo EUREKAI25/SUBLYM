@@ -450,26 +450,40 @@ DIRECTION REGARD: {gaze_directions} (JAMAIS vers la caméra SAUF si allows_camer
 RÈGLES POUR LES KEYFRAMES START ET END
 ═══════════════════════════════════════════════════════════════════════════════
 
+RÈGLE DE CONTINUITÉ START → END:
+- La TENUE doit être IDENTIQUE (même vêtement, même couleur, même coupe)
+- Les ACCESSOIRES doivent être IDENTIQUES (chapeau, lunettes, bijoux, sac — rien n'apparaît, rien ne disparaît)
+- La COIFFURE doit être IDENTIQUE
+- Le DÉCOR peut évoluer (ex: marché → village) SI le chemin de transition le justifie
+
 L'ACTION entre start et end doit créer une DIFFÉRENCE VISUELLE ÉVIDENTE en 6 secondes.
 
 EXEMPLES D'ACTIONS CORRECTES:
-| START                              | END                                    |
-|------------------------------------|----------------------------------------|
-| Debout, bras le long du corps      | Bras levé pointant vers l'horizon      |
-| Assis, mains sur les genoux        | Debout, main sur la rambarde           |
-| Marche vers la gauche              | Arrêté, regarde vers la droite         |
-| Tient un café, bras baissé         | Porte le café à ses lèvres             |
-| Laptop fermé sur la table          | Laptop ouvert, mains sur clavier       |
-| Regarde droit devant               | Tête tournée à 45 degrés vers la gauche|
-| Main dans la poche                 | Geste large de la main en parlant      |
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ START                              │ END                                    │
+├────────────────────────────────────┼────────────────────────────────────────┤
+│ Debout, bras le long du corps      │ Bras levé pointant vers l'horizon      │
+│ Assis, mains sur les genoux        │ Debout, main sur la rambarde           │
+│ Marche vers la gauche              │ Arrêté, regarde vers la droite         │
+│ Tient un café, bras baissé         │ Porte le café à ses lèvres             │
+│ Laptop fermé sur la table          │ Laptop ouvert, mains sur clavier       │
+│ Regarde droit devant               │ Tête tournée à 45° vers la gauche      │
+│ Main dans la poche                 │ Geste large de la main en parlant      │
+└─────────────────────────────────────────────────────────────────────────────┘
 
 ACTIONS INTERDITES (différence trop subtile):
-- "sourire s'élargit légèrement"
-- "change le poids d'un pied à l'autre"
-- "cligne des yeux"
-- "respire profondément"
-- "ajuste légèrement sa posture"
-- DEMI-TOUR (crée des artefacts vidéo)
+❌ "sourire s'élargit légèrement"
+❌ "change le poids d'un pied à l'autre"
+❌ "cligne des yeux"
+❌ "respire profondément"
+❌ "ajuste légèrement sa posture"
+❌ DEMI-TOUR (crée des artefacts vidéo)
+
+DÉMARCHE ET DÉPLACEMENT:
+- Si le personnage MARCHE: décrire une démarche NATURELLE et FLUIDE
+- Pas de robot, pas de glissement — un vrai pas humain avec balancement naturel des bras
+- Le poids du corps passe d'un pied à l'autre de façon réaliste
+- La vitesse de marche doit correspondre à l'émotion (lente et posée pour la contemplation, assurée pour l'action)
 
 RÈGLES STRICTES:
 1. Personnage ne regarde JAMAIS la caméra (SAUF si allows_camera_look=true pour dernière scène)
@@ -498,13 +512,17 @@ Réponds UNIQUEMENT en JSON valide:
     }},
     "end_keyframe": {{
         "description": "Description visuelle fin",
+        "location": "Lieu de fin (peut être différent du start si la transition le justifie)",
         "pose": "Position DIFFÉRENTE du start",
         "expression": "Expression finale",
         "expression_intensity": "subtle|moderate|pronounced",
         "gaze_direction": "direction (peut être 'camera' si allows_camera_look)",
+        "outfit": "IDENTIQUE au start (même vêtement, même couleur)",
+        "accessories": "IDENTIQUES au start (chapeau, lunettes, bijoux — rien ne disparaît)",
         "character_b_position": "Position de B si présent"
     }},
     "action": "Description COURTE du mouvement VISIBLE (1 phrase, 1 action)",
+    "transition_path": "Description du CHEMIN VISUEL de start à end en 6 secondes. Comment le personnage passe de la situation start à la situation end ? Décris les étapes visuelles intermédiaires que la caméra va capturer (ex: 'Claire descend du véhicule, traverse le marché en saluant les marchands, et arrive au centre du village'). Ce chemin doit rendre le changement LOGIQUE et FLUIDE.",
     "shooting": {{
         "shot_type": "type choisi",
         "camera_angle": "angle choisi",
@@ -579,94 +597,61 @@ Réponds UNIQUEMENT en JSON valide:
 # =============================================================================
 # GÉNÉRATION IMAGE
 # =============================================================================
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# NE JAMAIS CHANGER LA FORMULATION "THIS person" / "THIS person from the
+# reference photos" dans les prompts Gemini ci-dessous.
+#
+# "THIS person" est déictique : il pointe vers les photos envoyées.
+# "Same person" est comparatif : Gemini génère alors "quelqu'un de similaire".
+#
+# Avec "same person" : DeepFace ~0.40, ArcFace ~0.54, gap ~0.66 → FAIL
+# Avec "THIS person" : DeepFace ~0.72, ArcFace ~0.85, gap ~0.08 → PASS
+#
+# Testé et validé le 2026-02-05. NE PAS MODIFIER.
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
 
-PROMPT_IMAGE_GENERATE = """{strict_prefix}
+PROMPT_IMAGE_GENERATE = """Put THIS person from the reference photos into the following environment.
+Keep exactly the same face, body type, skin tone, hair, and age as in the reference photos.
 
-MAIN INSTRUCTION:
-Take the EXACT person from the attached reference photo and place them in the described situation.
-DO NOT modify this person. DO NOT reinvent their appearance.
-You MUST reproduce EXACTLY: their face, their body type, their age, their features.
+Environment: {location}
+Scene: {description}
+Outfit: {outfit}
+Accessories: {accessories}
+Pose: {pose}
+Expression: {expression}, {expression_intensity}
+Gaze: {gaze_direction}
 
-SITUATION TO CREATE:
-- Context: {description}
-- Location: {location}
-- Pose: {pose}
-- Expression: {expression} (intensity: {expression_intensity}, NEVER exaggerated)
-- Gaze direction: {gaze_direction} (NEVER toward camera unless explicitly allowed)
-- Outfit: {outfit}
-- Accessories: {accessories}
-
-SCENE COLOR PALETTE (use these 4 colors as dominant tones):
-{scene_palette}
-
-FRAMING:
-- Shot type: {shot_type}
-- Camera angle: {camera_angle}
-- Lighting direction: {lighting_direction}
-- Lighting temperature: {lighting_temperature}
-- Depth of field: {depth_of_field}
-- Focus on: {focus_on}
+Palette: {scene_palette}
+Framing: {shot_type}, {camera_angle}, {lighting_direction} {lighting_temperature} light, {depth_of_field} depth of field, focus on {focus_on}
 
 {same_day_rules}
 
-ABSOLUTE RULES - FACE PRESERVATION:
-- The person in the image MUST BE the EXACT SAME PERSON from the reference photo
-- IDENTICAL face shape, nose, jawline, chin, ears, forehead
-- IDENTICAL skin tone and complexion
-- IDENTICAL body type (same silhouette, same weight, same proportions)
-- NO change to facial structure or proportions
-- NO adding or removing glasses unless specified in character analysis
-- NO adding accessories not present in reference
-- NO age change - same age as reference
-
-ABSOLUTE RULES - SCENE:
-- Character NEVER looks at the lens/camera (unless last scene and explicitly allowed)
-- NO mirror or reflective surface showing a face
-- NO visible text
-- NO anatomical deformation
-- Natural expression, NEVER exaggerated
-- EXPRESSION MUST BE POSITIVE: the character is living their DREAM, they must look at minimum content, happy, or fulfilled. No neutral or negative expression.
-- Cinematic quality
-
-{strict_suffix}
+Rules:
+- THIS person from the photos above
+- Keep exactly the same attitude, posture, and facial expression as described
+- {camera_look_rule}
+- No mirror, no text, no deformation
+- Cinematic quality, photorealistic
 """
 
-PROMPT_IMAGE_SAME_DAY_RULES = """
-SAME-DAY RULES (same day continuity):
-- Outfit EXACTLY IDENTICAL to the previous scene (same garment, same color, same pattern)
-- Hairstyle EXACTLY IDENTICAL
-- Accessories EXACTLY IDENTICAL (same color, same pattern - plaid scarf = plaid, not solid)
-- Glasses IDENTICAL if present
+PROMPT_IMAGE_SAME_DAY_RULES = """Same-day continuity: keep exact same outfit, hairstyle, accessories, and glasses as previous scene.
 """
 
-PROMPT_IMAGE_POV = """{strict_prefix}
+PROMPT_IMAGE_POV = """Generate a POV (point of view) image showing what this person sees while walking.
+No person visible. Camera at standing eye level (~1.65m).
 
-INSTRUCTION: Generate a POV (point of view / subjective) image.
-This shows what the character SEES while WALKING/EXPLORING, not the character themselves.
+Scene: {description}
+Foreground (blurred): {foreground}
+Main subject: {midground}
+Background: {background}
+Lighting: {lighting}
 
-WHAT THE CHARACTER SEES:
-- Description: {description}
-- Foreground (blurred): {foreground}
-- Midground (main subject): {midground}
-- Background: {background}
-- Lighting: {lighting}
+Palette: {scene_palette}
+Depth of field: {depth_of_field}, {lighting_temperature} light
 
-COLOR PALETTE: {scene_palette}
-
-CAMERA HEIGHT: Eye level of a person STANDING (~1.65m from ground)
-
-FRAMING:
-- Depth of field: {depth_of_field}
-- Lighting temperature: {lighting_temperature}
-
-RULES:
-- NO person visible (this is THEIR view)
-- Camera at STANDING eye level (~1.65m), NEVER at table/sitting level
-- May include: hand holding object, edge of clothing (blurred foreground)
-- Natural and immersive perspective of someone WALKING
-- Cinematic quality
-
-{strict_suffix}
+May include blurred foreground elements (hand, edge of clothing). Cinematic quality.
 """
 
 
@@ -719,6 +704,8 @@ PROMPT_VIDEO = """Smooth {duration}-second cinematic video transitioning from th
 
 ACTION: {action}
 
+TRANSITION PATH: {transition_path}
+
 CAMERA: {camera_movement}
 
 RULES:
@@ -726,7 +713,7 @@ RULES:
 2. Only the CHARACTER moves - background COMPLETELY STATIC
 3. Do NOT morph, stretch, or deform any objects
 4. Character's face must stay IDENTICAL throughout
-5. Smooth, natural human movement only
+5. Smooth, natural human movement only - if walking, realistic gait with natural arm swing and weight transfer
 6. Background elements must remain FIXED
 """
 
@@ -1124,3 +1111,124 @@ RULES:
 4. NO sudden changes
 5. Contemplative mood
 """
+
+
+# =============================================================================
+# SCENARIO PUB v7 - RÈGLES ET TEMPLATES
+# =============================================================================
+
+RULES_PUB = """
+REGLES SPECIFIQUES PUB:
+
+## SCENE QUOTIDIEN (PRE-SWITCH)
+- Environnement: bureau, transports, appartement morne, file d'attente...
+- Palette: grise, desaturee, froide
+- Eclairage: plat, artificiel, neons
+- Expression: lassitude, ennui, frustration contenue, regard dans le vide
+- Posture: legerement voutee, epaules basses, gestes las
+- JAMAIS d'expression negative extreme (pas de pleurs, colere, desespoir)
+- Le personnage doit rester "neutre negatif" (ennui, pas depression)
+
+## END KEYFRAME QUOTIDIEN (POSE FIGEE)
+- Position PRECISE et REPRODUCTIBLE (sera copiee pour le switch)
+- Orientation du corps claire (face, 3/4, profil)
+- Position des bras et mains definie
+- Direction du regard fixee
+- Expression figee (moment de pause, regard au loin)
+
+## POST-SWITCH (MEME POSE, DECOR REVE)
+- EXACTEMENT meme position corporelle
+- EXACTEMENT meme orientation
+- EXACTEMENT memes vetements (pour continuite)
+- SEUL le decor change radicalement
+- Eclairage: chaud, naturel, dore
+- Un ou deux emblemes du lieu de reve visibles en arriere-plan (discrets)
+
+## SCENE DECOUVERTE
+- Debut: personnage destabilise (cligne des yeux, regarde autour)
+- Milieu: realisation progressive, sourire naissant
+- Fin: enthousiasme, premier mouvement vers la nouvelle vie
+- Transition emotionnelle: confusion → emerveillement → joie → action
+"""
+
+
+PROMPT_PUB_SWITCH_GEMINI = """Put this {gender} in {dream_decor_description}.
+
+Keep EXACTLY the same: face, hair, clothes, pose, expression, body position.
+Change ONLY the environment around {pronoun}.
+
+The new environment must be: {dream_decor_details}
+Lighting: warm, natural, cinematic, golden tones.
+Background elements: {dream_emblems}
+
+CRITICAL RULES:
+- The person must look IDENTICAL to the source image
+- Same face, same body type, same outfit, same pose, same expression
+- ONLY the background/environment changes
+- No special effects, no portal, no particles, no morphing
+- The result must look like a realistic photo in the new location
+- Photorealistic quality, cinematic lighting
+"""
+
+
+# =============================================================================
+# DYNAMIC PROMPT LOADING
+# =============================================================================
+
+# Mapping of prompt codes to their hardcoded defaults
+DEFAULTS = {
+    "ANALYZE_CHARACTER": PROMPT_ANALYZE_CHARACTER,
+    "EXTRACT_DREAM_ELEMENTS": PROMPT_EXTRACT_DREAM_ELEMENTS,
+    "GENERATE_PALETTE": PROMPT_GENERATE_PALETTE,
+    "SCENE_PALETTE": PROMPT_SCENE_PALETTE,
+    "SCENARIO_GLOBAL": PROMPT_SCENARIO_GLOBAL,
+    "FREE_SCENES": PROMPT_FREE_SCENES,
+    "SCENARIO_VIDEO": PROMPT_SCENARIO_VIDEO,
+    "SCENARIO_VIDEO_POV": PROMPT_SCENARIO_VIDEO_POV,
+    "IMAGE_GENERATE": PROMPT_IMAGE_GENERATE,
+    "IMAGE_SAME_DAY_RULES": PROMPT_IMAGE_SAME_DAY_RULES,
+    "IMAGE_POV": PROMPT_IMAGE_POV,
+    "VALIDATION": PROMPT_VALIDATION,
+    "VIDEO": PROMPT_VIDEO,
+    "SCENARIO_PUB_VIDEO_1A": PROMPT_SCENARIO_PUB_VIDEO_1A,
+    "SCENARIO_PUB_VIDEO_1B": PROMPT_SCENARIO_PUB_VIDEO_1B,
+    "SCENARIO_PUB": PROMPT_SCENARIO_PUB,
+    "VIDEO_POV": PROMPT_VIDEO_POV,
+    "PUB_SWITCH_GEMINI": PROMPT_PUB_SWITCH_GEMINI,
+}
+
+
+def get_prompt(config, code, **kwargs):
+    """Return a prompt from external config (database) or hardcoded default.
+
+    Args:
+        config: Pipeline config dict (may contain 'prompts' key from database)
+        code: Prompt code (e.g. "ANALYZE_CHARACTER", "SCENARIO_GLOBAL")
+        **kwargs: Template variables to substitute
+
+    Returns:
+        Formatted prompt string
+    """
+    external_prompts = config.get("prompts", {})
+    template = external_prompts.get(code, DEFAULTS.get(code, ""))
+    if kwargs:
+        try:
+            return template.format(**kwargs)
+        except KeyError:
+            # If template has placeholders not in kwargs, return as-is
+            return template
+    return template
+
+
+def get_raw_prompt(config, code):
+    """Return the raw prompt template (without formatting) from external config or default.
+
+    Args:
+        config: Pipeline config dict
+        code: Prompt code
+
+    Returns:
+        Raw template string (with {placeholders} intact)
+    """
+    external_prompts = config.get("prompts", {})
+    return external_prompts.get(code, DEFAULTS.get(code, ""))

@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Audit PUB Scenario - Je rêve de tomber amoureuse d'un bel homme brun à </title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 40px; background: #ecf0f1; padding: 10px; border-radius: 5px; }
+        .step { background: white; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .step-header { font-size: 1.3em; color: #2980b9; margin-bottom: 15px; }
+        .question { background: #e8f4f8; padding: 15px; border-left: 4px solid #3498db; margin: 10px 0; white-space: pre-wrap; font-family: monospace; font-size: 0.9em; }
+        .options { background: #fafafa; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .option { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; }
+        .option.chosen { background: #d5f5e3; border-color: #27ae60; }
+        .option-header { font-weight: bold; color: #555; }
+        .choice { background: #d5f5e3; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .validation { background: #fdf2e9; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .v-pass { color: #27ae60; }
+        .v-fail { color: #e74c3c; }
+        .result { background: #eaf2f8; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .result pre { white-space: pre-wrap; font-size: 0.85em; }
+        .prompt-box { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+        .cost { background: #f9e79f; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>🎬 Audit PUB Scenario</h1>
+    <p><strong>Rêve:</strong> Je rêve de tomber amoureuse d'un bel homme brun à Rome</p>
+    <p><strong>Date:</strong> 2026-02-04 21:50:48</p>
+    <div class="cost">💰 Coût total: $0.971 (95 appels LLM)</div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 0.1 État actuel (le MANQUE)</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Cette personne a un DÉSIR profond. Quel est son état actuel qui crée ce désir ?
+
+DÉSIR: Je rêve de tomber amoureuse d'un bel homme brun à Rome
+
+Le MANQUE est ce que la personne N'A PAS dans sa vie actuelle.
+
+Exemples:
+- Désir &quot;tomber amoureuse&quot; → Manque: CÉLIBAT (elle est seule)
+- Désir &quot;voyager&quot; → Manque: SÉDENTARITÉ (elle est coincée)
+- Désir &quot;réussir&quot; → Manque: ÉCHEC ou STAGNATION
+- Désir &quot;être libre&quot; → Manque: ENFERMEMENT
+
+Pour le désir &quot;Je rêve de tomber amoureuse d'un bel homme brun à Rome&quot;, quel est le MANQUE ?
+Réponds en 1-2 mots MAXIMUM.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;etat&quot;: &quot;SOLITUDE&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;etat&quot;: &quot;ENNUI&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;etat&quot;: &quot;MONOTONIE&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> Le désir de tomber amoureuse d'un bel homme brun à Rome indique un manque de connexion romantique et de compagnie dans la vie actuelle de la personne. Cela correspond à un état de SOLITUDE, car elle cherche à combler l'absence d'une relation amoureuse.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-fail">50%</td>
+                    <td>L'état de 'solitude' peut indiquer un manque de connexion sociale ou de soutien, mais il n'est pas directement explicite sur ce qui manque pour réaliser un désir spécifique.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-fail">70%</td>
+                    <td>L'état de 'solitude' est pertinent pour un rêve romantique, mais il manque de précision pour indiquer ce qui est spécifiquement insatisfaisant dans le quotidien. Il pourrait être plus efficace de décrire un état d'ennui ou de routine pour mieux contraster avec le rêve romantique vibrant à Rome.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-fail">FAIL</td>
+                    <td>L'état de 'solitude' n'est pas suffisamment précis pour indiquer un quotidien insatisfaisant dans le contexte d'une publicité. Il manque une description claire des éléments visuels et émotionnels qui caractérisent la scène quotidienne avant le switch. De plus, 'solitude' peut être interprété de manière trop large et ne respecte pas les directives de neutralité négative sans expression extrême. Il est essentiel de décrire un état d'ennui ou de routine pour mieux contraster avec le rêve vibrant post-switch.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Décrire un environnement de bureau ou de transport avec des éléments visuels comme des néons, des couleurs désaturées, et des expressions de lassitude.</li>
+                <li>Utiliser des expressions faciales et corporelles qui indiquent l'ennui ou la routine sans tomber dans des émotions extrêmes.</li>
+                <li>Assurer une transition claire et reproductible entre les scènes quotidienne et de rêve, avec une pose figée précise.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;etat&quot;: &quot;SOLITUDE&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 0.2 Inconvénients émotionnels</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Quels sont les INCONVÉNIENTS ÉMOTIONNELS de l'état &quot;SOLITUDE&quot; ?
+
+Liste 5 ÉMOTIONS/SENTIMENTS que ressent quelqu'un dans cet état.
+PAS de situations concrètes, UNIQUEMENT des émotions.
+
+Exemples pour CÉLIBAT:
+- solitude
+- incomplétude
+- jalousie envers les couples
+- impression que le temps passe
+- manque de tendresse</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;emotions&quot;: [
+    &quot;isolement&quot;,
+    &quot;tristesse&quot;,
+    &quot;vide intérieur&quot;,
+    &quot;désir d'interaction&quot;,
+    &quot;nostalgie&quot;
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;emotions&quot;: [
+    &quot;manque de connexion&quot;,
+    &quot;mélancolie&quot;,
+    &quot;envie de compagnonnage&quot;,
+    &quot;sentiment d'abandon&quot;,
+    &quot;amertume&quot;
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;emotions&quot;: [
+    &quot;retenue émotionnelle&quot;,
+    &quot;envie de partage&quot;,
+    &quot;désespoir discret&quot;,
+    &quot;frustration latente&quot;,
+    &quot;se sentir oublié&quot;
+  ]
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 propose des émotions qui sont directement liées à l'état de solitude, telles que l'isolement et la tristesse. Ces émotions sont pertinentes car elles décrivent bien l'expérience émotionnelle d'une personne se sentant seule. Le 'vide intérieur' et le 'désir d'interaction' sont également des sentiments typiques de la solitude, tandis que la 'nostalgie' peut refléter un désir de connexion passée ou de moments où l'on ne se sentait pas seul. Ces émotions sont bien centrées sur l'état de solitude et ne s'éloignent pas vers des sentiments moins directement liés comme l'amertume ou le désespoir.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">80%</td>
+                    <td>La plupart des items sont des émotions pertinentes, mais 'désir d'interaction' est plus un besoin qu'une émotion.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">85%</td>
+                    <td>Les émotions décrites sont globalement cohérentes avec l'état de solitude et le désir de romance. Cependant, 'désir d'interaction' est effectivement plus un besoin qu'une émotion. Les autres émotions sont pertinentes et bien alignées avec le contexte de solitude et de rêve romantique.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les émotions décrites sont majoritairement pertinentes et cohérentes avec le contexte d'une scène quotidienne morne et le désir de changement. Bien que 'désir d'interaction' soit plus un besoin qu'une émotion, il est lié à l'état émotionnel général du personnage. Les autres émotions comme 'isolement', 'tristesse', 'vide intérieur', et 'nostalgie' sont bien alignées avec l'ambiance de lassitude et d'ennui requise pour la scène quotidienne.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Remplacer 'désir d'interaction' par une émotion plus directement ressentie, comme 'solitude' ou 'mélancolie', pour mieux correspondre aux règles spécifiques.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;emotions&quot;: [
+    &quot;isolement&quot;,
+    &quot;tristesse&quot;,
+    &quot;vide intérieur&quot;,
+    &quot;désir d'interaction&quot;,
+    &quot;nostalgie&quot;
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 0.3 Contextes où le manque est douloureux</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Dans quels CONTEXTES/LIEUX ces émotions sont-elles les plus fortes ?
+
+État: SOLITUDE
+Émotions ressenties: isolement, tristesse, vide intérieur, désir d'interaction, nostalgie
+
+Liste 4 contextes/lieux où ces émotions sont particulièrement présentes.
+Exemples: appartement le soir, restaurant seul(e), soirée entre amis en couple, métro bondé...
+
+Critère: le contexte doit permettre de MONTRER visuellement l'émotion.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;contextes&quot;: [
+    {
+      &quot;lieu&quot;: &quot;appartement morne&quot;,
+      &quot;pourquoi&quot;: &quot;La solitude résonne dans le silence d'un appartement vide, accentuée par des objets du quotidien qui semblent anonymes et impersonnels.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;métro bondé&quot;,
+      &quot;pourquoi&quot;: &quot;Paradoxalement, le sentiment d'isolement est amplifié au milieu de la foule, chaque individu absorbé par sa propre routine, ignorant la présence des autres.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;restaurant seul(e)&quot;,
+      &quot;pourquoi&quot;: &quot;La tristesse et le désir d'interaction se manifestent en voyant les autres partager des moments conviviaux, l'absence de conversation rendant le repas fade.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;parc abandonné&quot;,
+      &quot;pourquoi&quot;: &quot;Le vide intérieur et la nostalgie prennent forme dans un espace désert, autrefois animé, désormais silencieux et dépourvu de vie.&quot;
+    }
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;contextes&quot;: [
+    {
+      &quot;lieu&quot;: &quot;bureau tard le soir&quot;,
+      &quot;pourquoi&quot;: &quot;Travailler seul dans un espace déserté renforce le vide intérieur, chaque tic-tac de l'horloge amplifiant le sentiment d'isolement.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;cinéma en solo&quot;,
+      &quot;pourquoi&quot;: &quot;La nostalgie et le désir d'interaction s'intensifient lorsque les rires et réactions collectives ne résonnent pas, laissant place à un silence pesant après le film.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;file d'attente à la poste&quot;,
+      &quot;pourquoi&quot;: &quot;L'ennui et l'isolement se renforcent dans une file monotone, où les regards évitent le contact et chacun attend impatiemment son tour sans interaction.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;café le matin&quot;,
+      &quot;pourquoi&quot;: &quot;Le sentiment d'être coupé des autres est accentué par la vue des tables occupées par des groupes, tandis qu'on sirote seul son café, accompagné du bruit ambiant sans chaleur.&quot;
+    }
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;contextes&quot;: [
+    {
+      &quot;lieu&quot;: &quot;arrêt de bus sous la pluie&quot;,
+      &quot;pourquoi&quot;: &quot;La tristesse et la solitude s'intensifient dans l'attente morne et humide, avec pour seule compagnie le bruit des gouttes sur le toit.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;supermarché le dimanche soir&quot;,
+      &quot;pourquoi&quot;: &quot;Le sentiment de vide intérieur s'accentue dans les allées éteintes et désertes, où acheter des provisions devient un acte mécanique sans âme.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;salle d'attente d'un cabinet médical&quot;,
+      &quot;pourquoi&quot;: &quot;L'isolation se ressent parmi les sièges vides ou occupés de patients silencieux, chacun absorbé par ses pensées, sans échange.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;galerie commerciale fermée&quot;,
+      &quot;pourquoi&quot;: &quot;La nostalgie et le désarroi s'insinuaient dans l'espace autrefois vibrant, désormais plongé dans le calme triste de la fermeture.&quot;
+    }
+  ]
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> Les contextes choisis dans l'option 1 permettent de montrer visuellement les émotions de solitude, d'isolement et de nostalgie de manière très forte. L'appartement morne et le métro bondé sont des lieux concrets où le sentiment de solitude est amplifié par le contraste entre l'environnement et l'état émotionnel du personnage. Le restaurant seul(e) est un contexte classique pour illustrer le désir d'interaction et la tristesse, tandis que le parc abandonné évoque puissamment la nostalgie et le vide intérieur. Ces lieux sont visuellement évocateurs et permettent de capturer les émotions de manière claire et reproductible.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>Tous les contextes mentionnés sont des lieux concrets où le personnage peut être filmé.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>Les contextes proposés sont cohérents avec l'état émotionnel de solitude et les lieux choisis reflètent bien les sentiments d'isolement et de nostalgie. Chaque lieu est réaliste et techniquement faisable pour une scène vidéo. Les descriptions sont suffisamment précises pour être reproductibles.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les contextes proposés sont bien décrits et correspondent aux règles spécifiques de la scène quotidienne. Chaque lieu évoque un sentiment de solitude et d'ennui, ce qui est en ligne avec l'objectif de la scène pré-switch. Les descriptions sont suffisamment précises pour être reproduites de manière cohérente et réaliste dans une vidéo publicitaire. Les lieux choisis sont techniquement faisables et permettent de créer une ambiance morne et désaturée, conforme à la palette et à l'éclairage requis.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que l'éclairage dans chaque scène est plat et artificiel pour renforcer l'atmosphère morne.</li>
+                <li>Veillez à ce que l'expression du personnage reste neutre négatif, sans tomber dans des émotions extrêmes.</li>
+                <li>Utilisez des éléments de décor qui accentuent l'anonymat et l'impersonnalité des lieux.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;contextes&quot;: [
+    {
+      &quot;lieu&quot;: &quot;appartement morne&quot;,
+      &quot;pourquoi&quot;: &quot;La solitude résonne dans le silence d'un appartement vide, accentuée par des objets du quotidien qui semblent anonymes et impersonnels.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;métro bondé&quot;,
+      &quot;pourquoi&quot;: &quot;Paradoxalement, le sentiment d'isolement est amplifié au milieu de la foule, chaque individu absorbé par sa propre routine, ignorant la présence des autres.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;restaurant seul(e)&quot;,
+      &quot;pourquoi&quot;: &quot;La tristesse et le désir d'interaction se manifestent en voyant les autres partager des moments conviviaux, l'absence de conversation rendant le repas fade.&quot;
+    },
+    {
+      &quot;lieu&quot;: &quot;parc abandonné&quot;,
+      &quot;pourquoi&quot;: &quot;Le vide intérieur et la nostalgie prennent forme dans un espace désert, autrefois animé, désormais silencieux et dépourvu de vie.&quot;
+    }
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 0.4 Sélection du contexte</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Parmi ces contextes, lequel est LE MEILLEUR pour la scène quotidien ?
+
+Contextes possibles:
+[
+  {
+    &quot;lieu&quot;: &quot;appartement morne&quot;,
+    &quot;pourquoi&quot;: &quot;La solitude résonne dans le silence d'un appartement vide, accentuée par des objets du quotidien qui semblent anonymes et impersonnels.&quot;
+  },
+  {
+    &quot;lieu&quot;: &quot;métro bondé&quot;,
+    &quot;pourquoi&quot;: &quot;Paradoxalement, le sentiment d'isolement est amplifié au milieu de la foule, chaque individu absorbé par sa propre routine, ignorant la présence des autres.&quot;
+  },
+  {
+    &quot;lieu&quot;: &quot;restaurant seul(e)&quot;,
+    &quot;pourquoi&quot;: &quot;La tristesse et le désir d'interaction se manifestent en voyant les autres partager des moments conviviaux, l'absence de conversation rendant le repas fade.&quot;
+  },
+  {
+    &quot;lieu&quot;: &quot;parc abandonné&quot;,
+    &quot;pourquoi&quot;: &quot;Le vide intérieur et la nostalgie prennent forme dans un espace désert, autrefois animé, désormais silencieux et dépourvu de vie.&quot;
+  }
+]
+
+Critères:
+- UNIVERSEL: beaucoup de gens peuvent s'identifier
+- EN LIEN DIRECT avec le manque affectif/romantique
+- INTIME: montre la solitude personnelle (pas un lieu professionnel)
+- VISUELLEMENT CLAIR: facile à mettre en scène
+
+Désir du personnage: Je rêve de tomber amoureuse d'un bel homme brun à Rome</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;contexte&quot;: &quot;appartement morne&quot;,
+  &quot;justification&quot;: &quot;Le silence pesant et la solitude palpable dans un appartement morne créent un cadre intime qui reflète parfaitement le désir du personnage de combler son vide affectif. Ce contexte est universel, car beaucoup peuvent s'identifier au sentiment d'isolement chez soi. L'intimité de l'espace personnel met en avant le manque d'interaction romantique, rendant la transition vers un rêve de romance à Rome d'autant plus saisissante.&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;contexte&quot;: &quot;métro bondé&quot;,
+  &quot;justification&quot;: &quot;Le contraste entre la foule oppressante du métro bondé et le sentiment d'isolement du personnage illustre bien le paradoxe d'être seul parmi beaucoup. Ce contexte est universel et met en avant la déconnexion émotionnelle dans un environnement qui devrait normalement offrir des interactions humaines, rendant le désir de rencontre amoureuse à Rome particulièrement poignant.&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;contexte&quot;: &quot;restaurant seul(e)&quot;,
+  &quot;justification&quot;: &quot;Manger seul dans un restaurant, entouré de groupes et de couples, accentue le manque d'interaction affective et romantique. Ce contexte intime et visuel est un rappel poignant de l'absence de partage et d'amour, renforçant le désir de tomber amoureuse dans un cadre idyllique comme Rome. La scène est universelle et facile à visualiser, capturant le besoin de compagnie et de connexion.&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'appartement morne est le meilleur choix car il offre un cadre intime et personnel qui reflète directement le manque affectif du personnage. Le silence pesant et la solitude palpable dans cet environnement mettent en avant le désir de combler un vide émotionnel, ce qui est en lien direct avec le rêve de romance à Rome. De plus, ce contexte est universel et beaucoup de gens peuvent s'identifier au sentiment d'isolement chez soi, rendant la transition vers le rêve d'amour d'autant plus saisissante. Visuellement, il est facile à mettre en scène avec des éléments du quotidien qui accentuent la solitude.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>Le contexte de l'appartement morne est un lieu intime où le manque affectif est clairement visible.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La réponse est cohérente avec le contexte du rêve et les données collectées. L'appartement morne est un cadre approprié pour refléter la solitude et le désir d'interaction romantique, ce qui rend la transition vers un rêve de romance à Rome particulièrement saisissante. La justification est bien alignée avec les émotions et les contextes douloureux décrits.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les deux évaluateurs sont d'accord sur la pertinence du contexte de l'appartement morne pour refléter la solitude et le désir de romance, ce qui est en adéquation avec les règles spécifiques de la scène quotidienne. L'appartement morne est un cadre universel et intime qui permet de mettre en avant le manque d'interaction, rendant la transition vers le rêve plus marquante. La justification fournie est cohérente et bien alignée avec les émotions à transmettre.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que l'appartement morne est bien représenté avec une palette grise et un éclairage plat pour renforcer l'ambiance de lassitude.</li>
+                <li>Veillez à ce que le personnage ait une posture légèrement voûtée et une expression de lassitude pour respecter les règles de la scène quotidienne.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;contexte&quot;: &quot;appartement morne&quot;,
+  &quot;justification&quot;: &quot;Le silence pesant et la solitude palpable dans un appartement morne créent un cadre intime qui reflète parfaitement le désir du personnage de combler son vide affectif. Ce contexte est universel, car beaucoup peuvent s'identifier au sentiment d'isolement chez soi. L'intimité de l'espace personnel met en avant le manque d'interaction romantique, rendant la transition vers un rêve de romance à Rome d'autant plus saisissante.&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 0.5 Situation concrète</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Décris une SITUATION CONCRÈTE dans ce contexte.
+
+Contexte: appartement morne
+État: SOLITUDE
+Émotions: isolement, tristesse, vide intérieur, désir d'interaction, nostalgie
+
+La situation doit:
+- Montrer l'émotion VISUELLEMENT (action + posture + expression)
+- Être SIMPLE (une seule action, pas de séquence complexe)
+- Être RELATABLE (tout le monde peut s'identifier)
+- NE PAS être pathétique (subtil, pas dramatique)
+
+Exemples:
+- &quot;dîne seule à sa table de cuisine, chaise vide en face&quot;
+- &quot;regarde par la fenêtre, tasse de thé refroidie&quot;
+- &quot;feuillette un magazine voyage sans vraiment lire&quot; </div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;situation&quot;: &quot;assise sur le canapé, télé éteinte&quot;,
+  &quot;action&quot;: &quot;fixe un point dans le vide&quot;,
+  &quot;element_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;,
+  &quot;posture&quot;: &quot;légèrement affalée, les bras le long du corps&quot;,
+  &quot;expression&quot;: &quot;visage pensif, regard perdu&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;situation&quot;: &quot;devant son bureau, ordinateur devant elle&quot;,
+  &quot;action&quot;: &quot;fait défiler ses e-mails sans intérêt&quot;,
+  &quot;element_symbolique&quot;: &quot;écran allumé mais vide de contenu attractif&quot;,
+  &quot;posture&quot;: &quot;légèrement voûtée, menton posé sur une main&quot;,
+  &quot;expression&quot;: &quot;visage lassé, yeux à demi-ouverts&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;situation&quot;: &quot;debout près de la bibliothèque&quot;,
+  &quot;action&quot;: &quot;fait glisser ses doigts sur les tranches des livres sans en sortir un&quot;,
+  &quot;element_symbolique&quot;: &quot;un livre poussiéreux et jamais ouvert&quot;,
+  &quot;posture&quot;: &quot;légèrement penchée en avant, épaules basses&quot;,
+  &quot;expression&quot;: &quot;regard mélancolique, coin des lèvres tombant&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> Cette option montre visuellement l'émotion de solitude et de vide intérieur de manière simple et relatable. Le personnage est assis sur le canapé, une situation courante et identifiable, avec la télé éteinte, ce qui symbolise l'absence d'interaction ou de distraction. L'action de fixer un point dans le vide, combinée à une posture légèrement affalée et un visage pensif, exprime subtilement l'isolement et la tristesse sans être pathétique. La télécommande abandonnée sur la table basse renforce l'idée de désintérêt et de vide émotionnel.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La situation est simple et visuelle, illustrant le manque sans pathos.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>La description de la scène quotidienne est cohérente avec le contexte de solitude et d'isolement dans un appartement morne. La posture et l'expression du personnage sont bien définies et correspondent à l'état émotionnel décrit. La télécommande abandonnée sur la table basse est un symbole subtil de l'ennui et de la passivité. La situation est réaliste et reproductible par une IA vidéo.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les descriptions fournies respectent les règles spécifiques de la scène quotidienne. L'environnement est morne et l'expression du personnage est neutre négatif, sans tomber dans l'extrême négatif. La posture est clairement définie et reproductible, avec une orientation du corps et une position des bras précises. L'élément symbolique de la télécommande abandonnée renforce subtilement le thème de l'ennui. La scène est réaliste et faisable techniquement par une IA. Les évaluations de V1 et V2 sont en accord, confirmant la validité de la scène.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que la transition vers le décor de rêve respecte les consignes de changement d'éclairage et d'ajout d'emblèmes du lieu de rêve.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;situation&quot;: &quot;assise sur le canapé, télé éteinte&quot;,
+  &quot;action&quot;: &quot;fixe un point dans le vide&quot;,
+  &quot;element_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;,
+  &quot;posture&quot;: &quot;légèrement affalée, les bras le long du corps&quot;,
+  &quot;expression&quot;: &quot;visage pensif, regard perdu&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 1.1 Palette quotidien</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Définis la palette de couleurs pour cette scène quotidien.
+
+Lieu: appartement morne
+Situation: assise sur le canapé, télé éteinte
+Émotion: isolement
+
+Tons désaturés, froids ou ternes. 4 couleurs hexa.
+La palette doit refléter l'émotion de manque/solitude.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option ">
+                <div class="option-header">[1] </div>
+                <pre>{
+  &quot;principale&quot;: &quot;#7A7A7A&quot;,
+  &quot;secondaire&quot;: &quot;#B0B0B0&quot;,
+  &quot;accent&quot;: &quot;#4D4D4D&quot;,
+  &quot;fond&quot;: &quot;#E0E0E0&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;principale&quot;: &quot;#8C8C8C&quot;,
+  &quot;secondaire&quot;: &quot;#A9A9A9&quot;,
+  &quot;accent&quot;: &quot;#6F6F6F&quot;,
+  &quot;fond&quot;: &quot;#D3D3D3&quot;
+}</pre>
+            </div>
+
+            <div class="option chosen">
+                <div class="option-header">[3] ★ CHOISI</div>
+                <pre>{
+  &quot;principale&quot;: &quot;#666666&quot;,
+  &quot;secondaire&quot;: &quot;#999999&quot;,
+  &quot;accent&quot;: &quot;#333333&quot;,
+  &quot;fond&quot;: &quot;#CCCCCC&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [3] sélectionnée</strong><br>
+            <em>Justification:</em> La palette choisie utilise des tons de gris variés qui sont désaturés et ternes, ce qui correspond bien à l'émotion de solitude et de manque. Le gris foncé (#666666) comme couleur principale évoque le poids de l'isolement, tandis que le gris plus clair (#999999) en secondaire ajoute une nuance de tristesse. L'accent très sombre (#333333) renforce l'idée de vide intérieur, et le fond légèrement plus clair (#CCCCCC) maintient l'ambiance morne sans être trop lumineux. Cette combinaison reflète parfaitement l'environnement d'un appartement morne et l'état émotionnel du personnage.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La palette est cohérente avec l'émotion, désaturée et évoque le manque.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La palette de couleurs proposée est parfaitement cohérente avec le contexte de solitude et d'isolement dans un appartement morne. Les teintes grises et désaturées reflètent bien l'émotion de vide intérieur et de tristesse, tout en restant dans une gamme de couleurs qui évoque un environnement froid et impersonnel. Les couleurs choisies sont réalistes et techniquement faisables pour une scène de quotidien avant le switch vers le rêve.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les deux évaluateurs sont d'accord sur la cohérence et l'adéquation de la palette de couleurs proposée avec le contexte de la scène quotidienne. Les teintes grises et désaturées sont appropriées pour évoquer un environnement morne et un sentiment de lassitude, tout en restant techniquement réalisables. La palette respecte les règles spécifiques de la scène quotidienne avant le switch.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que l'éclairage artificiel et plat est bien rendu pour renforcer l'ambiance morne.</li>
+                <li>Utilisez des textures et des éléments de décor qui accentuent la froideur et l'impersonnalité de l'environnement.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;principale&quot;: &quot;#666666&quot;,
+  &quot;secondaire&quot;: &quot;#999999&quot;,
+  &quot;accent&quot;: &quot;#333333&quot;,
+  &quot;fond&quot;: &quot;#CCCCCC&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 1.2 Éléments visuels quotidien</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Quels éléments visuels caractérisent cette scène ?
+
+Lieu: appartement morne
+Situation: assise sur le canapé, télé éteinte
+Élément symbolique identifié: télécommande abandonnée sur la table basse
+
+Liste le mobilier, objets, éclairage, arrière-plan.
+Les éléments doivent RENFORCER l'émotion de isolement.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;mobilier&quot;: [
+    &quot;canapé gris délavé&quot;,
+    &quot;table basse en bois pâle&quot;
+  ],
+  &quot;objets&quot;: [
+    &quot;plantes fanées sur le rebord de fenêtre&quot;,
+    &quot;cadre photo vide sur l'étagère&quot;
+  ],
+  &quot;objet_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;,
+  &quot;eclairage&quot;: &quot;néons blafards&quot;,
+  &quot;arriere_plan&quot;: &quot;rideaux fins tirés, laissant filtrer une lumière froide&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;mobilier&quot;: [
+    &quot;fauteuil usé aux motifs démodés&quot;,
+    &quot;étagère en métal gris&quot;
+  ],
+  &quot;objets&quot;: [
+    &quot;pile de magazines non lus&quot;,
+    &quot;tasse de café froide&quot;
+  ],
+  &quot;objet_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;,
+  &quot;eclairage&quot;: &quot;ampoule faible au plafond&quot;,
+  &quot;arriere_plan&quot;: &quot;mur blanc sans décoration&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;mobilier&quot;: [
+    &quot;chaise en bois solitaire&quot;,
+    &quot;commode poussiéreuse&quot;
+  ],
+  &quot;objets&quot;: [
+    &quot;lampe de bureau éteinte&quot;,
+    &quot;vase vide&quot;
+  ],
+  &quot;objet_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;,
+  &quot;eclairage&quot;: &quot;lumière crue d'un plafonnier&quot;,
+  &quot;arriere_plan&quot;: &quot;fenêtre sans vue&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 renforce l'émotion d'isolement de manière cohérente avec le contexte d'un appartement morne. Le canapé gris délavé et la table basse en bois pâle évoquent une ambiance terne et sans vie. Les plantes fanées sur le rebord de fenêtre et le cadre photo vide sur l'étagère symbolisent l'absence de vie et de souvenirs, accentuant le sentiment de solitude. L'éclairage par néons blafards et les rideaux fins laissant filtrer une lumière froide contribuent à une atmosphère froide et impersonnelle, en adéquation avec l'émotion principale d'isolement. Tous ces éléments visuels s'harmonisent pour créer un cadre qui renforce l'état émotionnel du personnage.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>Tous les éléments décrits sont cohérents avec un lieu qui évoque une ambiance de négligence et de tristesse, renforçant l'émotion de désolation.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>Tous les éléments décrits sont en parfaite adéquation avec le contexte d'un appartement morne, renforçant l'émotion de solitude et de vide intérieur. Le mobilier et les objets choisis, ainsi que l'éclairage, contribuent à créer une atmosphère de négligence et de tristesse, ce qui est cohérent avec l'état émotionnel du personnage. L'arrière-plan avec les rideaux fins et la lumière froide complète bien cette scène quotidienne.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les descriptions fournies respectent parfaitement les règles spécifiques de la scène quotidienne. Le mobilier, les objets, l'éclairage et l'arrière-plan sont tous en adéquation avec l'ambiance morne et désaturée requise. Chaque élément contribue à créer une atmosphère de lassitude et de négligence, sans tomber dans une expression négative extrême. L'ensemble est cohérent et réaliste, ce qui permet une reproduction fidèle par l'IA.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que la télécommande abandonnée soit bien visible pour renforcer l'idée de négligence.</li>
+                <li>Vérifiez que les rideaux fins laissent passer suffisamment de lumière froide pour accentuer l'éclairage blafard.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;mobilier&quot;: [
+    &quot;canapé gris délavé&quot;,
+    &quot;table basse en bois pâle&quot;
+  ],
+  &quot;objets&quot;: [
+    &quot;plantes fanées sur le rebord de fenêtre&quot;,
+    &quot;cadre photo vide sur l'étagère&quot;
+  ],
+  &quot;objet_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;,
+  &quot;eclairage&quot;: &quot;néons blafards&quot;,
+  &quot;arriere_plan&quot;: &quot;rideaux fins tirés, laissant filtrer une lumière froide&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 2.1 Start keyframe quotidien</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Décris le DÉBUT de la scène quotidien.
+
+Lieu: appartement morne
+Situation: assise sur le canapé, télé éteinte
+Action: fixe un point dans le vide
+Posture: légèrement affalée, les bras le long du corps
+Émotion: isolement
+Éléments visuels: {&quot;mobilier&quot;: [&quot;canapé gris délavé&quot;, &quot;table basse en bois pâle&quot;], &quot;objets&quot;: [&quot;plantes fanées sur le rebord de fenêtre&quot;, &quot;cadre photo vide sur l'étagère&quot;], &quot;objet_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;, &quot;eclairage&quot;: &quot;néons blafards&quot;, &quot;arriere_plan&quot;: &quot;rideaux fins tirés, laissant filtrer une lumière froide&quot;}
+
+Le personnage est en pleine action, l'émotion commence à transparaître.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;description&quot;: &quot;Le personnage est assis sur un canapé gris délavé, dans un appartement morne, où l'éclairage artificiel crache une lumière blafarde.&quot;,
+  &quot;pose&quot;: &quot;légèrement affalée sur le canapé, les bras le long du corps&quot;,
+  &quot;expression&quot;: &quot;visage pensif, lèvre inférieure légèrement mordillée&quot;,
+  &quot;action&quot;: &quot;fixe un point invisible dans le vide&quot;,
+  &quot;regard&quot;: &quot;droit devant elle, vers un point indéterminé&quot;,
+  &quot;tenue&quot;: &quot;jeans usés et pull gris ample&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;description&quot;: &quot;Dans la lumière froide d'un appartement morne, le personnage est assise sur un canapé fatigué, les plantes alentour flétrissant peu à peu.&quot;,
+  &quot;pose&quot;: &quot;affalée sur le canapé, les mains reposant doucement sur les cuisses&quot;,
+  &quot;expression&quot;: &quot;regard perdu, sourcils très légèrement froncés&quot;,
+  &quot;action&quot;: &quot;demeure immobile, la télé éteinte devant elle&quot;,
+  &quot;regard&quot;: &quot;fixe la télécommande abandonnée sur la table basse&quot;,
+  &quot;tenue&quot;: &quot;t-shirt gris passé et pantalon de jogging sombre&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;description&quot;: &quot;Elle est assise sur le canapé gris délavé, entourée des ombres froides projetées par les néons blafards, le silence pesant dans l'appartement morne.&quot;,
+  &quot;pose&quot;: &quot;affalée, jambes croisées sur le canapé, mains l'une sur l'autre&quot;,
+  &quot;expression&quot;: &quot;lèvres serrées, yeux légèrement plissés&quot;,
+  &quot;action&quot;: &quot;regarde dans le vide, perdue dans ses pensées&quot;,
+  &quot;regard&quot;: &quot;en direction de la fenêtre où les rideaux sont tirés&quot;,
+  &quot;tenue&quot;: &quot;cardigan gris sur un haut simple, pantalon d'intérieur&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 décrit une scène qui capture bien l'émotion de manque et d'isolement sans être exagérée. Le personnage est assis sur un canapé gris délavé, ce qui correspond au mobilier de l'appartement morne. La pose légèrement affalée avec les bras le long du corps et l'expression pensive avec la lèvre inférieure légèrement mordillée transmettent subtilement l'émotion de solitude et de vide intérieur. L'action de fixer un point invisible dans le vide, avec un regard droit devant elle, accentue l'idée de perte dans ses pensées. La tenue de jeans usés et de pull gris ample renforce l'ambiance morne et quotidienne. Cette option est réaliste et techniquement faisable par l'IA, tout en étant cohérente avec le contexte et reproductible pour le switch ultérieur.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La description montre efficacement l'émotion de manque de manière réaliste et non exagérée.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>La description est cohérente avec le contexte de solitude et d'isolement dans un appartement morne. Les éléments de la scène quotidienne sont bien intégrés, et l'expression du personnage reste dans le registre 'neutre négatif' sans tomber dans l'exagération. La pose est précise et reproductible, ce qui facilitera le switch vers le décor de rêve.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les descriptions fournies respectent les règles spécifiques de la scène quotidienne pré-switch. Le personnage est dans un environnement morne avec une palette grise et un éclairage artificiel. L'expression et la posture sont conformes au 'neutre négatif', sans tomber dans l'extrême. La pose est précise et reproductible, ce qui est crucial pour le switch. Les évaluations de V1 et V2 sont positives et cohérentes, indiquant que la scène est bien conçue pour la transition vers le décor de rêve.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que la transition vers le décor de rêve maintient la même pose exacte pour une continuité parfaite.</li>
+                <li>Dans le décor de rêve, intégrez des éléments emblématiques discrets pour renforcer le contraste avec la scène quotidienne.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;description&quot;: &quot;Le personnage est assis sur un canapé gris délavé, dans un appartement morne, où l'éclairage artificiel crache une lumière blafarde.&quot;,
+  &quot;pose&quot;: &quot;légèrement affalée sur le canapé, les bras le long du corps&quot;,
+  &quot;expression&quot;: &quot;visage pensif, lèvre inférieure légèrement mordillée&quot;,
+  &quot;action&quot;: &quot;fixe un point invisible dans le vide&quot;,
+  &quot;regard&quot;: &quot;droit devant elle, vers un point indéterminé&quot;,
+  &quot;tenue&quot;: &quot;jeans usés et pull gris ample&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 2.2 End keyframe quotidien (POSE FIGÉE)</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Décris la FIN de la scène quotidien. Le personnage s'arrête dans une POSE PRÉCISE.
+
+Situation: assise sur le canapé, télé éteinte
+Émotion: isolement
+
+IMPORTANT - Cette pose doit être:
+- SIMPLE et REPRODUCTIBLE (sera copiée exactement pour le switch)
+- Assis ou debout (pas en mouvement)
+- Regard vers un point fixe (fenêtre, horizon, vide)
+- Position des BRAS et MAINS définie précisément
+- Expression PENSIVE (moment de pause, rêverie)</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;orientation_corps&quot;: &quot;trois_quarts_droite&quot;,
+  &quot;position_tete&quot;: &quot;légèrement inclinée droite&quot;,
+  &quot;position_epaules&quot;: &quot;légèrement affaissées&quot;,
+  &quot;bras_gauche&quot;: &quot;posé sur l'accoudoir du canapé&quot;,
+  &quot;bras_droit&quot;: &quot;reposant sur la cuisse&quot;,
+  &quot;mains&quot;: &quot;doigts de la main droite légèrement écartés&quot;,
+  &quot;regard&quot;: &quot;vers le vide, droit devant elle&quot;,
+  &quot;expression&quot;: &quot;pensive&quot;,
+  &quot;tenue&quot;: &quot;même que start&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;orientation_corps&quot;: &quot;face&quot;,
+  &quot;position_tete&quot;: &quot;droite&quot;,
+  &quot;position_epaules&quot;: &quot;droites&quot;,
+  &quot;bras_gauche&quot;: &quot;posé sur la table basse&quot;,
+  &quot;bras_droit&quot;: &quot;le long du corps&quot;,
+  &quot;mains&quot;: &quot;main gauche légèrement ouverte, paume sur la table&quot;,
+  &quot;regard&quot;: &quot;fixe un point inconnu sur le sol&quot;,
+  &quot;expression&quot;: &quot;pensive&quot;,
+  &quot;tenue&quot;: &quot;même que start&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;orientation_corps&quot;: &quot;trois_quarts_gauche&quot;,
+  &quot;position_tete&quot;: &quot;légèrement inclinée gauche&quot;,
+  &quot;position_epaules&quot;: &quot;légèrement affaissées&quot;,
+  &quot;bras_gauche&quot;: &quot;reposant sur la cuisse gauche&quot;,
+  &quot;bras_droit&quot;: &quot;près de la télécommande sur la table basse&quot;,
+  &quot;mains&quot;: &quot;doigts légèrement repliés vers la paume&quot;,
+  &quot;regard&quot;: &quot;à travers la fenêtre&quot;,
+  &quot;expression&quot;: &quot;pensive&quot;,
+  &quot;tenue&quot;: &quot;même que start&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 offre une pose simple et reproductible, avec une orientation du corps en trois quarts droite qui permet une transition fluide vers le décor de rêve. La position des bras et des mains est clairement définie, avec le bras gauche posé sur l'accoudoir et le bras droit reposant sur la cuisse, ce qui est facile à reproduire. Le regard vers le vide et l'expression pensive capturent bien l'aspiration à autre chose, tout en restant dans le cadre de l'isolement et de la rêverie. Cette pose est en adéquation avec la scène quotidienne et permet une continuité parfaite pour le switch vers le décor de rêve.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">80%</td>
+                    <td>La pose est précise et reproductible, mais l'aspiration à autre chose est subtile.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>La description de la pose est précise et reproductible, respectant les règles de continuité entre la scène quotidienne et le switch vers le rêve. L'orientation du corps, la position de la tête, des épaules, des bras et des mains sont bien définies, ce qui permet une transition fluide vers la scène de rêve. L'expression pensive et le regard vers le vide sont cohérents avec l'état émotionnel de solitude et d'isolement. La tenue reste la même, assurant la continuité visuelle. L'aspiration à autre chose est subtile mais présente, ce qui est approprié pour la scène de transition.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les évaluations de V1 et V2 sont globalement positives, avec un accent sur la précision et la reproductibilité de la pose, ce qui est crucial pour la transition entre les scènes quotidienne et de rêve. L'orientation du corps, la position de la tête, des épaules, des bras et des mains sont bien définies, permettant une transition fluide vers la scène de rêve. L'expression pensive et le regard vers le vide sont cohérents avec l'état émotionnel requis. La tenue reste la même, assurant la continuité visuelle. Bien que l'aspiration à autre chose soit subtile, elle est présente, ce qui est approprié pour la scène de transition.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurer que l'expression pensive reste subtilement aspirante pour renforcer la transition émotionnelle.</li>
+                <li>Vérifier que l'éclairage et le décor post-switch sont bien en contraste avec la scène quotidienne pour maximiser l'impact visuel.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;orientation_corps&quot;: &quot;trois_quarts_droite&quot;,
+  &quot;position_tete&quot;: &quot;légèrement inclinée droite&quot;,
+  &quot;position_epaules&quot;: &quot;légèrement affaissées&quot;,
+  &quot;bras_gauche&quot;: &quot;posé sur l'accoudoir du canapé&quot;,
+  &quot;bras_droit&quot;: &quot;reposant sur la cuisse&quot;,
+  &quot;mains&quot;: &quot;doigts de la main droite légèrement écartés&quot;,
+  &quot;regard&quot;: &quot;vers le vide, droit devant elle&quot;,
+  &quot;expression&quot;: &quot;pensive&quot;,
+  &quot;tenue&quot;: &quot;même que start&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 3.1 Décor rêve (post-switch)</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Décris le DÉCOR DU RÊVE qui remplacera le décor quotidien.
+            
+Le personnage sera dans EXACTEMENT la même pose que: {&quot;orientation_corps&quot;: &quot;trois_quarts_droite&quot;, &quot;position_tete&quot;: &quot;légèrement inclinée droite&quot;, &quot;position_epaules&quot;: &quot;légèrement affaissées&quot;, &quot;bras_gauche&quot;: &quot;posé sur l'accoudoir du canapé&quot;, &quot;bras_droit&quot;: &quot;reposant sur la cuisse&quot;, &quot;mains&quot;: &quot;doigts de la main droite légèrement écartés&quot;, &quot;regard&quot;: &quot;vers le vide, droit devant elle&quot;, &quot;expression&quot;: &quot;pensive&quot;, &quot;tenue&quot;: &quot;même que start&quot;}
+
+Le décor doit:
+- Correspondre au rêve: Je rêve de tomber amoureuse d'un bel homme brun à Rome
+- Inclure 1-2 emblèmes reconnaissables du lieu (discrets, en arrière-plan)
+- Avoir une palette chaude, lumineuse, naturelle
+- Contraster fortement avec le quotidien</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option ">
+                <div class="option-header">[1] </div>
+                <pre>{
+  &quot;description&quot;: &quot;Le personnage est assis dans un jardin romain luxuriant, entouré de roses et de jasmins en fleurs. Une douce brise caresse son visage tandis que l'arôme enivrant des fleurs emplit l'air.&quot;,
+  &quot;lieu&quot;: &quot;jardin romantique à Rome&quot;,
+  &quot;emblemes_visibles&quot;: [
+    &quot;Colisée (discret)&quot;,
+    &quot;statue d'empereur&quot;
+  ],
+  &quot;eclairage&quot;: &quot;naturel, doré&quot;,
+  &quot;palette_dominante&quot;: &quot;tons chauds et verts, doré&quot;,
+  &quot;arriere_plan&quot;: &quot;les contours majestueux du Colisée se devinent entre les branches garnies de fleurs&quot;,
+  &quot;contraste_quotidien&quot;: &quot;remplace la froideur du quotidien par une chaleur florale et historique, emplissant l'air de parfums naturels&quot;
+}</pre>
+            </div>
+
+            <div class="option chosen">
+                <div class="option-header">[2] ★ CHOISI</div>
+                <pre>{
+  &quot;description&quot;: &quot;Elle se trouve maintenant sur une terrasse romaine baignée de soleil, avec une vue panoramique sur les toits en tuiles anciennes et la verdure des collines avoisinantes.&quot;,
+  &quot;lieu&quot;: &quot;terrasse panoramique à Rome&quot;,
+  &quot;emblemes_visibles&quot;: [
+    &quot;Fontaine de Trevi (discret)&quot;
+  ],
+  &quot;eclairage&quot;: &quot;lumière chaude, dorée&quot;,
+  &quot;palette_dominante&quot;: &quot;ocre, orange, vert olive&quot;,
+  &quot;arriere_plan&quot;: &quot;les jets d'eau de la Fontaine de Trevi apparaissent au loin parmi les toits&quot;,
+  &quot;contraste_quotidien&quot;: &quot;opposé à l'appartement morne par la clarté et l'ouverture du paysage romain, apportant une sensation de liberté et de beauté&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;description&quot;: &quot;Elle est assise dans une charmante ruelle du quartier Trastevere, où les rires et les conversations des passants résonnent, animant l'atmosphère.&quot;,
+  &quot;lieu&quot;: &quot;ruelle animée à Trastevere, Rome&quot;,
+  &quot;emblemes_visibles&quot;: [
+    &quot;vieille église (discret)&quot;
+  ],
+  &quot;eclairage&quot;: &quot;chaleureux, rayons solaires filtrant à travers les ruelles&quot;,
+  &quot;palette_dominante&quot;: &quot;terres de Sienne, rouge brique, crème&quot;,
+  &quot;arriere_plan&quot;: &quot;l'architecture pittoresque et les balcons fleuris de Trastevere&quot;,
+  &quot;contraste_quotidien&quot;: &quot;remplace l'isolement par une vivacité urbaine, vivant au rythme de la romance et de l'histoire&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [2] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 2 présente un décor qui correspond parfaitement au rêve de romance à Rome. La terrasse romaine baignée de soleil offre une vue panoramique sur les toits en tuiles anciennes et la verdure des collines avoisinantes, ce qui contraste fortement avec l'appartement morne et fermé du quotidien. La lumière chaude et dorée, ainsi que la palette de couleurs ocre, orange et vert olive, créent une atmosphère lumineuse et naturelle. L'emblème de la Fontaine de Trevi est discrètement visible, ajoutant une touche de rêve et de romantisme sans être envahissant. Ce choix est réaliste et techniquement faisable, tout en respectant les critères de contraste et de cohérence avec le rêve.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La description est cohérente avec le rêve, présente un contraste fort avec le quotidien, les emblèmes sont discrets et le décor est réaliste.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>La description est globalement cohérente avec le rêve et respecte les règles de transition du quotidien au rêve. Le contraste entre l'appartement morne et la terrasse romaine est bien marqué, et l'éclairage doré renforce la sensation de chaleur et de liberté. Les emblèmes de Rome, comme la Fontaine de Trevi, sont présents de manière discrète, ce qui est conforme aux directives. Cependant, il pourrait être utile de préciser davantage la position corporelle du personnage pour assurer une continuité parfaite avec la pose figée du quotidien.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les deux évaluateurs sont d'accord sur la cohérence et la qualité de la scène post-switch. La description respecte les règles de transition du quotidien au rêve, avec un contraste fort entre l'appartement morne et la terrasse romaine lumineuse. Les emblèmes de Rome, comme la Fontaine de Trevi, sont intégrés de manière discrète, et l'éclairage doré est conforme aux directives. Bien que V2 suggère une précision supplémentaire sur la position corporelle, cela n'affecte pas la validation globale, car la continuité est déjà bien respectée.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Préciser la position corporelle du personnage pour assurer une continuité parfaite avec la pose figée du quotidien.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;description&quot;: &quot;Elle se trouve maintenant sur une terrasse romaine baignée de soleil, avec une vue panoramique sur les toits en tuiles anciennes et la verdure des collines avoisinantes.&quot;,
+  &quot;lieu&quot;: &quot;terrasse panoramique à Rome&quot;,
+  &quot;emblemes_visibles&quot;: [
+    &quot;Fontaine de Trevi (discret)&quot;
+  ],
+  &quot;eclairage&quot;: &quot;lumière chaude, dorée&quot;,
+  &quot;palette_dominante&quot;: &quot;ocre, orange, vert olive&quot;,
+  &quot;arriere_plan&quot;: &quot;les jets d'eau de la Fontaine de Trevi apparaissent au loin parmi les toits&quot;,
+  &quot;contraste_quotidien&quot;: &quot;opposé à l'appartement morne par la clarté et l'ouverture du paysage romain, apportant une sensation de liberté et de beauté&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 3.2 Prompt Gemini (switch décor - SIMPLE)</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Génère le PROMPT pour Gemini qui va transformer UNIQUEMENT LE DÉCOR.
+
+PRINCIPE CRUCIAL:
+- L'image source montre le personnage dans sa pose figée (quotidien)
+- Gemini doit GARDER le personnage EXACTEMENT IDENTIQUE
+- Gemini doit CHANGER UNIQUEMENT l'environnement autour
+
+Le prompt doit être SIMPLE et DIRECT, format:
+&quot;Put this person in [DÉCOR]. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment around them.&quot;
+
+Décor cible: {&quot;description&quot;: &quot;Elle se trouve maintenant sur une terrasse romaine baignée de soleil, avec une vue panoramique sur les toits en tuiles anciennes et la verdure des collines avoisinantes.&quot;, &quot;lieu&quot;: &quot;terrasse panoramique à Rome&quot;, &quot;emblemes_visibles&quot;: [&quot;Fontaine de Trevi (discret)&quot;], &quot;eclairage&quot;: &quot;lumière chaude, dorée&quot;, &quot;palette_dominante&quot;: &quot;ocre, orange, vert olive&quot;, &quot;arriere_plan&quot;: &quot;les jets d'eau de la Fontaine de Trevi apparaissent au loin parmi les toits&quot;, &quot;contraste_quotidien&quot;: &quot;opposé à l'appartement morne par la clarté et l'ouverture du paysage romain, apportant une sensation de liberté et de beauté&quot;}</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;Put this person in a sunlit Roman terrace with a panoramic view of ancient tiled roofs and nearby green hills. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment: a vibrant, warm setting with hints of the Trevi Fountain in the distance.&quot;,
+  &quot;decor_short_en&quot;: &quot;A sunlit Roman terrace with a view of ancient roofs and green hills.&quot;,
+  &quot;elements_conserves&quot;: [
+    &quot;face&quot;,
+    &quot;hair&quot;,
+    &quot;clothes&quot;,
+    &quot;pose&quot;,
+    &quot;expression&quot;
+  ],
+  &quot;elements_changes&quot;: [
+    &quot;background&quot;,
+    &quot;lighting&quot;,
+    &quot;surroundings&quot;
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;Put this person on a Roman terrace, bathed in golden light, with a sweeping view over terracotta rooftops and lush hills. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment to show a warm, inviting scene with a subtle glimpse of the Trevi Fountain.&quot;,
+  &quot;decor_short_en&quot;: &quot;A Roman terrace with golden light and views of rooftops and hills.&quot;,
+  &quot;elements_conserves&quot;: [
+    &quot;face&quot;,
+    &quot;hair&quot;,
+    &quot;clothes&quot;,
+    &quot;pose&quot;,
+    &quot;expression&quot;
+  ],
+  &quot;elements_changes&quot;: [
+    &quot;background&quot;,
+    &quot;lighting&quot;,
+    &quot;surroundings&quot;
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;Put this person in a bright terrace setting in Rome, with an expansive view of tiled rooftops and verdant hills nearby. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment to create a warm and lively atmosphere, with distant views of the Trevi Fountain.&quot;,
+  &quot;decor_short_en&quot;: &quot;A bright Roman terrace with views of tile roofs and verdant hills.&quot;,
+  &quot;elements_conserves&quot;: [
+    &quot;face&quot;,
+    &quot;hair&quot;,
+    &quot;clothes&quot;,
+    &quot;pose&quot;,
+    &quot;expression&quot;
+  ],
+  &quot;elements_changes&quot;: [
+    &quot;background&quot;,
+    &quot;lighting&quot;,
+    &quot;surroundings&quot;
+  ]
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 est la plus simple et directe, en utilisant des termes clairs et précis pour décrire le nouveau décor tout en insistant sur la conservation totale du personnage. Elle respecte le format demandé et met en avant le changement exclusif de l'environnement.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>Le prompt est simple, direct, et insiste clairement sur la conservation totale du personnage.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La réponse respecte parfaitement les règles établies pour la transition du quotidien au rêve. Le personnage conserve exactement la même position, expression et tenue, tandis que l'environnement change radicalement pour refléter le rêve. Le décor de la terrasse romaine ensoleillée avec des éléments emblématiques de Rome est bien décrit et contraste efficacement avec l'appartement morne initial. Les éléments conservés et changés sont clairement identifiés, assurant une continuité visuelle et émotionnelle cohérente.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les deux évaluateurs sont d'accord sur le fait que le prompt respecte parfaitement les règles établies pour la transition du quotidien au rêve. Le personnage conserve exactement la même position, expression et tenue, tandis que l'environnement change radicalement pour refléter le rêve. Le décor de la terrasse romaine ensoleillée avec des éléments emblématiques de Rome est bien décrit et contraste efficacement avec l'appartement morne initial. Les éléments conservés et changés sont clairement identifiés, assurant une continuité visuelle et émotionnelle cohérente.</td>
+                </tr>
+            </table>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;prompt_en&quot;: &quot;Put this person in a sunlit Roman terrace with a panoramic view of ancient tiled roofs and nearby green hills. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment: a vibrant, warm setting with hints of the Trevi Fountain in the distance.&quot;,
+  &quot;decor_short_en&quot;: &quot;A sunlit Roman terrace with a view of ancient roofs and green hills.&quot;,
+  &quot;elements_conserves&quot;: [
+    &quot;face&quot;,
+    &quot;hair&quot;,
+    &quot;clothes&quot;,
+    &quot;pose&quot;,
+    &quot;expression&quot;
+  ],
+  &quot;elements_changes&quot;: [
+    &quot;background&quot;,
+    &quot;lighting&quot;,
+    &quot;surroundings&quot;
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 4.1 Analyse émotionnelle de la réaction</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Imagine: quelqu'un est soudainement transporté de son quotidien morne vers son RÊVE.
+
+Rêve: Je rêve de tomber amoureuse d'un bel homme brun à Rome
+Quotidien quitté: ?
+Nouveau décor: terrasse panoramique à Rome
+
+Que peut ressentir cette personne ? Liste les ÉMOTIONS SUCCESSIVES dans l'ordre chronologique.
+Pense à: le choc initial, l'incrédulité, la prise de conscience, l'acceptation, la joie...
+
+IMPORTANT: Ce n'est PAS de la peur. C'est un rêve POSITIF qui se réalise.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;emotions_sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;emotion&quot;: &quot;désorientation&quot;,
+      &quot;description&quot;: &quot;Une sensation de surprise et de confusion tandis qu'elle réalise que quelque chose a changé sans qu'elle puisse immédiatement comprendre quoi.&quot;,
+      &quot;duree_relative&quot;: &quot;très court&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;emotion&quot;: &quot;incrédulité&quot;,
+      &quot;description&quot;: &quot;Elle cligne des yeux et se frotte les yeux, ne pouvant croire à la scène qui se déroule devant elle.&quot;,
+      &quot;duree_relative&quot;: &quot;court&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;emotion&quot;: &quot;réalisation&quot;,
+      &quot;description&quot;: &quot;La prise de conscience que le décor autour d'elle a complètement changé et qu'elle est maintenant dans un lieu magnifique.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;emotion&quot;: &quot;émerveillement&quot;,
+      &quot;description&quot;: &quot;Elle commence à sourire alors que la beauté du paysage la submerge.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;emotion&quot;: &quot;joie&quot;,
+      &quot;description&quot;: &quot;Un sentiment de bonheur intense s'installe lorsque l'idée qu'elle peut vivre son rêve d'amour devient tangible.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    }
+  ],
+  &quot;emotion_dominante_finale&quot;: &quot;joie&quot;,
+  &quot;intensite_globale&quot;: &quot;moderate&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;emotions_sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;emotion&quot;: &quot;surprise&quot;,
+      &quot;description&quot;: &quot;Un choc soudain face à la transition inattendue du morne au magnifique.&quot;,
+      &quot;duree_relative&quot;: &quot;très court&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;emotion&quot;: &quot;confusion&quot;,
+      &quot;description&quot;: &quot;Elle tente de comprendre ce qui s'est passé, ses yeux se baladant autour d'elle.&quot;,
+      &quot;duree_relative&quot;: &quot;court&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;emotion&quot;: &quot;curiosité&quot;,
+      &quot;description&quot;: &quot;L'envie de découvrir ce nouvel environnement commence à poindre alors qu'elle observe les détails.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;emotion&quot;: &quot;appréciation&quot;,
+      &quot;description&quot;: &quot;Une reconnaissance de la beauté du lieu, accompagnée d'un léger sourire.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;emotion&quot;: &quot;espoir&quot;,
+      &quot;description&quot;: &quot;Une lueur d'espoir concernant les opportunités romantiques que ce nouvel environnement pourrait apporter.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    }
+  ],
+  &quot;emotion_dominante_finale&quot;: &quot;espoir&quot;,
+  &quot;intensite_globale&quot;: &quot;subtle&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;emotions_sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;emotion&quot;: &quot;étonnement&quot;,
+      &quot;description&quot;: &quot;Un moment de stupéfaction tandis qu'elle s'aperçoit qu'elle n'est plus dans son appartement.&quot;,
+      &quot;duree_relative&quot;: &quot;très court&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;emotion&quot;: &quot;réflexion&quot;,
+      &quot;description&quot;: &quot;Elle réfléchit brièvement à la signification de ce changement soudain.&quot;,
+      &quot;duree_relative&quot;: &quot;court&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;emotion&quot;: &quot;acceptation&quot;,
+      &quot;description&quot;: &quot;Elle finit par accepter ce nouvel environnement, se sentant progressivement plus à l'aise.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;emotion&quot;: &quot;bien-être&quot;,
+      &quot;description&quot;: &quot;Une sensation de confort et de contentement se développe alors qu'elle contemple les alentours.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;emotion&quot;: &quot;anticipation&quot;,
+      &quot;description&quot;: &quot;Elle ressent une excitation croissante pour ce que cette nouvelle aventure pourrait lui réserver.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    }
+  ],
+  &quot;emotion_dominante_finale&quot;: &quot;anticipation&quot;,
+  &quot;intensite_globale&quot;: &quot;strong&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 propose une séquence émotionnelle qui commence par une désorientation et une incrédulité, ce qui est réaliste pour quelqu'un qui passe soudainement d'un environnement morne à un rêve. La progression vers la réalisation, l'émerveillement et finalement la joie est cohérente avec le fait que c'est un rêve positif qui se réalise. L'émotion dominante finale est la joie, ce qui correspond bien à l'idée d'un rêve romantique qui devient tangible. Cette séquence est positive, progressive et ne contient pas d'éléments de peur ou d'angoisse, ce qui respecte les critères de choix.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La séquence émotionnelle est réaliste, positive et progressive, sans peur ni angoisse.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>La séquence émotionnelle proposée est cohérente avec le contexte du rêve et respecte la transition émotionnelle attendue. Chaque étape est bien décrite et suit une progression logique depuis la désorientation initiale jusqu'à la joie finale. Les durées relatives des émotions sont appropriées et permettent une montée en intensité progressive. La dominante finale de joie est en accord avec le thème romantique du rêve.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>La séquence émotionnelle proposée est bien structurée et respecte les règles de transition émotionnelle attendues dans le contexte d'une publicité. Chaque étape de la progression, de la désorientation à la joie, est décrite de manière réaliste et cohérente, permettant une montée en intensité progressive. Les durées relatives des émotions sont appropriées, et la dominante finale de joie est en accord avec le thème romantique du rêve. Les avis de V1 et V2 sont en accord sur la validité de la séquence, ce qui justifie un passage.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que les expressions faciales et les gestes corporels correspondent bien à chaque étape émotionnelle pour renforcer l'impact visuel.</li>
+                <li>Utilisez des transitions douces entre chaque émotion pour maintenir une fluidité dans la narration.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;emotions_sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;emotion&quot;: &quot;désorientation&quot;,
+      &quot;description&quot;: &quot;Une sensation de surprise et de confusion tandis qu'elle réalise que quelque chose a changé sans qu'elle puisse immédiatement comprendre quoi.&quot;,
+      &quot;duree_relative&quot;: &quot;très court&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;emotion&quot;: &quot;incrédulité&quot;,
+      &quot;description&quot;: &quot;Elle cligne des yeux et se frotte les yeux, ne pouvant croire à la scène qui se déroule devant elle.&quot;,
+      &quot;duree_relative&quot;: &quot;court&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;emotion&quot;: &quot;réalisation&quot;,
+      &quot;description&quot;: &quot;La prise de conscience que le décor autour d'elle a complètement changé et qu'elle est maintenant dans un lieu magnifique.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;emotion&quot;: &quot;émerveillement&quot;,
+      &quot;description&quot;: &quot;Elle commence à sourire alors que la beauté du paysage la submerge.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;emotion&quot;: &quot;joie&quot;,
+      &quot;description&quot;: &quot;Un sentiment de bonheur intense s'installe lorsque l'idée qu'elle peut vivre son rêve d'amour devient tangible.&quot;,
+      &quot;duree_relative&quot;: &quot;moyen&quot;
+    }
+  ],
+  &quot;emotion_dominante_finale&quot;: &quot;joie&quot;,
+  &quot;intensite_globale&quot;: &quot;moderate&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 4.2 Traduction en comportements physiques</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Pour chaque émotion de la séquence, décris comment elle se MANIFESTE PHYSIQUEMENT.
+
+Séquence émotionnelle:
+{&quot;emotions_sequence&quot;: [{&quot;ordre&quot;: 1, &quot;emotion&quot;: &quot;désorientation&quot;, &quot;description&quot;: &quot;Une sensation de surprise et de confusion tandis qu'elle réalise que quelque chose a changé sans qu'elle puisse immédiatement comprendre quoi.&quot;, &quot;duree_relative&quot;: &quot;très court&quot;}, {&quot;ordre&quot;: 2, &quot;emotion&quot;: &quot;incrédulité&quot;, &quot;description&quot;: &quot;Elle cligne des yeux et se frotte les yeux, ne pouvant croire à la scène qui se déroule devant elle.&quot;, &quot;duree_relative&quot;: &quot;court&quot;}, {&quot;ordre&quot;: 3, &quot;emotion&quot;: &quot;réalisation&quot;, &quot;description&quot;: &quot;La prise de conscience que le décor autour d'elle a complètement changé et qu'elle est maintenant dans un lieu magnifique.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}, {&quot;ordre&quot;: 4, &quot;emotion&quot;: &quot;émerveillement&quot;, &quot;description&quot;: &quot;Elle commence à sourire alors que la beauté du paysage la submerge.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}, {&quot;ordre&quot;: 5, &quot;emotion&quot;: &quot;joie&quot;, &quot;description&quot;: &quot;Un sentiment de bonheur intense s'installe lorsque l'idée qu'elle peut vivre son rêve d'amour devient tangible.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}], &quot;emotion_dominante_finale&quot;: &quot;joie&quot;, &quot;intensite_globale&quot;: &quot;moderate&quot;}
+
+Pour chaque émotion, comment ça se voit:
+- Expression du visage ?
+- Regard ?
+- Geste des mains/bras ?
+- Posture du corps ?
+- Mouvement de la tête ?
+
+RAPPEL RÈGLES:
+- Mouvements LENTS (l'IA ne gère pas la vitesse)
+- Pas de demi-tour
+- Expressions positives uniquement</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;manifestations&quot;: [
+    {
+      &quot;emotion&quot;: &quot;désorientation&quot;,
+      &quot;visage&quot;: &quot;ses sourcils se froncent légèrement, la bouche se relâche en une petite ouverture&quot;,
+      &quot;regard&quot;: &quot;échappe momentanément vers le plafond en cherchant des indices&quot;,
+      &quot;geste&quot;: &quot;ses mains se contractent légèrement sur ses cuisses&quot;,
+      &quot;posture&quot;: &quot;se redresse imperceptiblement, le dos toujours soutenu par le canapé&quot;,
+      &quot;tete&quot;: &quot;légèrement inclinée vers la gauche&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;incrédulité&quot;,
+      &quot;visage&quot;: &quot;ses yeux s'écarquillent, un léger froncement de sourcil persiste&quot;,
+      &quot;regard&quot;: &quot;fixe un point éloigné, cherchant à confirmer ce qu'elle voit&quot;,
+      &quot;geste&quot;: &quot;porte la main droite à ses yeux pour les frotter doucement&quot;,
+      &quot;posture&quot;: &quot;reste stable, l'inclinaison de son dos à peine modifiée&quot;,
+      &quot;tete&quot;: &quot;se redresse un peu, puis reste immobile&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;réalisation&quot;,
+      &quot;visage&quot;: &quot;ses lèvres commencent à dessiner un sourire émergent&quot;,
+      &quot;regard&quot;: &quot;devient plus fixe, admirant le changement de décor&quot;,
+      &quot;geste&quot;: &quot;les doigts de sa main droite s'ouvrent légèrement&quot;,
+      &quot;posture&quot;: &quot;son buste se redresse doucement, trahissant un regain d'intérêt&quot;,
+      &quot;tete&quot;: &quot;légèrement inclinée vers l'avant&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;émerveillement&quot;,
+      &quot;visage&quot;: &quot;un large sourire illumine son visage, les yeux deviennent brillants&quot;,
+      &quot;regard&quot;: &quot;balaye lentement l'environnement avec une attention émerveillée&quot;,
+      &quot;geste&quot;: &quot;les mains se détendent complètement, tombant sur ses cuisses&quot;,
+      &quot;posture&quot;: &quot;le torse s'avance imperceptiblement, presque tiré par la vue&quot;,
+      &quot;tete&quot;: &quot;légèrement tournée vers l'horizon&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;joie&quot;,
+      &quot;visage&quot;: &quot;sourire rayonnant, les joues légèrement rosées&quot;,
+      &quot;regard&quot;: &quot;fixé avec une intensité joyeuse sur le panorama&quot;,
+      &quot;geste&quot;: &quot;les bras tombent naturellement de chaque côté, exprimant l'ouverture&quot;,
+      &quot;posture&quot;: &quot;elle se lève lentement du canapé, prête à explorer&quot;,
+      &quot;tete&quot;: &quot;maintenant droite et tournée vers l'avant&quot;
+    }
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;manifestations&quot;: [
+    {
+      &quot;emotion&quot;: &quot;désorientation&quot;,
+      &quot;visage&quot;: &quot;le front se plisse avec une confusion apparente, la bouche entrouverte&quot;,
+      &quot;regard&quot;: &quot;se promène brièvement autour sans se fixer&quot;,
+      &quot;geste&quot;: &quot;les mains s'agitent délicatement, comme pour sonder l'air&quot;,
+      &quot;posture&quot;: &quot;s'enfonce plus profondément dans le canapé&quot;,
+      &quot;tete&quot;: &quot;oscille légèrement d'avant en arrière&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;incrédulité&quot;,
+      &quot;visage&quot;: &quot;sourcils haussés, les paupières clignent rapidement&quot;,
+      &quot;regard&quot;: &quot;fixe intensément la distance comme pour confirmer la vue&quot;,
+      &quot;geste&quot;: &quot;la main droite frotte doucement les yeux&quot;,
+      &quot;posture&quot;: &quot;immobile, le corps semble temporairement figé&quot;,
+      &quot;tete&quot;: &quot;se balance légèrement, puis reste inclinée vers la droite&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;réalisation&quot;,
+      &quot;visage&quot;: &quot;les traits se détendent, un presque-sourire apparaissant&quot;,
+      &quot;regard&quot;: &quot;se stabilise sur un point fixe, captant la beauté&quot;,
+      &quot;geste&quot;: &quot;la main droite se pose doucement sur la cuisse&quot;,
+      &quot;posture&quot;: &quot;le buste pivote légèrement vers l'avant, intéressé&quot;,
+      &quot;tete&quot;: &quot;s'incline légèrement vers le bas&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;émerveillement&quot;,
+      &quot;visage&quot;: &quot;un sourire se répand sur ses lèvres, illuminant son visage&quot;,
+      &quot;regard&quot;: &quot;explore progressivement l'environnement, plein de curiosité&quot;,
+      &quot;geste&quot;: &quot;les mains se déploient dans un geste de surprise contenue&quot;,
+      &quot;posture&quot;: &quot;s'avance légèrement sur le canapé, presque en suspension&quot;,
+      &quot;tete&quot;: &quot;légèrement relevée, tournée vers le spectacle environnant&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;joie&quot;,
+      &quot;visage&quot;: &quot;un sourire éclatant, les yeux pétillent&quot;,
+      &quot;regard&quot;: &quot;concentré sur les détails enchanteurs qui l'entourent&quot;,
+      &quot;geste&quot;: &quot;les bras s'étendent sur les côtés, vibrant de joie&quot;,
+      &quot;posture&quot;: &quot;se lève avec grâce et légèreté&quot;,
+      &quot;tete&quot;: &quot;maintenue droite, tournée vers l'horizon&quot;
+    }
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;manifestations&quot;: [
+    {
+      &quot;emotion&quot;: &quot;désorientation&quot;,
+      &quot;visage&quot;: &quot;regard interrogateur avec les sourcils légèrement froncés&quot;,
+      &quot;regard&quot;: &quot;balaye rapidement la pièce avec une légère hésitation&quot;,
+      &quot;geste&quot;: &quot;les doigts de la main droite effleurent le canapé&quot;,
+      &quot;posture&quot;: &quot;s'affaisse légèrement dans le canapé&quot;,
+      &quot;tete&quot;: &quot;penche légèrement sur le côté, comme perplexe&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;incrédulité&quot;,
+      &quot;visage&quot;: &quot;ses yeux s'élargissent, bouche ouverte sans un mot&quot;,
+      &quot;regard&quot;: &quot;fixe le changement avec une expression de surprise&quot;,
+      &quot;geste&quot;: &quot;frotte doucement ses yeux avec la paume ouverte&quot;,
+      &quot;posture&quot;: &quot;reste posée, stable, confrontée à l'étonnement&quot;,
+      &quot;tete&quot;: &quot;se redresse légèrement puis s'arrête net&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;réalisation&quot;,
+      &quot;visage&quot;: &quot;ses lèvres s'étirent en un léger sourire en coin&quot;,
+      &quot;regard&quot;: &quot;se fige sur un aspect particulièrement captivant de la vue&quot;,
+      &quot;geste&quot;: &quot;les mains tombent le long du canapé, détendues&quot;,
+      &quot;posture&quot;: &quot;le buste s'avance plus qu'auparavant, attentif&quot;,
+      &quot;tete&quot;: &quot;se redresse complètement, visage tourné vers le paysage&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;émerveillement&quot;,
+      &quot;visage&quot;: &quot;le visage s'éclaire, les traits se détendent dans un sourire&quot;,
+      &quot;regard&quot;: &quot;suivi curieusement de détails visuels captivants&quot;,
+      &quot;geste&quot;: &quot;les mains s'écartent légèrement du corps, accueillant&quot;,
+      &quot;posture&quot;: &quot;se penche légèrement en avant, enthousiaste&quot;,
+      &quot;tete&quot;: &quot;légèrement inclinée vers le haut, regardant avec admiration&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;joie&quot;,
+      &quot;visage&quot;: &quot;sourire large et sincère avec des yeux rayonnants&quot;,
+      &quot;regard&quot;: &quot;fixé sur l'horizon, brillants de bonheur&quot;,
+      &quot;geste&quot;: &quot;les bras s'élèvent doucement, ouverts à la nouveauté&quot;,
+      &quot;posture&quot;: &quot;se lève doucement avec une aisance joyeuse&quot;,
+      &quot;tete&quot;: &quot;levée droite, exprimant une confiance sereine&quot;
+    }
+  ]
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 présente des manifestations réalistes et faisables par une IA vidéo, avec des mouvements lents et progressifs qui respectent les règles de transition émotionnelle. Les expressions faciales et les gestes sont subtils et cohérents avec chaque émotion, sans exagération. Les mouvements de la tête et du corps sont limités, évitant des changements brusques, ce qui est adapté pour une animation fluide. De plus, les descriptions sont suffisamment détaillées pour être reproductibles.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>Les manifestations émotionnelles sont réalistes, progressives et faisables par une IA vidéo sans exagération.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>Les manifestations émotionnelles sont bien décrites et suivent une progression logique et réaliste. Elles respectent les transitions émotionnelles prévues, allant de la désorientation à la joie, et sont techniquement réalisables par une IA vidéo. Les détails des expressions faciales, des gestes et des postures sont cohérents avec le contexte du rêve et le changement de décor.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les manifestations émotionnelles décrites sont réalistes, progressives et techniquement réalisables par une IA vidéo. Elles respectent les transitions émotionnelles prévues, allant de la désorientation à la joie, et sont cohérentes avec le contexte du rêve et le changement de décor. Les détails des expressions faciales, des gestes et des postures sont bien décrits et suivent une progression logique.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que les transitions entre les émotions sont fluides et bien synchronisées avec le changement de décor pour maximiser l'impact visuel.</li>
+                <li>Vérifiez que la lumière et les couleurs du décor de rêve sont suffisamment contrastées avec l'environnement initial pour accentuer le changement.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;manifestations&quot;: [
+    {
+      &quot;emotion&quot;: &quot;désorientation&quot;,
+      &quot;visage&quot;: &quot;ses sourcils se froncent légèrement, la bouche se relâche en une petite ouverture&quot;,
+      &quot;regard&quot;: &quot;échappe momentanément vers le plafond en cherchant des indices&quot;,
+      &quot;geste&quot;: &quot;ses mains se contractent légèrement sur ses cuisses&quot;,
+      &quot;posture&quot;: &quot;se redresse imperceptiblement, le dos toujours soutenu par le canapé&quot;,
+      &quot;tete&quot;: &quot;légèrement inclinée vers la gauche&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;incrédulité&quot;,
+      &quot;visage&quot;: &quot;ses yeux s'écarquillent, un léger froncement de sourcil persiste&quot;,
+      &quot;regard&quot;: &quot;fixe un point éloigné, cherchant à confirmer ce qu'elle voit&quot;,
+      &quot;geste&quot;: &quot;porte la main droite à ses yeux pour les frotter doucement&quot;,
+      &quot;posture&quot;: &quot;reste stable, l'inclinaison de son dos à peine modifiée&quot;,
+      &quot;tete&quot;: &quot;se redresse un peu, puis reste immobile&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;réalisation&quot;,
+      &quot;visage&quot;: &quot;ses lèvres commencent à dessiner un sourire émergent&quot;,
+      &quot;regard&quot;: &quot;devient plus fixe, admirant le changement de décor&quot;,
+      &quot;geste&quot;: &quot;les doigts de sa main droite s'ouvrent légèrement&quot;,
+      &quot;posture&quot;: &quot;son buste se redresse doucement, trahissant un regain d'intérêt&quot;,
+      &quot;tete&quot;: &quot;légèrement inclinée vers l'avant&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;émerveillement&quot;,
+      &quot;visage&quot;: &quot;un large sourire illumine son visage, les yeux deviennent brillants&quot;,
+      &quot;regard&quot;: &quot;balaye lentement l'environnement avec une attention émerveillée&quot;,
+      &quot;geste&quot;: &quot;les mains se détendent complètement, tombant sur ses cuisses&quot;,
+      &quot;posture&quot;: &quot;le torse s'avance imperceptiblement, presque tiré par la vue&quot;,
+      &quot;tete&quot;: &quot;légèrement tournée vers l'horizon&quot;
+    },
+    {
+      &quot;emotion&quot;: &quot;joie&quot;,
+      &quot;visage&quot;: &quot;sourire rayonnant, les joues légèrement rosées&quot;,
+      &quot;regard&quot;: &quot;fixé avec une intensité joyeuse sur le panorama&quot;,
+      &quot;geste&quot;: &quot;les bras tombent naturellement de chaque côté, exprimant l'ouverture&quot;,
+      &quot;posture&quot;: &quot;elle se lève lentement du canapé, prête à explorer&quot;,
+      &quot;tete&quot;: &quot;maintenant droite et tournée vers l'avant&quot;
+    }
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 4.3 Séquençage des micro-actions</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Définis l'ORDRE PRÉCIS des micro-actions pour la scène de découverte.
+
+Manifestations physiques disponibles:
+{&quot;manifestations&quot;: [{&quot;emotion&quot;: &quot;désorientation&quot;, &quot;visage&quot;: &quot;ses sourcils se froncent légèrement, la bouche se relâche en une petite ouverture&quot;, &quot;regard&quot;: &quot;échappe momentanément vers le plafond en cherchant des indices&quot;, &quot;geste&quot;: &quot;ses mains se contractent légèrement sur ses cuisses&quot;, &quot;posture&quot;: &quot;se redresse imperceptiblement, le dos toujours soutenu par le canapé&quot;, &quot;tete&quot;: &quot;légèrement inclinée vers la gauche&quot;}, {&quot;emotion&quot;: &quot;incrédulité&quot;, &quot;visage&quot;: &quot;ses yeux s'écarquillent, un léger froncement de sourcil persiste&quot;, &quot;regard&quot;: &quot;fixe un point éloigné, cherchant à confirmer ce qu'elle voit&quot;, &quot;geste&quot;: &quot;porte la main droite à ses yeux pour les frotter doucement&quot;, &quot;posture&quot;: &quot;reste stable, l'inclinaison de son dos à peine modifiée&quot;, &quot;tete&quot;: &quot;se redresse un peu, puis reste immobile&quot;}, {&quot;emotion&quot;: &quot;réalisation&quot;, &quot;visage&quot;: &quot;ses lèvres commencent à dessiner un sourire émergent&quot;, &quot;regard&quot;: &quot;devient plus fixe, admirant le changement de décor&quot;, &quot;geste&quot;: &quot;les doigts de sa main droite s'ouvrent légèrement&quot;, &quot;posture&quot;: &quot;son buste se redresse doucement, trahissant un regain d'intérêt&quot;, &quot;tete&quot;: &quot;légèrement inclinée vers l'avant&quot;}, {&quot;emotion&quot;: &quot;émerveillement&quot;, &quot;visage&quot;: &quot;un large sourire illumine son visage, les yeux deviennent brillants&quot;, &quot;regard&quot;: &quot;balaye lentement l'environnement avec une attention émerveillée&quot;, &quot;geste&quot;: &quot;les mains se détendent complètement, tombant sur ses cuisses&quot;, &quot;posture&quot;: &quot;le torse s'avance imperceptiblement, presque tiré par la vue&quot;, &quot;tete&quot;: &quot;légèrement tournée vers l'horizon&quot;}, {&quot;emotion&quot;: &quot;joie&quot;, &quot;visage&quot;: &quot;sourire rayonnant, les joues légèrement rosées&quot;, &quot;regard&quot;: &quot;fixé avec une intensité joyeuse sur le panorama&quot;, &quot;geste&quot;: &quot;les bras tombent naturellement de chaque côté, exprimant l'ouverture&quot;, &quot;posture&quot;: &quot;elle se lève lentement du canapé, prête à explorer&quot;, &quot;tete&quot;: &quot;maintenant droite et tournée vers l'avant&quot;}]}
+
+Crée une séquence CHRONOLOGIQUE de 4-6 micro-actions.
+Chaque micro-action = 1-2 secondes.
+
+Exemples de micro-actions:
+- Cligner des yeux rapidement
+- Froncer légèrement les sourcils
+- Tourner lentement la tête à gauche
+- Ouvrir légèrement la bouche
+- Redresser le buste
+- Esquisser un sourire
+- Se lever lentement</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;action&quot;: &quot;cligner des yeux rapidement&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;yeux&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;action&quot;: &quot;froncer légèrement les sourcils&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;action&quot;: &quot;redresser imperceptiblement le buste&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;buste&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;action&quot;: &quot;ouvrir légèrement la bouche&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;action&quot;: &quot;esquisser un sourire&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 6,
+      &quot;action&quot;: &quot;se lever lentement&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;buste&quot;
+    }
+  ],
+  &quot;duree_totale_sec&quot;: 9,
+  &quot;point_culminant&quot;: &quot;esquisser un sourire&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;action&quot;: &quot;froncer légèrement les sourcils&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;action&quot;: &quot;tourner lentement la tête à gauche&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;tête&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;action&quot;: &quot;regarder fixement un point éloigné&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;yeux&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;action&quot;: &quot;esquisser un sourire&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;action&quot;: &quot;se lever lentement&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;buste&quot;
+    }
+  ],
+  &quot;duree_totale_sec&quot;: 8,
+  &quot;point_culminant&quot;: &quot;esquisser un sourire&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;action&quot;: &quot;ouvrir légèrement la bouche&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;action&quot;: &quot;cligner des yeux rapidement&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;yeux&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;action&quot;: &quot;redresser imperceptiblement le buste&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;buste&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;action&quot;: &quot;balayer lentement l'environnement du regard&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;yeux&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;action&quot;: &quot;sourire largement&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    }
+  ],
+  &quot;duree_totale_sec&quot;: 8,
+  &quot;point_culminant&quot;: &quot;sourire largement&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> Cette option propose une séquence fluide et progressive qui respecte la transition émotionnelle décrite. Elle commence par des actions subtiles de désorientation, comme cligner des yeux et froncer légèrement les sourcils, puis passe à une prise de conscience avec un redressement imperceptible du buste et l'ouverture de la bouche. La séquence culmine avec un sourire, marquant le passage à l'émerveillement et à la joie, et se termine par le mouvement vers l'action, se lever lentement, symbolisant l'acceptation et l'engagement vers la nouvelle vie. Chaque action est simple et faisable, respectant les contraintes de la scène de découverte.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La séquence est fluide et progressive, chaque action est simple et faisable.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">90%</td>
+                    <td>La séquence proposée est cohérente avec la transition émotionnelle attendue et respecte les contraintes du contexte. Chaque action est bien décrite et suit une progression logique du désorientation à la joie, culminant avec un sourire. Les actions sont faisables techniquement par une IA vidéo et correspondent aux émotions décrites dans les données collectées.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>La séquence proposée respecte les règles spécifiques de la scène découverte en suivant une transition émotionnelle logique et fluide. Chaque action est bien décrite, faisable techniquement, et cohérente avec le contexte de la publicité. La progression de la confusion à la joie est bien capturée, et le point culminant du sourire marque une transition réussie vers l'enthousiasme.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que la transition émotionnelle soit bien visible et progressive, avec un focus sur les expressions faciales.</li>
+                <li>Vérifiez que l'éclairage et le décor post-switch sont bien en place pour renforcer le contraste avec la scène quotidienne.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;sequence&quot;: [
+    {
+      &quot;ordre&quot;: 1,
+      &quot;action&quot;: &quot;cligner des yeux rapidement&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;yeux&quot;
+    },
+    {
+      &quot;ordre&quot;: 2,
+      &quot;action&quot;: &quot;froncer légèrement les sourcils&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 3,
+      &quot;action&quot;: &quot;redresser imperceptiblement le buste&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;buste&quot;
+    },
+    {
+      &quot;ordre&quot;: 4,
+      &quot;action&quot;: &quot;ouvrir légèrement la bouche&quot;,
+      &quot;duree_sec&quot;: 1,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 5,
+      &quot;action&quot;: &quot;esquisser un sourire&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;visage&quot;
+    },
+    {
+      &quot;ordre&quot;: 6,
+      &quot;action&quot;: &quot;se lever lentement&quot;,
+      &quot;duree_sec&quot;: 2,
+      &quot;partie_corps&quot;: &quot;buste&quot;
+    }
+  ],
+  &quot;duree_totale_sec&quot;: 9,
+  &quot;point_culminant&quot;: &quot;esquisser un sourire&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 4.5 End keyframe découverte</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Décris la POSE FINALE de la scène découverte.
+
+Le personnage vient de vivre cette séquence émotionnelle:
+{&quot;emotions_sequence&quot;: [{&quot;ordre&quot;: 1, &quot;emotion&quot;: &quot;désorientation&quot;, &quot;description&quot;: &quot;Une sensation de surprise et de confusion tandis qu'elle réalise que quelque chose a changé sans qu'elle puisse immédiatement comprendre quoi.&quot;, &quot;duree_relative&quot;: &quot;très court&quot;}, {&quot;ordre&quot;: 2, &quot;emotion&quot;: &quot;incrédulité&quot;, &quot;description&quot;: &quot;Elle cligne des yeux et se frotte les yeux, ne pouvant croire à la scène qui se déroule devant elle.&quot;, &quot;duree_relative&quot;: &quot;court&quot;}, {&quot;ordre&quot;: 3, &quot;emotion&quot;: &quot;réalisation&quot;, &quot;description&quot;: &quot;La prise de conscience que le décor autour d'elle a complètement changé et qu'elle est maintenant dans un lieu magnifique.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}, {&quot;ordre&quot;: 4, &quot;emotion&quot;: &quot;émerveillement&quot;, &quot;description&quot;: &quot;Elle commence à sourire alors que la beauté du paysage la submerge.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}, {&quot;ordre&quot;: 5, &quot;emotion&quot;: &quot;joie&quot;, &quot;description&quot;: &quot;Un sentiment de bonheur intense s'installe lorsque l'idée qu'elle peut vivre son rêve d'amour devient tangible.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}], &quot;emotion_dominante_finale&quot;: &quot;joie&quot;, &quot;intensite_globale&quot;: &quot;moderate&quot;}
+
+Avec ces micro-actions:
+{&quot;sequence&quot;: [{&quot;ordre&quot;: 1, &quot;action&quot;: &quot;cligner des yeux rapidement&quot;, &quot;duree_sec&quot;: 1, &quot;partie_corps&quot;: &quot;yeux&quot;}, {&quot;ordre&quot;: 2, &quot;action&quot;: &quot;froncer légèrement les sourcils&quot;, &quot;duree_sec&quot;: 1, &quot;partie_corps&quot;: &quot;visage&quot;}, {&quot;ordre&quot;: 3, &quot;action&quot;: &quot;redresser imperceptiblement le buste&quot;, &quot;duree_sec&quot;: 2, &quot;partie_corps&quot;: &quot;buste&quot;}, {&quot;ordre&quot;: 4, &quot;action&quot;: &quot;ouvrir légèrement la bouche&quot;, &quot;duree_sec&quot;: 1, &quot;partie_corps&quot;: &quot;visage&quot;}, {&quot;ordre&quot;: 5, &quot;action&quot;: &quot;esquisser un sourire&quot;, &quot;duree_sec&quot;: 2, &quot;partie_corps&quot;: &quot;visage&quot;}, {&quot;ordre&quot;: 6, &quot;action&quot;: &quot;se lever lentement&quot;, &quot;duree_sec&quot;: 2, &quot;partie_corps&quot;: &quot;buste&quot;}], &quot;duree_totale_sec&quot;: 9, &quot;point_culminant&quot;: &quot;esquisser un sourire&quot;}
+
+Décris la POSE FINALE après toutes ces réactions:
+- Le personnage a COMPRIS qu'il est dans son rêve
+- Il est prêt à VIVRE ce rêve
+- Premier élan vers l'action (pas encore l'action)
+
+RAPPEL: Pas de gros plan visage, expressions naturelles.</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;description&quot;: &quot;Le personnage se tient maintenant debout sur la terrasse romaine, son corps légèrement incliné vers l'avant, comme attiré par l'appel du magnifique panorama qui s'étend devant elle.&quot;,
+  &quot;pose&quot;: {
+    &quot;corps&quot;: &quot;debout, orientation face à la terrasse&quot;,
+    &quot;tete&quot;: &quot;légèrement inclinée vers la droite, tournée vers l'horizon&quot;,
+    &quot;bras&quot;: &quot;les bras tombent naturellement de chaque côté du corps&quot;,
+    &quot;poids&quot;: &quot;réparti de façon équilibrée entre les deux jambes&quot;
+  },
+  &quot;expression&quot;: &quot;joie, émerveillement&quot;,
+  &quot;expression_intensity&quot;: &quot;moderate&quot;,
+  &quot;regard&quot;: &quot;fixé avec intensité sur l'horizon romain&quot;,
+  &quot;geste_elan&quot;: &quot;les doigts de sa main droite se courbent légèrement vers l'avant&quot;,
+  &quot;transition_vers&quot;: &quot;s'avancer vers le bord de la terrasse pour mieux voir&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;description&quot;: &quot;Elle est maintenant debout, bien droite, et son buste est légèrement projeté en avant, comme si elle était prête à embrasser la nouvelle réalité qui s'ouvre à elle.&quot;,
+  &quot;pose&quot;: {
+    &quot;corps&quot;: &quot;debout, légèrement de trois quarts face à la terrasse&quot;,
+    &quot;tete&quot;: &quot;redressée, regard vers l'horizon&quot;,
+    &quot;bras&quot;: &quot;les bras légèrement écartés du corps&quot;,
+    &quot;poids&quot;: &quot;principalement sur la jambe droite&quot;
+  },
+  &quot;expression&quot;: &quot;émerveillement&quot;,
+  &quot;expression_intensity&quot;: &quot;moderate&quot;,
+  &quot;regard&quot;: &quot;fixé sur les toits en tuiles et la verdure au loin&quot;,
+  &quot;geste_elan&quot;: &quot;une main légèrement levée vers le paysage&quot;,
+  &quot;transition_vers&quot;: &quot;faire un pas en avant vers la vue fascinante&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;description&quot;: &quot;Le personnage est debout, son corps légèrement incliné vers l'avant, les lèvres dessinant un sourire radieux à la vue du tableau qu'elle contemple.&quot;,
+  &quot;pose&quot;: {
+    &quot;corps&quot;: &quot;debout, face à la terrasse, légèrement de profil&quot;,
+    &quot;tete&quot;: &quot;tournée légèrement vers la gauche&quot;,
+    &quot;bras&quot;: &quot;bras gauche posé sur le rebord de la terrasse, bras droit libre à côté du corps&quot;,
+    &quot;poids&quot;: &quot;sur la jambe gauche&quot;
+  },
+  &quot;expression&quot;: &quot;enthousiasme&quot;,
+  &quot;expression_intensity&quot;: &quot;moderate&quot;,
+  &quot;regard&quot;: &quot;balayant le panorama de la terrasse&quot;,
+  &quot;geste_elan&quot;: &quot;sa main gauche se déplace lentement sur le rebord de la terrasse&quot;,
+  &quot;transition_vers&quot;: &quot;s'élancer vers le centre de la terrasse pour prendre toute la scène&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> La pose finale décrite dans l'option 1 est cohérente avec la transition émotionnelle du personnage, qui passe de la réalisation à la joie et à l'élan vers l'action. Le personnage se tient debout, légèrement incliné vers l'avant, indiquant une intention de mouvement sans être encore en action. Cette position exprime un élan naturel vers le rêve qui s'ouvre devant elle, tout en conservant une intensité modérée de joie et d'émerveillement. Les bras tombant naturellement et les doigts légèrement courbés vers l'avant renforcent l'idée d'une transition vers l'action, sans être trop explicite. Cette option est dynamique mais pas en mouvement, ce qui correspond parfaitement au critère de choix.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">80%</td>
+                    <td>La pose est dynamique avec une légère inclinaison vers l'avant, exprimant l'élan et la joie. Cependant, les bras tombant naturellement pourraient être plus expressifs pour renforcer l'élan.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">85%</td>
+                    <td>La description de la pose et de l'expression du personnage est globalement cohérente avec la transition émotionnelle attendue après le switch. La posture debout et l'inclinaison vers l'avant traduisent bien l'élan et l'émerveillement face au panorama romain. Les bras tombant naturellement peuvent effectivement être perçus comme moins expressifs, mais cela reste en accord avec une transition vers l'action. L'expression de joie et d'émerveillement est bien décrite et correspond à la progression émotionnelle prévue.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>Les évaluations de V1 et V2 sont globalement en accord avec une note supérieure à 80%, ce qui indique que la scène post-switch est bien décrite et respecte les critères de transition émotionnelle et de posture. La pose dynamique avec une légère inclinaison vers l'avant exprime l'élan et la joie, et bien que les bras puissent être plus expressifs, cela n'empêche pas la scène d'être cohérente et réalisable. L'expression de joie et d'émerveillement est bien capturée, et la transition vers l'action est présente.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Rendre les bras plus expressifs pour renforcer l'élan et l'émerveillement.</li>
+                <li>Ajouter un élément visuel distinctif du panorama romain pour renforcer l'immersion.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;description&quot;: &quot;Le personnage se tient maintenant debout sur la terrasse romaine, son corps légèrement incliné vers l'avant, comme attiré par l'appel du magnifique panorama qui s'étend devant elle.&quot;,
+  &quot;pose&quot;: {
+    &quot;corps&quot;: &quot;debout, orientation face à la terrasse&quot;,
+    &quot;tete&quot;: &quot;légèrement inclinée vers la droite, tournée vers l'horizon&quot;,
+    &quot;bras&quot;: &quot;les bras tombent naturellement de chaque côté du corps&quot;,
+    &quot;poids&quot;: &quot;réparti de façon équilibrée entre les deux jambes&quot;
+  },
+  &quot;expression&quot;: &quot;joie, émerveillement&quot;,
+  &quot;expression_intensity&quot;: &quot;moderate&quot;,
+  &quot;regard&quot;: &quot;fixé avec intensité sur l'horizon romain&quot;,
+  &quot;geste_elan&quot;: &quot;les doigts de sa main droite se courbent légèrement vers l'avant&quot;,
+  &quot;transition_vers&quot;: &quot;s'avancer vers le bord de la terrasse pour mieux voir&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 5.1 Prompt PRE-SWITCH (vidéo quotidien)</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Génère le PROMPT VIDÉO complet pour la scène quotidien (PRE-SWITCH).
+
+DONNÉES:
+- Start keyframe: {&quot;description&quot;: &quot;Le personnage est assis sur un canapé gris délavé, dans un appartement morne, où l'éclairage artificiel crache une lumière blafarde.&quot;, &quot;pose&quot;: &quot;légèrement affalée sur le canapé, les bras le long du corps&quot;, &quot;expression&quot;: &quot;visage pensif, lèvre inférieure légèrement mordillée&quot;, &quot;action&quot;: &quot;fixe un point invisible dans le vide&quot;, &quot;regard&quot;: &quot;droit devant elle, vers un point indéterminé&quot;, &quot;tenue&quot;: &quot;jeans usés et pull gris ample&quot;}
+- End keyframe: {&quot;orientation_corps&quot;: &quot;trois_quarts_droite&quot;, &quot;position_tete&quot;: &quot;légèrement inclinée droite&quot;, &quot;position_epaules&quot;: &quot;légèrement affaissées&quot;, &quot;bras_gauche&quot;: &quot;posé sur l'accoudoir du canapé&quot;, &quot;bras_droit&quot;: &quot;reposant sur la cuisse&quot;, &quot;mains&quot;: &quot;doigts de la main droite légèrement écartés&quot;, &quot;regard&quot;: &quot;vers le vide, droit devant elle&quot;, &quot;expression&quot;: &quot;pensive&quot;, &quot;tenue&quot;: &quot;même que start&quot;}
+- Palette: {&quot;principale&quot;: &quot;#666666&quot;, &quot;secondaire&quot;: &quot;#999999&quot;, &quot;accent&quot;: &quot;#333333&quot;, &quot;fond&quot;: &quot;#CCCCCC&quot;}
+- Éléments: {&quot;mobilier&quot;: [&quot;canapé gris délavé&quot;, &quot;table basse en bois pâle&quot;], &quot;objets&quot;: [&quot;plantes fanées sur le rebord de fenêtre&quot;, &quot;cadre photo vide sur l'étagère&quot;], &quot;objet_symbolique&quot;: &quot;télécommande abandonnée sur la table basse&quot;, &quot;eclairage&quot;: &quot;néons blafards&quot;, &quot;arriere_plan&quot;: &quot;rideaux fins tirés, laissant filtrer une lumière froide&quot;}
+- Émotion: ?
+
+RÈGLES:
+- Prompt en ANGLAIS
+- Optimisé pour génération vidéo IA
+- Mouvements LENTS
+- Fin sur la POSE FIGÉE (regard pensif, aspiration à l'ailleurs)</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option chosen">
+                <div class="option-header">[1] ★ CHOISI</div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;The scene unfolds in a drab apartment, where the character sits on a worn grey couch. The artificial neon lighting casts a stark, cold illumination. Her posture is slightly slouched, arms resting along her sides. Her face shows a pensive expression as she bites her lower lip subtly. She stares into the void, her gaze fixed straight ahead towards an indeterminate point. The room is filled with elements of quiet loneliness: a pale wooden coffee table with an abandoned remote, wilted plants on the windowsill, and empty photo frames on the shelf. The overall palette of greys and muted tones contributes to the atmosphere of melancholy. As the camera lingers, her orientation shifts to a three-quarter right angle, the head slightly inclined to the right, shoulders slumped. Her left arm rests on the couch armrest, while her right hand lies on her thigh, fingers slightly splayed. The scene ends with her distant, introspective gaze, capturing a moment of quiet solitude.&quot;,
+  &quot;duration_sec&quot;: 6,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;mood&quot;: &quot;melancholy, longing, quiet loneliness&quot;,
+  &quot;end_note&quot;: &quot;The character's figure is captured in a contemplative state, a lingering aspiration for something beyond the dullness.&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[2] </div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;In a muted, somber apartment, the character sits on a faded grey couch. The harsh neon lights give the room a bleak atmosphere. Her jeans are worn, and her loose grey sweater adds to the overall drab setting. With a thoughtful expression on her face and her lower lip slightly bitten, she looks straight ahead, her eyes unfocused. The surroundings reflect a sense of isolation: a pale wooden coffee table with a neglected remote, drooping plants near the window, and a frame void of photographs. The scene is painted in tones of grey and muted colors, emphasizing her solitude. The character's position gradually shifts, her body oriented three-quarters to the right, head gently tilted. Her left arm rests on the sofa while her right hand lies open on her knee. The scene holds this contemplative pose, the backdrop of solitary elements reinforcing her introspection.&quot;,
+  &quot;duration_sec&quot;: 6,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium_full&quot;,
+    &quot;movement&quot;: &quot;static&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;mood&quot;: &quot;melancholy, longing, quiet loneliness&quot;,
+  &quot;end_note&quot;: &quot;The character is frozen in her yearning, her eyes locked on an unseen distance, enveloped by an aura of introspection.&quot;
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;Inside a dim and muted apartment, the character finds herself seated on a weathered grey couch. The artificial glow of neon lighting saturates the room in a stark, cold light. Slouched slightly, she sits with both arms at her sides. Her gaze is fixed in the distance, her face bearing a reflective expression, with her lower lip caught between her teeth. The dreary setting is accentuated by lifeless plants on the windowsill, a vacant photo frame on the shelf, and a solitary remote abandoned on a light wooden coffee table. The grey-dominated palette complements the mood of quiet solitude. As the camera holds, her body turns gradually to a three-quarter angle with her head tipping slightly to the right. Her left hand rests on the armrest, while her right hand is loosely open upon her thigh. The scene concludes with her pensive gaze into the unknown, encapsulating a moment of yearning for connection.&quot;,
+  &quot;duration_sec&quot;: 6,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;very_slow_zoom_in&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;mood&quot;: &quot;melancholy, longing, quiet loneliness&quot;,
+  &quot;end_note&quot;: &quot;The final image is a snapshot of the character in quiet contemplation, her eyes holding a distant, yearning look.&quot;
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [1] sélectionnée</strong><br>
+            <em>Justification:</em> L'option 1 est choisie car elle offre une description complète et détaillée de la scène, en mettant l'accent sur l'atmosphère mélancolique et la solitude du personnage. Le prompt capture bien l'ambiance morne de l'appartement avec des éléments précis comme l'éclairage néon, les plantes fanées, et les cadres photo vides. La fin sur une pose figée claire, avec une orientation du corps et du regard bien définie, correspond parfaitement aux critères de fin de scène. De plus, le choix d'un plan moyen statique permet de bien capturer l'expression pensive du personnage, renforçant l'idée d'une aspiration à l'ailleurs. L'option 1 respecte donc tous les paramètres requis pour la scène quotidien (PRE-SWITCH).
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La réponse respecte parfaitement le critère avec une atmosphère mélancolique et une fin sur une pose figée claire.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La réponse est parfaitement alignée avec les critères de la scène quotidienne. Elle décrit avec précision l'environnement morne de l'appartement, l'éclairage artificiel, et la posture du personnage. L'expression et le regard sont cohérents avec l'état émotionnel de solitude et de mélancolie. La pose finale est bien définie et reproductible pour le switch. Tous les éléments sont en place pour une transition fluide vers le décor de rêve.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>La description de la scène quotidienne respecte parfaitement les critères établis. L'environnement morne de l'appartement, l'éclairage artificiel, et la posture du personnage sont décrits avec précision, créant une atmosphère de lassitude et de solitude. L'expression et le regard du personnage sont cohérents avec cet état émotionnel. La pose finale est bien définie et reproductible, ce qui est crucial pour assurer une transition fluide vers le décor de rêve. Tous les éléments nécessaires sont présents pour passer à la scène suivante.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que la transition post-switch conserve exactement la même pose et orientation du personnage.</li>
+                <li>Ajoutez des éléments emblématiques du décor de rêve dans la scène post-switch pour renforcer le contraste.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;prompt_en&quot;: &quot;The scene unfolds in a drab apartment, where the character sits on a worn grey couch. The artificial neon lighting casts a stark, cold illumination. Her posture is slightly slouched, arms resting along her sides. Her face shows a pensive expression as she bites her lower lip subtly. She stares into the void, her gaze fixed straight ahead towards an indeterminate point. The room is filled with elements of quiet loneliness: a pale wooden coffee table with an abandoned remote, wilted plants on the windowsill, and empty photo frames on the shelf. The overall palette of greys and muted tones contributes to the atmosphere of melancholy. As the camera lingers, her orientation shifts to a three-quarter right angle, the head slightly inclined to the right, shoulders slumped. Her left arm rests on the couch armrest, while her right hand lies on her thigh, fingers slightly splayed. The scene ends with her distant, introspective gaze, capturing a moment of quiet solitude.&quot;,
+  &quot;duration_sec&quot;: 6,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;mood&quot;: &quot;melancholy, longing, quiet loneliness&quot;,
+  &quot;end_note&quot;: &quot;The character's figure is captured in a contemplative state, a lingering aspiration for something beyond the dullness.&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">📌 ÉTAPE 5.2 Prompt POST-SWITCH (vidéo découverte)</div>
+        
+        <h3>📝 Question posée:</h3>
+        <div class="question">Génère le PROMPT VIDÉO complet pour la scène découverte (POST-SWITCH).
+
+DONNÉES:
+- Start: MÊME POSE que end quotidien, décor rêve
+- Séquence émotionnelle: {&quot;emotions_sequence&quot;: [{&quot;ordre&quot;: 1, &quot;emotion&quot;: &quot;désorientation&quot;, &quot;description&quot;: &quot;Une sensation de surprise et de confusion tandis qu'elle réalise que quelque chose a changé sans qu'elle puisse immédiatement comprendre quoi.&quot;, &quot;duree_relative&quot;: &quot;très court&quot;}, {&quot;ordre&quot;: 2, &quot;emotion&quot;: &quot;incrédulité&quot;, &quot;description&quot;: &quot;Elle cligne des yeux et se frotte les yeux, ne pouvant croire à la scène qui se déroule devant elle.&quot;, &quot;duree_relative&quot;: &quot;court&quot;}, {&quot;ordre&quot;: 3, &quot;emotion&quot;: &quot;réalisation&quot;, &quot;description&quot;: &quot;La prise de conscience que le décor autour d'elle a complètement changé et qu'elle est maintenant dans un lieu magnifique.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}, {&quot;ordre&quot;: 4, &quot;emotion&quot;: &quot;émerveillement&quot;, &quot;description&quot;: &quot;Elle commence à sourire alors que la beauté du paysage la submerge.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}, {&quot;ordre&quot;: 5, &quot;emotion&quot;: &quot;joie&quot;, &quot;description&quot;: &quot;Un sentiment de bonheur intense s'installe lorsque l'idée qu'elle peut vivre son rêve d'amour devient tangible.&quot;, &quot;duree_relative&quot;: &quot;moyen&quot;}], &quot;emotion_dominante_finale&quot;: &quot;joie&quot;, &quot;intensite_globale&quot;: &quot;moderate&quot;}
+- Micro-actions: {&quot;sequence&quot;: [{&quot;ordre&quot;: 1, &quot;action&quot;: &quot;cligner des yeux rapidement&quot;, &quot;duree_sec&quot;: 1, &quot;partie_corps&quot;: &quot;yeux&quot;}, {&quot;ordre&quot;: 2, &quot;action&quot;: &quot;froncer légèrement les sourcils&quot;, &quot;duree_sec&quot;: 1, &quot;partie_corps&quot;: &quot;visage&quot;}, {&quot;ordre&quot;: 3, &quot;action&quot;: &quot;redresser imperceptiblement le buste&quot;, &quot;duree_sec&quot;: 2, &quot;partie_corps&quot;: &quot;buste&quot;}, {&quot;ordre&quot;: 4, &quot;action&quot;: &quot;ouvrir légèrement la bouche&quot;, &quot;duree_sec&quot;: 1, &quot;partie_corps&quot;: &quot;visage&quot;}, {&quot;ordre&quot;: 5, &quot;action&quot;: &quot;esquisser un sourire&quot;, &quot;duree_sec&quot;: 2, &quot;partie_corps&quot;: &quot;visage&quot;}, {&quot;ordre&quot;: 6, &quot;action&quot;: &quot;se lever lentement&quot;, &quot;duree_sec&quot;: 2, &quot;partie_corps&quot;: &quot;buste&quot;}], &quot;duree_totale_sec&quot;: 9, &quot;point_culminant&quot;: &quot;esquisser un sourire&quot;}
+- End keyframe: {&quot;description&quot;: &quot;Le personnage se tient maintenant debout sur la terrasse romaine, son corps légèrement incliné vers l'avant, comme attiré par l'appel du magnifique panorama qui s'étend devant elle.&quot;, &quot;pose&quot;: {&quot;corps&quot;: &quot;debout, orientation face à la terrasse&quot;, &quot;tete&quot;: &quot;légèrement inclinée vers la droite, tournée vers l'horizon&quot;, &quot;bras&quot;: &quot;les bras tombent naturellement de chaque côté du corps&quot;, &quot;poids&quot;: &quot;réparti de façon équilibrée entre les deux jambes&quot;}, &quot;expression&quot;: &quot;joie, émerveillement&quot;, &quot;expression_intensity&quot;: &quot;moderate&quot;, &quot;regard&quot;: &quot;fixé avec intensité sur l'horizon romain&quot;, &quot;geste_elan&quot;: &quot;les doigts de sa main droite se courbent légèrement vers l'avant&quot;, &quot;transition_vers&quot;: &quot;s'avancer vers le bord de la terrasse pour mieux voir&quot;}
+- Décor: {&quot;description&quot;: &quot;Elle se trouve maintenant sur une terrasse romaine baignée de soleil, avec une vue panoramique sur les toits en tuiles anciennes et la verdure des collines avoisinantes.&quot;, &quot;lieu&quot;: &quot;terrasse panoramique à Rome&quot;, &quot;emblemes_visibles&quot;: [&quot;Fontaine de Trevi (discret)&quot;], &quot;eclairage&quot;: &quot;lumière chaude, dorée&quot;, &quot;palette_dominante&quot;: &quot;ocre, orange, vert olive&quot;, &quot;arriere_plan&quot;: &quot;les jets d'eau de la Fontaine de Trevi apparaissent au loin parmi les toits&quot;, &quot;contraste_quotidien&quot;: &quot;opposé à l'appartement morne par la clarté et l'ouverture du paysage romain, apportant une sensation de liberté et de beauté&quot;}
+
+RÈGLES:
+- Prompt en ANGLAIS
+- Commence EXACTEMENT dans la même pose que fin quotidien
+- Décrit la progression: surprise → réalisation → émerveillement → joie → élan
+- Mouvements LENTS et PROGRESSIFS
+- Pas de gros plan visage</div>
+
+        <h3>🎲 Options générées (3):</h3>
+        <div class="options">
+
+            <div class="option ">
+                <div class="option-header">[1] </div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;The scene transitions seamlessly from the mundane setting of a lifeless apartment to an enchanting Roman terrace bathed in golden sunlight. The character maintains the same position as before, slightly slouched, with her left arm resting on the couch and her right hand on her thigh. Initially, her face reveals a subtle confusion as she quickly blinks, her eyes adjusting to the vibrant environment. Her eyebrows furrow slightly, a momentary gesture of disbelief. As the warmth of the sun envelops her, she senses the shift around her. Her buste begins to straighten, a slow acknowledgment of the new vista. Upon realizing the breathtaking panorama, her lips part slightly, breath drawn in by the stunning view. An unfolding smile creeps onto her face, illuminating her features as a wave of joy washes over her. Her body rises slowly, transitioning from the seated position to a standing stance, drawn towards the view of the ancient Roman landscape. The scene concludes with her standing, arms relaxed at her sides, eyes fixed passionately on the horizon, ready to embrace the world before her.&quot;,
+  &quot;duration_sec&quot;: 8,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static then slow_pull_back to reveal environment&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;emotional_arc_en&quot;: &quot;confusion → wonder → joy → readiness&quot;,
+  &quot;key_moments&quot;: [
+    &quot;Initial blinking and slight brow furrow indicating confusion&quot;,
+    &quot;Slow straightening of the buste as realization dawns&quot;,
+    &quot;Bright smile and standing up, fully embracing the new setting&quot;
+  ]
+}</pre>
+            </div>
+
+            <div class="option chosen">
+                <div class="option-header">[2] ★ CHOISI</div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;At the outset, she remains in the exact same pose as before, on a terrace now, with the warmth of the sun filtering through the ochres and greens of a Roman landscape. She begins by blinking rapidly, a hesitant awareness bubbling to the surface. Her brow crinkles, a soft unfolding of incredulity. Subtly, her posture shifts, the buste elevating as she processes the breathtaking view before her. Realization sets in, ushered by a gentle parting of her lips in awe. Gradually, a smile unfolds, brightening her demeanor as joy takes hold. With growing confidence, she rises gracefully from her seat, stepping into the inviting embrace of this splendid vista. Her eyes lock onto the distant horizon, filled with promise, her arms hanging relaxed at her sides, poised to explore this newfound reality.&quot;,
+  &quot;duration_sec&quot;: 8,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static then slow_pull_back to reveal environment&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;emotional_arc_en&quot;: &quot;confusion → wonder → joy → readiness&quot;,
+  &quot;key_moments&quot;: [
+    &quot;Quick blinking that signals the beginning of her awareness&quot;,
+    &quot;Slow upward movement of her torso signaling realization&quot;,
+    &quot;Rising from her seat with a bright, joyful expression&quot;
+  ]
+}</pre>
+            </div>
+
+            <div class="option ">
+                <div class="option-header">[3] </div>
+                <pre>{
+  &quot;prompt_en&quot;: &quot;In the initial moments, she retains her position, seated as before, but now amidst the warm glow of a Roman terrace. The serene backdrop draws her into a gentle state of surprise. Rapid blinking disorients her briefly, as her brow furrows in mild disbelief. The warmth of the scene coaxing her into realization causes her buste to rise, subtly easing into awareness of her surroundings. Her lips part softly, reflecting her growing astonishment. As the wonder of the Italian expanse unfolds before her, an uncontrollable smile begins to spread across her face. Rising slowly, her entire posture transforms, as she stands, poised at the edge of this radiant new setting. She gazes intently into the distance, her expression alight with joy, ready to step forward and embrace the exciting world opening before her.&quot;,
+  &quot;duration_sec&quot;: 8,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static then slow_pull_back to reveal environment&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;emotional_arc_en&quot;: &quot;confusion → wonder → joy → readiness&quot;,
+  &quot;key_moments&quot;: [
+    &quot;Rapid blinking and slight brow furrow&quot;,
+    &quot;Straightening of her buste as realization sets in&quot;,
+    &quot;Standing up, expressing joy and readiness to explore&quot;
+  ]
+}</pre>
+            </div>
+
+        </div>
+
+        <h3>🎯 Choix:</h3>
+        <div class="choice">
+            <strong>Option [2] sélectionnée</strong><br>
+            <em>Justification:</em> Cette option décrit de manière détaillée et progressive la transition émotionnelle du personnage, en commençant par une prise de conscience hésitante, suivie d'une incrédulité douce, puis d'une réalisation émerveillée, pour finalement culminer dans la joie et la préparation à explorer le nouvel environnement. Les mouvements sont lents et progressifs, ce qui permet de révéler le décor romain de manière fluide et captivante. La caméra statique qui passe à un lent recul pour dévoiler l'environnement ajoute à l'effet de découverte progressive, et l'arc émotionnel est bien structuré, allant de la confusion à la préparation, en passant par l'émerveillement et la joie. Cela correspond parfaitement aux critères de choix définis pour cette scène.
+        </div>
+
+        <h3>✅ Validation:</h3>
+        <div class="validation">
+            <table>
+                <tr>
+                    <td><strong>V1 Critère spécifique</strong></td>
+                    <td class="v-pass">100%</td>
+                    <td>La réponse décrit parfaitement la progression émotionnelle et les mouvements lents, tout en révélant progressivement le décor.</td>
+                </tr>
+                <tr>
+                    <td><strong>V2 Cohérence globale</strong></td>
+                    <td class="v-pass">95%</td>
+                    <td>La réponse est très cohérente avec le contexte et respecte les règles établies. Elle décrit bien la transition émotionnelle et physique du personnage, tout en maintenant la continuité avec la scène précédente. Les mouvements et expressions sont réalistes et réalisables techniquement. La description du décor post-switch est précise et en accord avec le rêve de Rome.</td>
+                </tr>
+                <tr>
+                    <td><strong>V3 Arbitre final</strong></td>
+                    <td class="v-pass">PASS</td>
+                    <td>La réponse satisfait toutes les exigences des règles spécifiques. Elle décrit avec précision la transition émotionnelle du personnage de la confusion à la joie, tout en maintenant la continuité avec la scène précédente grâce à une pose identique. Le décor post-switch est bien décrit, avec des éléments emblématiques d'un paysage romain, et l'éclairage est conforme aux attentes. Les mouvements et expressions du personnage sont réalistes et techniquement réalisables. La scène de découverte est bien structurée, avec une progression claire et cohérente.</td>
+                </tr>
+            </table>
+
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Assurez-vous que le changement d'éclairage est bien visible pour accentuer la transition de l'environnement morne à celui de rêve.</li>
+                <li>Vérifiez que le mouvement de la caméra est fluide pour renforcer l'effet de révélation du nouveau décor.</li>
+
+            </ul>
+
+        </div>
+
+        <h3>💾 Réponse stockée:</h3>
+        <div class="result">
+            <pre>{
+  &quot;prompt_en&quot;: &quot;At the outset, she remains in the exact same pose as before, on a terrace now, with the warmth of the sun filtering through the ochres and greens of a Roman landscape. She begins by blinking rapidly, a hesitant awareness bubbling to the surface. Her brow crinkles, a soft unfolding of incredulity. Subtly, her posture shifts, the buste elevating as she processes the breathtaking view before her. Realization sets in, ushered by a gentle parting of her lips in awe. Gradually, a smile unfolds, brightening her demeanor as joy takes hold. With growing confidence, she rises gracefully from her seat, stepping into the inviting embrace of this splendid vista. Her eyes lock onto the distant horizon, filled with promise, her arms hanging relaxed at her sides, poised to explore this newfound reality.&quot;,
+  &quot;duration_sec&quot;: 8,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static then slow_pull_back to reveal environment&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;emotional_arc_en&quot;: &quot;confusion → wonder → joy → readiness&quot;,
+  &quot;key_moments&quot;: [
+    &quot;Quick blinking that signals the beginning of her awareness&quot;,
+    &quot;Slow upward movement of her torso signaling realization&quot;,
+    &quot;Rising from her seat with a bright, joyful expression&quot;
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <h2>🎬 PROMPTS FINAUX GÉNÉRÉS</h2>
+
+    <div class="step">
+        <div class="step-header">PRE-SWITCH</div>
+        <div class="prompt-box">The scene unfolds in a drab apartment, where the character sits on a worn grey couch. The artificial neon lighting casts a stark, cold illumination. Her posture is slightly slouched, arms resting along her sides. Her face shows a pensive expression as she bites her lower lip subtly. She stares into the void, her gaze fixed straight ahead towards an indeterminate point. The room is filled with elements of quiet loneliness: a pale wooden coffee table with an abandoned remote, wilted plants on the windowsill, and empty photo frames on the shelf. The overall palette of greys and muted tones contributes to the atmosphere of melancholy. As the camera lingers, her orientation shifts to a three-quarter right angle, the head slightly inclined to the right, shoulders slumped. Her left arm rests on the couch armrest, while her right hand lies on her thigh, fingers slightly splayed. The scene ends with her distant, introspective gaze, capturing a moment of quiet solitude.</div>
+        <div class="result">
+            <pre>{
+  &quot;prompt_en&quot;: &quot;The scene unfolds in a drab apartment, where the character sits on a worn grey couch. The artificial neon lighting casts a stark, cold illumination. Her posture is slightly slouched, arms resting along her sides. Her face shows a pensive expression as she bites her lower lip subtly. She stares into the void, her gaze fixed straight ahead towards an indeterminate point. The room is filled with elements of quiet loneliness: a pale wooden coffee table with an abandoned remote, wilted plants on the windowsill, and empty photo frames on the shelf. The overall palette of greys and muted tones contributes to the atmosphere of melancholy. As the camera lingers, her orientation shifts to a three-quarter right angle, the head slightly inclined to the right, shoulders slumped. Her left arm rests on the couch armrest, while her right hand lies on her thigh, fingers slightly splayed. The scene ends with her distant, introspective gaze, capturing a moment of quiet solitude.&quot;,
+  &quot;duration_sec&quot;: 6,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;mood&quot;: &quot;melancholy, longing, quiet loneliness&quot;,
+  &quot;end_note&quot;: &quot;The character's figure is captured in a contemplative state, a lingering aspiration for something beyond the dullness.&quot;
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">GEMINI-SWITCH</div>
+        <div class="prompt-box">Put this person in a sunlit Roman terrace with a panoramic view of ancient tiled roofs and nearby green hills. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment: a vibrant, warm setting with hints of the Trevi Fountain in the distance.</div>
+        <div class="result">
+            <pre>{
+  &quot;prompt_en&quot;: &quot;Put this person in a sunlit Roman terrace with a panoramic view of ancient tiled roofs and nearby green hills. Keep EXACTLY the same: face, hair, clothes, pose, expression. Change ONLY the environment: a vibrant, warm setting with hints of the Trevi Fountain in the distance.&quot;,
+  &quot;decor_short_en&quot;: &quot;A sunlit Roman terrace with a view of ancient roofs and green hills.&quot;,
+  &quot;elements_conserves&quot;: [
+    &quot;face&quot;,
+    &quot;hair&quot;,
+    &quot;clothes&quot;,
+    &quot;pose&quot;,
+    &quot;expression&quot;
+  ],
+  &quot;elements_changes&quot;: [
+    &quot;background&quot;,
+    &quot;lighting&quot;,
+    &quot;surroundings&quot;
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-header">POST-SWITCH</div>
+        <div class="prompt-box">At the outset, she remains in the exact same pose as before, on a terrace now, with the warmth of the sun filtering through the ochres and greens of a Roman landscape. She begins by blinking rapidly, a hesitant awareness bubbling to the surface. Her brow crinkles, a soft unfolding of incredulity. Subtly, her posture shifts, the buste elevating as she processes the breathtaking view before her. Realization sets in, ushered by a gentle parting of her lips in awe. Gradually, a smile unfolds, brightening her demeanor as joy takes hold. With growing confidence, she rises gracefully from her seat, stepping into the inviting embrace of this splendid vista. Her eyes lock onto the distant horizon, filled with promise, her arms hanging relaxed at her sides, poised to explore this newfound reality.</div>
+        <div class="result">
+            <pre>{
+  &quot;prompt_en&quot;: &quot;At the outset, she remains in the exact same pose as before, on a terrace now, with the warmth of the sun filtering through the ochres and greens of a Roman landscape. She begins by blinking rapidly, a hesitant awareness bubbling to the surface. Her brow crinkles, a soft unfolding of incredulity. Subtly, her posture shifts, the buste elevating as she processes the breathtaking view before her. Realization sets in, ushered by a gentle parting of her lips in awe. Gradually, a smile unfolds, brightening her demeanor as joy takes hold. With growing confidence, she rises gracefully from her seat, stepping into the inviting embrace of this splendid vista. Her eyes lock onto the distant horizon, filled with promise, her arms hanging relaxed at her sides, poised to explore this newfound reality.&quot;,
+  &quot;duration_sec&quot;: 8,
+  &quot;camera&quot;: {
+    &quot;shot_type&quot;: &quot;medium&quot;,
+    &quot;movement&quot;: &quot;static then slow_pull_back to reveal environment&quot;,
+    &quot;angle&quot;: &quot;eye_level&quot;
+  },
+  &quot;emotional_arc_en&quot;: &quot;confusion → wonder → joy → readiness&quot;,
+  &quot;key_moments&quot;: [
+    &quot;Quick blinking that signals the beginning of her awareness&quot;,
+    &quot;Slow upward movement of her torso signaling realization&quot;,
+    &quot;Rising from her seat with a bright, joyful expression&quot;
+  ]
+}</pre>
+        </div>
+    </div>
+
+</body>
+</html>

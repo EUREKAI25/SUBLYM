@@ -28,7 +28,7 @@ app.get('/status', async (c) => {
     try {
       const token = authHeader.substring(7);
       const { verify } = await import('hono/jwt');
-      const payload = await verify(token, process.env.JWT_SECRET!);
+      const payload = await verify(token, process.env.JWT_SECRET!, 'HS256');
       if (payload.type === 'access' && payload.sub) {
         user = await prisma.user.findUnique({
           where: { id: payload.sub as number },
@@ -98,16 +98,24 @@ app.get('/status', async (c) => {
 // POST /smile/start
 app.post('/start', authMiddleware, async (c) => {
   const { user } = getAuthContext(c);
-  
-  // Check if already started
+
+  // Check if already started - return success (idempotent)
   const existing = await prisma.smileReaction.findUnique({
     where: { userId: user.id },
   });
-  
+
   if (existing) {
-    throw new ValidationError('You have already started the Smile offer');
+    console.log(`[SMILE] User ${user.id} already started Smile (reaction ${existing.id})`);
+    return c.json({
+      success: true,
+      already: true,
+      reaction: {
+        id: existing.id,
+        status: existing.status,
+      },
+    });
   }
-  
+
   // Check availability
   const smileConfig = await prisma.smileConfig.findFirst({
     where: {
@@ -119,14 +127,28 @@ app.post('/start', authMiddleware, async (c) => {
     },
     orderBy: { country: 'desc' },
   });
-  
+
   if (!smileConfig || smileConfig.currentCount >= smileConfig.threshold) {
     return c.json({
       error: 'OFFER_ENDED',
       message: 'The Smile offer has ended for your country',
     }, 410);
   }
-  
+
+  // Grant subscription to user
+  const subscriptionEnd = new Date();
+  subscriptionEnd.setMonth(subscriptionEnd.getMonth() + smileConfig.premiumMonths);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      subscriptionLevel: smileConfig.premiumLevel,
+      subscriptionEnd,
+    },
+  });
+
+  console.log(`[SMILE] User ${user.id} granted level ${smileConfig.premiumLevel} until ${subscriptionEnd.toISOString()}`);
+
   // Create reaction record
   const reaction = await prisma.smileReaction.create({
     data: {
@@ -135,13 +157,23 @@ app.post('/start', authMiddleware, async (c) => {
       premiumLevel: smileConfig.premiumLevel,
     },
   });
-  
+
+  // Increment smile count
+  await prisma.smileConfig.update({
+    where: { id: smileConfig.id },
+    data: { currentCount: { increment: 1 } },
+  });
+
   return c.json({
     success: true,
     message: 'Smile offer started. Watch your video and record your reaction!',
     reaction: {
       id: reaction.id,
       status: reaction.status,
+    },
+    subscription: {
+      level: smileConfig.premiumLevel,
+      until: subscriptionEnd,
     },
   });
 });

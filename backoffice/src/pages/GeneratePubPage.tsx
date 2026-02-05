@@ -1,87 +1,170 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Clapperboard, Search, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  Clapperboard, Loader2, CheckCircle, AlertCircle, Upload, X,
+  Plus, GripVertical, Trash2, Eye, ArrowLeftRight, Sparkles, Film
+} from 'lucide-react';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
-interface UserOption {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  photosCount: number;
+// Types de scènes disponibles
+type SceneType = 'transition_awakening' | 'transition_action' | 'free' | 'pov' | 'accomplishment';
+
+interface SceneConfig {
+  id: string;
+  type: SceneType;
+  description?: string;
+  allowsCameraLook?: boolean;
+}
+
+const SCENE_TYPE_INFO: Record<SceneType, { label: string; icon: React.ReactNode; color: string; description: string }> = {
+  transition_awakening: {
+    label: 'Transition Avant/Après',
+    icon: <ArrowLeftRight className="w-4 h-4" />,
+    color: 'bg-purple-100 text-purple-700 border-purple-200',
+    description: 'Passage du quotidien au rêve (couleurs désaturées → vives)',
+  },
+  transition_action: {
+    label: 'Transition Action',
+    icon: <Sparkles className="w-4 h-4" />,
+    color: 'bg-pink-100 text-pink-700 border-pink-200',
+    description: 'Premiers pas dans le rêve (keyframe partagée avec fin transition)',
+  },
+  free: {
+    label: 'Scène Libre',
+    icon: <Film className="w-4 h-4" />,
+    color: 'bg-blue-100 text-blue-700 border-blue-200',
+    description: 'Scène de rêve indépendante (action, interaction, immersion)',
+  },
+  pov: {
+    label: 'Scène POV',
+    icon: <Eye className="w-4 h-4" />,
+    color: 'bg-teal-100 text-teal-700 border-teal-200',
+    description: 'Vue subjective (ce que voit le personnage en marchant)',
+  },
+  accomplishment: {
+    label: 'Accomplissement',
+    icon: <CheckCircle className="w-4 h-4" />,
+    color: 'bg-green-100 text-green-700 border-green-200',
+    description: 'Scène finale, regard caméra autorisé, rêve réalisé',
+  },
+};
+
+let sceneIdCounter = 0;
+function generateSceneId(): string {
+  return `scene_${++sceneIdCounter}_${Date.now()}`;
 }
 
 export function GeneratePubPage() {
   const { fetchWithAuth } = useAuth();
 
   // Form state
-  const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
-  const [userSearch, setUserSearch] = useState('');
-  const [userResults, setUserResults] = useState<UserOption[]>([]);
-  const [searchingUsers, setSearchingUsers] = useState(false);
-
   const [dreamDescription, setDreamDescription] = useState('');
   const [dailyContext, setDailyContext] = useState('');
-  const [scenesCount, setScenesCount] = useState(7);
   const [rejectText, setRejectText] = useState('');
+
+  // Scenes configuration
+  const [scenes, setScenes] = useState<SceneConfig[]>([
+    { id: generateSceneId(), type: 'transition_awakening' },
+    { id: generateSceneId(), type: 'transition_action' },
+    { id: generateSceneId(), type: 'free' },
+    { id: generateSceneId(), type: 'free' },
+    { id: generateSceneId(), type: 'free' },
+    { id: generateSceneId(), type: 'accomplishment', allowsCameraLook: true },
+  ]);
+
+  // Photo state
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Drag state for scenes
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   // Submission state
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; traceId?: string; error?: string } | null>(null);
 
-  // Search users
-  useEffect(() => {
-    if (userSearch.length < 2) {
-      setUserResults([]);
-      return;
-    }
+  // Photo handlers
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    setPhotoFiles(prev => [...prev, ...files].slice(0, 10));
+  }, []);
 
-    const timer = setTimeout(async () => {
-      setSearchingUsers(true);
-      try {
-        const res = await fetchWithAuth(`${API_URL}/admin/users?email=${encodeURIComponent(userSearch)}&perPage=10`);
-        if (res.ok) {
-          const data = await res.json();
-          setUserResults(data.users.map((u: any) => ({
-            id: u.id,
-            email: u.email,
-            firstName: u.firstName || '',
-            lastName: u.lastName || '',
-            photosCount: u.photosCount || 0,
-          })));
-        }
-      } catch {
-        // Ignore
-      } finally {
-        setSearchingUsers(false);
-      }
-    }, 300);
+  const handlePhotoFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+    setPhotoFiles(prev => [...prev, ...files].slice(0, 10));
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [userSearch]);
+  const removePhotoFile = useCallback((index: number) => {
+    setPhotoFiles(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  // Scene handlers
+  const addScene = (type: SceneType) => {
+    const newScene: SceneConfig = {
+      id: generateSceneId(),
+      type,
+      allowsCameraLook: type === 'accomplishment',
+    };
+    setScenes(prev => [...prev, newScene]);
+  };
+
+  const removeScene = (index: number) => {
+    setScenes(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateScene = (index: number, updates: Partial<SceneConfig>) => {
+    setScenes(prev => prev.map((s, i) => i === index ? { ...s, ...updates } : s));
+  };
+
+  // Drag and drop for scenes
+  const handleSceneDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleSceneDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newScenes = [...scenes];
+    const [draggedScene] = newScenes.splice(draggedIndex, 1);
+    newScenes.splice(index, 0, draggedScene);
+    setScenes(newScenes);
+    setDraggedIndex(index);
+  };
+
+  const handleSceneDragEnd = () => {
+    setDraggedIndex(null);
+  };
 
   const handleSubmit = async () => {
-    if (!selectedUser || !dreamDescription.trim() || !dailyContext.trim()) return;
+    if (photoFiles.length === 0 || !dreamDescription.trim()) return;
 
     setSubmitting(true);
     setResult(null);
 
     try {
-      const reject = rejectText
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
+      const formData = new FormData();
+      for (const file of photoFiles) {
+        formData.append('photos', file);
+      }
+      formData.append('dreamDescription', dreamDescription.trim());
+      if (dailyContext.trim()) {
+        formData.append('dailyContext', dailyContext.trim());
+      }
+      formData.append('scenesConfig', JSON.stringify(scenes));
+      formData.append('scenesCount', scenes.filter(s => !s.type.startsWith('transition')).length.toString());
+      if (rejectText.trim()) {
+        formData.append('reject', rejectText.trim());
+      }
 
-      const res = await fetchWithAuth(`${API_URL}/admin/generate-pub`, {
+      const res = await fetch(`${API_URL}/admin/generate-pub`, {
         method: 'POST',
-        body: JSON.stringify({
-          userId: selectedUser.id,
-          dreamDescription: dreamDescription.trim(),
-          dailyContext: dailyContext.trim(),
-          scenesCount,
-          ...(reject.length > 0 && { reject }),
-        }),
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token') || ''}` },
+        body: formData,
       });
 
       const data = await res.json();
@@ -98,126 +181,98 @@ export function GeneratePubPage() {
     }
   };
 
-  const canSubmit = selectedUser && selectedUser.photosCount > 0 && dreamDescription.trim().length >= 10 && dailyContext.trim().length >= 5;
+  const canSubmit = photoFiles.length >= 3 && dreamDescription.trim().length >= 10 && scenes.length >= 1;
+
+  // Count scene types
+  const hasTransition = scenes.some(s => s.type === 'transition_awakening');
+  const freeCount = scenes.filter(s => s.type === 'free').length;
+  const povCount = scenes.filter(s => s.type === 'pov').length;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Spot Pub</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Composer un scénario</h1>
         <p className="text-gray-500 mt-1">
-          Lancer une generation en mode scenario_pub (transition quotidien &rarr; reve)
+          Assemblez les scènes selon vos besoins : transitions, scènes libres, POV...
         </p>
       </div>
 
-      <div className="card">
-        <div className="flex items-center gap-3 mb-6">
-          <Clapperboard className="w-5 h-5 text-gray-400" />
-          <h2 className="text-lg font-semibold text-gray-900">Nouvelle generation pub</h2>
-        </div>
-
-        {/* User selection */}
-        <div className="mb-6">
-          <label className="label">Utilisateur</label>
-          {selectedUser ? (
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">
-                  {selectedUser.firstName} {selectedUser.lastName}
-                </p>
-                <p className="text-sm text-gray-500">{selectedUser.email}</p>
-                <p className="text-xs text-gray-400">{selectedUser.photosCount} photo(s)</p>
-              </div>
-              <button
-                onClick={() => { setSelectedUser(null); setUserSearch(''); }}
-                className="text-sm text-red-600 hover:text-red-700"
-              >
-                Changer
-              </button>
-            </div>
-          ) : (
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left: Form */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Photos du personnage */}
+          <div className="card">
+            <label className="label">Photos du personnage</label>
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+              }`}
+              onDrop={handleDrop}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onClick={() => document.getElementById('pub-photo-input')?.click()}
+            >
               <input
-                type="text"
-                value={userSearch}
-                onChange={(e) => setUserSearch(e.target.value)}
-                placeholder="Rechercher par email..."
-                className="input pl-10"
+                id="pub-photo-input"
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handlePhotoFileSelect}
               />
-              {searchingUsers && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
-              )}
-              {userResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                  {userResults.map((u) => (
-                    <button
-                      key={u.id}
-                      onClick={() => {
-                        setSelectedUser(u);
-                        setUserSearch('');
-                        setUserResults([]);
-                      }}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0"
-                    >
-                      <p className="font-medium text-gray-900">{u.firstName} {u.lastName}</p>
-                      <p className="text-sm text-gray-500">{u.email} &middot; {u.photosCount} photo(s)</p>
-                    </button>
+              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600">Glissez 3 à 10 photos ici</p>
+            </div>
+
+            {photoFiles.length > 0 && (
+              <div className="mt-3">
+                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                  {photoFiles.map((file, i) => (
+                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                      <img src={URL.createObjectURL(file)} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); removePhotoFile(i); }}
+                        className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
-          {selectedUser && selectedUser.photosCount === 0 && (
-            <p className="text-sm text-red-600 mt-1">Cet utilisateur n'a pas de photos.</p>
-          )}
-        </div>
-
-        {/* Dream description */}
-        <div className="mb-6">
-          <label className="label">Description du reve</label>
-          <textarea
-            value={dreamDescription}
-            onChange={(e) => setDreamDescription(e.target.value)}
-            placeholder="Ex: Devenir chef cuisinier dans un grand restaurant parisien..."
-            className="input min-h-[100px]"
-            rows={4}
-          />
-          <p className="text-xs text-gray-500 mt-1">Le reve que le personnage va vivre (min 10 caracteres)</p>
-        </div>
-
-        {/* Daily context */}
-        <div className="mb-6">
-          <label className="label">Contexte quotidien (l'ennui a fuir)</label>
-          <textarea
-            value={dailyContext}
-            onChange={(e) => setDailyContext(e.target.value)}
-            placeholder="Ex: Employe de bureau dans un open space gris, travail repetitif devant un ecran..."
-            className="input min-h-[80px]"
-            rows={3}
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            L'environnement quotidien ennuyeux d'ou le personnage s'echappe (scene 1A)
-          </p>
-        </div>
-
-        {/* Scenes count + reject */}
-        <div className="grid sm:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="label">Nombre de scenes de reve</label>
-            <input
-              type="number"
-              value={scenesCount}
-              onChange={(e) => setScenesCount(Math.max(3, Math.min(10, parseInt(e.target.value) || 7)))}
-              className="input"
-              min={3}
-              max={10}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              + 2 scenes de transition (1A + 1B) = {scenesCount + 2} scenes au total
-            </p>
+                <p className="text-xs text-gray-500 mt-2">{photoFiles.length} photo(s)</p>
+              </div>
+            )}
           </div>
-          <div>
-            <label className="label">Elements a exclure (optionnel)</label>
+
+          {/* Dream description */}
+          <div className="card">
+            <label className="label">Description du rêve</label>
+            <textarea
+              value={dreamDescription}
+              onChange={(e) => setDreamDescription(e.target.value)}
+              placeholder="Ex: Devenir chef cuisinier dans un grand restaurant parisien..."
+              className="input min-h-[100px]"
+              rows={4}
+            />
+          </div>
+
+          {/* Daily context (optional) */}
+          <div className="card">
+            <label className="label">
+              Contexte quotidien <span className="text-gray-400 font-normal">(optionnel, pour transitions avant/après)</span>
+            </label>
+            <textarea
+              value={dailyContext}
+              onChange={(e) => setDailyContext(e.target.value)}
+              placeholder="Ex: Employé de bureau dans un open space gris..."
+              className="input min-h-[60px]"
+              rows={2}
+            />
+          </div>
+
+          {/* Reject */}
+          <div className="card">
+            <label className="label">Éléments à exclure <span className="text-gray-400 font-normal">(optionnel)</span></label>
             <input
               type="text"
               value={rejectText}
@@ -225,57 +280,137 @@ export function GeneratePubPage() {
               placeholder="Ex: pas de robe, pas de plage..."
               className="input"
             />
-            <p className="text-xs text-gray-500 mt-1">Separes par des virgules</p>
           </div>
-        </div>
 
-        {/* Submit */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleSubmit}
-            disabled={!canSubmit || submitting}
-            className="btn btn-primary flex items-center gap-2"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Lancement en cours...
-              </>
-            ) : (
-              <>
-                <Clapperboard className="w-4 h-4" />
-                Lancer la generation pub
-              </>
-            )}
-          </button>
-
-          {result && (
-            <div className={`flex items-center gap-2 text-sm ${result.success ? 'text-green-600' : 'text-red-600'}`}>
-              {result.success ? (
+          {/* Submit */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleSubmit}
+              disabled={!canSubmit || submitting}
+              className="btn btn-primary flex items-center gap-2"
+            >
+              {submitting ? (
                 <>
-                  <CheckCircle className="w-4 h-4" />
-                  Generation lancee (trace: {result.traceId})
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Lancement...
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-4 h-4" />
-                  {result.error}
+                  <Clapperboard className="w-4 h-4" />
+                  Lancer la génération
                 </>
               )}
-            </div>
-          )}
-        </div>
-      </div>
+            </button>
 
-      {/* Info card */}
-      <div className="card bg-blue-50 border-blue-200">
-        <h3 className="font-semibold text-blue-900 mb-2">Mode scenario_pub</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>&bull; Scene 1A : transition quotidien ennuyeux &rarr; environnement de reve (couleurs desaturees &rarr; vives)</li>
-          <li>&bull; Scene 1B : premiers pas dans le reve (keyframe partage avec fin 1A)</li>
-          <li>&bull; Scenes 2+ : scenes de reve independantes (same_day=false, tenue variable)</li>
-          <li>&bull; Derniere scene : ACCOMPLISSEMENT avec regard camera autorise</li>
-        </ul>
+            {result && (
+              <div className={`flex items-center gap-2 text-sm ${result.success ? 'text-green-600' : 'text-red-600'}`}>
+                {result.success ? (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    Lancé (trace: {result.traceId})
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="w-4 h-4" />
+                    {result.error}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right: Scene composer */}
+        <div className="space-y-4">
+          <div className="card">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900">Scènes ({scenes.length})</h2>
+            </div>
+
+            {/* Add scene buttons */}
+            <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b border-gray-100">
+              {(Object.keys(SCENE_TYPE_INFO) as SceneType[]).map((type) => {
+                const info = SCENE_TYPE_INFO[type];
+                return (
+                  <button
+                    key={type}
+                    onClick={() => addScene(type)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-colors hover:opacity-80 ${info.color}`}
+                    title={info.description}
+                  >
+                    {info.icon}
+                    <Plus className="w-3 h-3" />
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Scene list */}
+            <div className="space-y-2 max-h-[500px] overflow-y-auto">
+              {scenes.map((scene, index) => {
+                const info = SCENE_TYPE_INFO[scene.type];
+                return (
+                  <div
+                    key={scene.id}
+                    draggable
+                    onDragStart={() => handleSceneDragStart(index)}
+                    onDragOver={(e) => handleSceneDragOver(e, index)}
+                    onDragEnd={handleSceneDragEnd}
+                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-move transition-all ${
+                      draggedIndex === index ? 'opacity-50 scale-95' : ''
+                    } ${info.color}`}
+                  >
+                    <GripVertical className="w-4 h-4 opacity-50 flex-shrink-0" />
+                    <span className="flex items-center gap-1.5 text-xs font-medium flex-1">
+                      {info.icon}
+                      <span className="truncate">{info.label}</span>
+                    </span>
+                    <span className="text-[10px] opacity-60 flex-shrink-0">#{index + 1}</span>
+                    <button
+                      onClick={() => removeScene(index)}
+                      className="p-1 hover:bg-white/50 rounded opacity-60 hover:opacity-100"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {scenes.length === 0 && (
+              <p className="text-sm text-gray-400 text-center py-4">
+                Aucune scène. Ajoutez-en avec les boutons ci-dessus.
+              </p>
+            )}
+          </div>
+
+          {/* Summary */}
+          <div className="card bg-gray-50 text-sm">
+            <h3 className="font-medium text-gray-700 mb-2">Résumé</h3>
+            <ul className="space-y-1 text-gray-600">
+              {hasTransition && <li>• Transition quotidien → rêve</li>}
+              {freeCount > 0 && <li>• {freeCount} scène(s) libre(s)</li>}
+              {povCount > 0 && <li>• {povCount} scène(s) POV</li>}
+              {scenes.some(s => s.type === 'accomplishment') && (
+                <li>• Accomplissement final (regard caméra)</li>
+              )}
+            </ul>
+          </div>
+
+          {/* Legend */}
+          <div className="card text-xs space-y-2">
+            <h3 className="font-medium text-gray-700 mb-2">Légende</h3>
+            {(Object.entries(SCENE_TYPE_INFO) as [SceneType, typeof SCENE_TYPE_INFO[SceneType]][]).map(([type, info]) => (
+              <div key={type} className="flex items-start gap-2">
+                <span className={`flex-shrink-0 p-1 rounded ${info.color}`}>{info.icon}</span>
+                <div>
+                  <span className="font-medium">{info.label}</span>
+                  <p className="text-gray-500">{info.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

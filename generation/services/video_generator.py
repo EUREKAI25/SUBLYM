@@ -33,15 +33,20 @@ class VideoGenerator:
     
     def generate(self, start_image: str, end_image: str, action: str,
                  camera_movement: str = "static", is_pov: bool = False,
-                 duration: int = 6, output_path: Optional[str] = None) -> Dict:
-        
+                 duration: int = 6, output_path: Optional[str] = None,
+                 transition_path: str = "") -> Dict:
+
         if self.dry_run:
             return self._mock_generate(output_path)
-        
+
         if is_pov:
             prompt = PROMPT_VIDEO_POV.format(duration=duration, action=action)
         else:
-            prompt = PROMPT_VIDEO.format(duration=duration, action=action, camera_movement=camera_movement)
+            prompt = PROMPT_VIDEO.format(
+                duration=duration, action=action,
+                camera_movement=camera_movement,
+                transition_path=transition_path or action
+            )
         
         if self.verbose:
             print(f"\n--- PROMPT VIDEO ---\n{prompt}\n---")

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { API_ENDPOINTS, fetchWithAuth, fetchUpload } from '@/lib/config';
+import { API_ENDPOINTS, API_BASE_URL, fetchWithAuth, fetchUpload } from '@/lib/config';
 
 export interface GenerationStatus {
   runId: string;
@@ -15,12 +15,15 @@ export interface GenerationStatus {
 export interface GenerationInput {
   dream: string;
   reject?: string[];
-  photosUser: File[];
+  photosUser?: File[];
+  useExistingPhotos?: boolean;
   photosOther?: File[];
   photosDecor?: File[];
   style?: string;
   characterAName?: string;
   characterBName?: string;
+  plan?: string;
+  smileConsent?: string;
 }
 
 export function useGeneration() {
@@ -30,6 +33,7 @@ export function useGeneration() {
   const [error, setError] = useState<string | null>(null);
 
   const uploadPhotos = useCallback(async (photos: File[], type: 'user' | 'other' | 'decor'): Promise<string[]> => {
+    console.log(`[GEN] Uploading ${photos.length} photos (type: ${type})`);
     const formData = new FormData();
     for (const photo of photos) {
       formData.append('photos', photo);
@@ -40,20 +44,38 @@ export function useGeneration() {
 
     if (!response.ok) {
       const err = await response.json();
+      console.error(`[GEN] Upload failed:`, err);
       throw new Error(err.error || 'Upload failed');
     }
 
     const data = await response.json();
+    console.log(`[GEN] Upload OK: ${data.photos.length} photos, total: ${data.total}`);
     return data.photos.map((p: { id: number }) => p.id.toString());
+  }, []);
+
+  const startSmile = useCallback(async (): Promise<boolean> => {
+    console.log('[GEN] Starting Smile offer...');
+    const response = await fetchWithAuth(`${API_BASE_URL}/smile/start`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      console.error('[GEN] Smile start failed:', err);
+      throw new Error(err.error || err.message || 'Failed to start Smile');
+    }
+
+    const data = await response.json();
+    console.log('[GEN] Smile start OK:', data);
+    return true;
   }, []);
 
   const createDream = useCallback(async (
     description: string,
     reject?: string[],
-    style?: string,
-    characterAName?: string,
-    characterBName?: string
   ): Promise<string> => {
+    console.log(`[GEN] Creating dream (${description.length} chars, reject: ${reject?.length || 0})`);
     const response = await fetchWithAuth(API_ENDPOINTS.dreams, {
       method: 'POST',
       body: JSON.stringify({
@@ -64,14 +86,18 @@ export function useGeneration() {
 
     if (!response.ok) {
       const err = await response.json();
-      throw new Error(err.error || 'Failed to create dream');
+      const msg = typeof err.error === 'string' ? err.error : err.message || JSON.stringify(err.error) || 'Failed to create dream';
+      console.error(`[GEN] Dream creation failed:`, msg);
+      throw new Error(msg);
     }
 
     const data = await response.json();
+    console.log(`[GEN] Dream created: id=${data.dream.id}`);
     return data.dream.id.toString();
   }, []);
 
   const startGeneration = useCallback(async (dreamId: string): Promise<string> => {
+    console.log(`[GEN] Starting generation for dream ${dreamId}`);
     const response = await fetchWithAuth(API_ENDPOINTS.generateDream(dreamId), {
       method: 'POST',
       body: JSON.stringify({}),
@@ -79,10 +105,12 @@ export function useGeneration() {
 
     if (!response.ok) {
       const err = await response.json();
+      console.error(`[GEN] Generation start failed:`, err);
       throw new Error(err.error || 'Failed to start generation');
     }
 
     const data = await response.json();
+    console.log(`[GEN] Generation started: traceId=${data.run.traceId}, photosOnly=${data.run.isPhotosOnly}`);
     return data.run.traceId;
   }, []);
 
@@ -109,30 +137,39 @@ export function useGeneration() {
   }, []);
 
   const generate = useCallback(async (input: GenerationInput) => {
+    console.log('[GEN] === GENERATE START ===');
+    console.log('[GEN] Input:', {
+      dream: input.dream.substring(0, 50) + '...',
+      photosCount: input.photosUser?.length || 0,
+      useExisting: input.useExistingPhotos,
+      plan: input.plan,
+      smileConsent: input.smileConsent,
+    });
+
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // 1. Upload photos
-      const userPhotoIds = await uploadPhotos(input.photosUser, 'user');
-
-      let otherPhotoIds: string[] = [];
-      if (input.photosOther && input.photosOther.length > 0) {
-        otherPhotoIds = await uploadPhotos(input.photosOther, 'other');
+      // 0. If Smile, activate the offer first (grants subscription)
+      if (input.plan === 'smile') {
+        await startSmile();
       }
 
-      let decorPhotoIds: string[] = [];
-      if (input.photosDecor && input.photosDecor.length > 0) {
-        decorPhotoIds = await uploadPhotos(input.photosDecor, 'decor');
+      // 1. Upload photos (skip if using existing profile photos)
+      if (!input.useExistingPhotos && input.photosUser && input.photosUser.length > 0) {
+        try {
+          await uploadPhotos(input.photosUser, 'user');
+        } catch (uploadErr) {
+          console.warn('[GEN] Photo upload failed (may already exist), continuing:', uploadErr);
+        }
+      } else {
+        console.log('[GEN] Skipping photo upload (useExisting or no photos)');
       }
 
       // 2. Create dream
       const dreamId = await createDream(
         input.dream,
         input.reject,
-        input.style,
-        input.characterAName,
-        input.characterBName
       );
 
       // 3. Start generation (returns traceId for polling)
@@ -149,11 +186,11 @@ export function useGeneration() {
 
           if (currentStatus.status === 'completed' || currentStatus.status === 'failed' || currentStatus.status === 'cancelled') {
             setIsPolling(false);
+            console.log(`[GEN] Final status: ${currentStatus.status}`);
             if (currentStatus.status === 'failed') {
-              setError(currentStatus.error || 'La génération a échoué');
+              setError(currentStatus.error || 'La generation a echoue');
             }
           } else {
-            // Continue polling every 3 seconds
             setTimeout(poll, 3000);
           }
         } catch (err) {
@@ -162,18 +199,19 @@ export function useGeneration() {
         }
       };
 
-      // Start polling
       poll();
 
+      console.log(`[GEN] === GENERATE OK === traceId=${traceId}`);
       return traceId;
     } catch (err) {
+      console.error('[GEN] === GENERATE FAILED ===', err);
       setIsSubmitting(false);
       setIsPolling(false);
       const message = err instanceof Error ? err.message : 'Une erreur est survenue';
       setError(message);
       throw err;
     }
-  }, [uploadPhotos, createDream, startGeneration, pollStatus]);
+  }, [uploadPhotos, startSmile, createDream, startGeneration, pollStatus]);
 
   const cancel = useCallback(async () => {
     if (!status?.runId) return;

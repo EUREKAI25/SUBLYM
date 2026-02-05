@@ -81,6 +81,7 @@ model User {
   email           String    @unique
   firstName       String
   lastName        String
+  phone           String?
   birthDate       DateTime?
   gender          String?   // male, female, other
   country         String?
@@ -557,6 +558,42 @@ model LegalDocument {
 
   @@index([type])
   @@index([type, isActive])
+}
+
+// ============================================
+// GENERATION PIPELINE CONFIG
+// ============================================
+
+model SceneType {
+  id              Int      @id @default(autoincrement())
+  code            String   // ACTION, INTERACTION, IMMERSION, etc.
+  mode            String   @default("all") // "all", "scenario", "scenario_pub"
+  description     String   @db.Text
+  minRatio        Float    @default(0)
+  maxRatio        Float    @default(1)
+  examples        String[] // ["marche", "cuisine", "joue musique"]
+  position        String?  // "1A", "1B" (pour TRANSITION_*)
+  allowsCameraLook Boolean @default(false)
+  enabled         Boolean  @default(true)
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([code, mode])
+}
+
+model PromptTemplate {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique // ANALYZE_CHARACTER, EXTRACT_DREAM_ELEMENTS, SCENARIO_GLOBAL, etc.
+  name        String   // Nom lisible : "Analyse personnage", "Scenario global"
+  description String?  @db.Text
+  template    String   @db.Text // Le contenu du prompt en FR avec {placeholders}
+  templateEn  String?  @db.Text // Traduction anglaise du prompt (utilisée pour l'exécution)
+  category    String   @default("generation") // generation, validation, video
+  version     Int      @default(1)
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ============================================

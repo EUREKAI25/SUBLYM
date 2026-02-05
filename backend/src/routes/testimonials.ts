@@ -198,4 +198,81 @@ app.get('/mine', authMiddleware, async (c) => {
   });
 });
 
+// ============================================
+// PUT /testimonials/:id
+// ============================================
+
+app.put('/:id', authMiddleware, zValidator('json', createTestimonialSchema), async (c) => {
+  const { user } = getAuthContext(c);
+  const testimonialId = parseInt(c.req.param('id'));
+
+  const testimonial = await prisma.testimonial.findUnique({
+    where: { id: testimonialId },
+  });
+
+  if (!testimonial || testimonial.userId !== user.id) {
+    throw new NotFoundError('Testimonial');
+  }
+
+  if (testimonial.status === 'approved') {
+    throw new ValidationError('Cannot edit an approved testimonial');
+  }
+
+  const data = c.req.valid('json');
+
+  const updated = await prisma.testimonial.update({
+    where: { id: testimonialId },
+    data: {
+      text: data.text,
+      rating: data.rating,
+      consentDisplay: data.consentDisplay,
+      consentMarketing: data.consentMarketing || false,
+      status: 'pending', // Reset to pending after edit
+      rejectionReason: null,
+    },
+  });
+
+  return c.json({
+    success: true,
+    testimonial: { id: updated.id, status: updated.status },
+    message: 'Testimonial updated and submitted for review.',
+  });
+});
+
+// ============================================
+// DELETE /testimonials/:id
+// ============================================
+
+app.delete('/:id', authMiddleware, async (c) => {
+  const { user } = getAuthContext(c);
+  const testimonialId = parseInt(c.req.param('id'));
+
+  const testimonial = await prisma.testimonial.findUnique({
+    where: { id: testimonialId },
+  });
+
+  if (!testimonial || testimonial.userId !== user.id) {
+    throw new NotFoundError('Testimonial');
+  }
+
+  // Delete associated files
+  if (testimonial.proofPath || testimonial.videoPath) {
+    const testimonialDir = path.join(STORAGE_PATH, 'testimonials', testimonialId.toString());
+    try {
+      await fs.rm(testimonialDir, { recursive: true });
+    } catch (err) {
+      console.error('Failed to delete testimonial files:', err);
+    }
+  }
+
+  await prisma.testimonial.delete({
+    where: { id: testimonialId },
+  });
+
+  return c.json({
+    success: true,
+    message: 'Testimonial deleted',
+  });
+});
+
 export { app as testimonialsRoutes };

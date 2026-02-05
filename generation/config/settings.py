@@ -1,7 +1,114 @@
 """
 Sublym v4 - Configuration par défaut
 VERSION MISE À JOUR - Février 2026
+- Scenario Agent v7: 11 étapes avec validation
 """
+
+# =============================================================================
+# RÈGLES DE PRODUCTION VIDÉO (par catégorie)
+# =============================================================================
+
+RULES_TECHNIQUE = """\
+- Mouvements lents à modérés (l'IA génère des artefacts sur mouvements rapides)
+- Pas de rotation caméra rapide
+- Éviter les foules denses
+- Max 2 personnages principaux par plan
+- Pas de texte lisible dans le cadre
+- Éviter reflets complexes (miroirs, eau agitée)
+- Préférer éclairage naturel diffus"""
+
+RULES_PERSONNAGES = """\
+- Pas de demi-tour des personnages
+- Expressions positives uniquement (joie, tendresse, émerveillement, complicité)
+- JAMAIS d'air triste, inquiet, effrayé, en colère
+- Figurants floutés / hors focus (seuls protagonistes nets)
+- Pas de gros plan visage (révèle l'artifice IA)
+- Vue de dos = brève uniquement, jamais scène entière
+- Pas de dos prolongé à la caméra
+- Expressions faciales naturelles, pas exagérées
+- Contact visuel entre personnages = connexion
+- Gestes cohérents avec l'émotion
+- Proximité physique progressive (romance)
+- Personnages normaux, pas hollywoodiens (réalisme et identification)
+- Style vestimentaire adapté au lieu et à l'activité (crédibilité)"""
+
+RULES_CADRAGE = """\
+Plans autorisés:
+- Plan d'ensemble (extreme wide): établir le lieu
+- Plan large (wide): action dans l'environnement
+- Plan moyen (medium): dialogue, interaction
+- Plan américain (cowboy): personnage en action
+- Plan rapproché poitrine (medium close-up): émotion sans gros plan visage
+- PAS de gros plan visage, PAS de très gros plan
+
+Mouvements caméra autorisés:
+- Fixe: stabilité, contemplation
+- Travelling avant lent: entrer dans l'intimité
+- Travelling arrière lent: révéler le contexte
+- Travelling latéral lent: accompagner le mouvement
+- Panoramique lent: découverte du lieu
+- Léger mouvement (handheld subtle): authenticité
+
+Angles:
+- Niveau des yeux: neutre, identification
+- Légère plongée: vulnérabilité, tendresse
+- Légère contre-plongée: puissance, admiration"""
+
+RULES_NARRATIVES = """\
+- Chaque scène a un objectif émotionnel clair
+- Progression d'intensité émotionnelle
+- Scène finale = accomplissement visible
+- Pas de scène sans lien avec l'objectif du rêve
+- Transitions logiques (lieu/temps)"""
+
+RULES_COHERENCE = """\
+- Palette couleurs cohérente sur toute la vidéo
+- Tenues vestimentaires cohérentes dans le temps
+- Éclairage cohérent avec l'heure indiquée
+- Météo constante sauf indication contraire"""
+
+RULES_RYTHME = """\
+- Répartition durée à discrétion (±20% par scène)
+- Scène d'ouverture peut être plus longue (immersion)
+- Scène finale peut être plus longue (impact)
+- Pas de scène < 4s
+- Pas d'action statique > 3s"""
+
+RULES_FORMAT = """\
+- Style descriptif neutre, 3ème personne
+- JAMAIS de "vous", "Visualisez-vous", "Imaginez"
+- Descriptions factuelles et précises
+- Pas de répétition entre scènes"""
+
+PRODUCTION_RULES_BY_CATEGORY = {
+    "technique": RULES_TECHNIQUE,
+    "personnages": RULES_PERSONNAGES,
+    "cadrage": RULES_CADRAGE,
+    "narratives": RULES_NARRATIVES,
+    "coherence": RULES_COHERENCE,
+    "rythme": RULES_RYTHME,
+    "format": RULES_FORMAT,
+}
+
+
+def get_rules(*categories: str) -> str:
+    """Retourne les règles combinées pour les catégories spécifiées.
+
+    Usage: get_rules("technique", "personnages", "format")
+    """
+    parts = []
+    for cat in categories:
+        text = PRODUCTION_RULES_BY_CATEGORY.get(cat, "")
+        if text:
+            parts.append(f"## {cat.upper()}\n{text}")
+    if not parts:
+        return ""
+    return "RÈGLES DE PRODUCTION:\n\n" + "\n\n".join(parts)
+
+
+# Full rules (rétrocompatibilité)
+PRODUCTION_RULES = get_rules(*PRODUCTION_RULES_BY_CATEGORY.keys())
+
 
 # =============================================================================
 # PRESETS D'ÉTAPES
@@ -84,10 +191,12 @@ PRESETS = {
 DEFAULT_CONFIG = {
     # Scènes
     "nb_scenes": 6,
+    "duree_scene": 6,  # secondes par scène
     "nb_pov_scenes": 1,
     "mode": "scenario",  # "scenario", "free_scenes", ou "scenario_pub"
     "imposed_scenes": None,
     "daily_context": "",  # Mode scenario_pub : description du quotidien ennuyeux
+    "nb_scenes_avant": 1,  # Mode scenario_pub : nb de scènes quotidien avant le switch
     "custom_palette": None,
     "palette_complement_skin": True,
 
@@ -96,7 +205,7 @@ DEFAULT_CONFIG = {
     "prompt_strict_suffix": "",
 
     # Shooting
-    "shot_types": ["close_up", "medium", "medium_full", "full", "wide"],
+    "shot_types": ["close_up", "medium", "medium_full", "full", "wide", "profile", "back_three_quarter", "far"],
     "camera_angles": ["eye_level", "low_angle", "high_angle"],
     "camera_movements": ["static", "slow_pan_left", "slow_pan_right", "slow_zoom_in", "slow_zoom_out", "tracking"],
     "lighting_directions": ["front", "side", "back", "rim"],
@@ -155,50 +264,87 @@ DEFAULT_CONFIG = {
         "action_match": {"min": 0.7, "ref": "pitch", "label": "Action correspond"},
     },
 
-    # Critères additionnels pour le mode scenario_pub (scènes de transition)
+    # Critères additionnels pour le mode scenario_pub (scènes quotidien)
     "validation_config_pub_transition": {
         "no_scifi_effect": {
             "min": 0.95, "ref": "none",
-            "label": "NO sci-fi effects: no portal, no magic, no light rays, no particles, no morphing. The transition is a cinematic CUT, NOT a special effect."
+            "label": "NO sci-fi effects: no portal, no magic, no light rays, no particles, no morphing."
         },
         "no_caricature": {
             "min": 0.9, "ref": "none",
-            "label": "NO caricature: image must be photorealistic and credible. No unrealistic colors, no impossible fantasy setting, no supernatural lighting."
-        },
-        "natural_surprise": {
-            "min": 0.85, "ref": "none",
-            "label": "NATURAL surprise: the wonder reaction must be that of a real person. No exaggerated wide-open mouth, no cartoon bulging eyes. A slight step back, raised eyebrows, slightly open mouth = OK."
-        },
-        "genuine_happiness": {
-            "min": 0.85, "ref": "none",
-            "label": "GENUINE happiness: the smile and joy must appear sincere and spontaneous. No forced, frozen, or toothpaste-commercial smile. A real smile reaches the eyes (Duchenne smile)."
+            "label": "NO caricature: image must be photorealistic and credible. No unrealistic colors, no supernatural lighting."
         },
         "daily_scene_mundane": {
             "min": 0.85, "ref": "pitch",
-            "label": "CREDIBLE daily scene: the daily setting (start 1A) must be a real recognizable mundane place (office, transport, kitchen...), not an already stylized or aestheticized location."
-        },
-        "palette_contrast_visible": {
-            "min": 0.8, "ref": "none",
-            "label": "VISIBLE palette contrast: if scene 1A, start must be clearly desaturated/dull and end clearly colorful/luminous. The difference must be striking."
+            "label": "CREDIBLE daily scene: must be a real recognizable mundane place (office, transport, kitchen...)."
         },
         "emotion_arc_coherent": {
             "min": 0.8, "ref": "pitch",
-            "label": "COHERENT emotional arc: character expression must match the arc moment (weariness for start 1A, wonder for end 1A, joy for 1B)."
+            "label": "COHERENT emotional arc: character expression must match the scene moment."
         },
     },
 
-    # Validation faciale DeepFace + ArcFace (Gemini Vision désactivé)
+    # Critères de validation pour le SWITCH décor (Gemini background swap)
+    "validation_config_pub_switch": {
+        "face_identical": {
+            "min": 0.95, "ref": "source_image",
+            "label": "Face IDENTICAL to source image: same person, same features, same expression"
+        },
+        "pose_identical": {
+            "min": 0.9, "ref": "source_image",
+            "label": "Body position IDENTICAL: same orientation, same arm/hand positions, same posture"
+        },
+        "clothing_identical": {
+            "min": 0.9, "ref": "source_image",
+            "label": "Clothing IDENTICAL: same outfit, same colors, same patterns"
+        },
+        "hair_identical": {
+            "min": 0.9, "ref": "source_image",
+            "label": "Hair IDENTICAL: same length, same style, same color"
+        },
+        "environment_changed": {
+            "min": 0.85, "ref": "none",
+            "label": "Environment COMPLETELY different from original: new setting, new background, new lighting"
+        },
+        "environment_matches_dream": {
+            "min": 0.8, "ref": "pitch",
+            "label": "New environment matches the dream description"
+        },
+        "no_scifi_effect": {
+            "min": 0.95, "ref": "none",
+            "label": "NO sci-fi effects: no portal, no particles, no morphing, no magic light"
+        },
+        "realistic_lighting": {
+            "min": 0.85, "ref": "none",
+            "label": "Realistic lighting coherent with the new location"
+        },
+    },
+
+    # Validation faciale biométrique : DeepFace + ArcFace uniquement
     "face_validation": {
-        "gemini_min": 0.7,
-        "tolerance": 0.4,
+        "tolerance": 0.3,
         "threshold": 0.8,
+    },
+
+    # Tolérance faciale adaptée au type de plan
+    # None = skip face validation (visage non visible)
+    "face_tolerance_by_shot": {
+        "close_up": 0.2,            # Visage = sujet principal, strict
+        "medium": 0.3,              # Standard (défaut)
+        "medium_full": 0.4,         # Visage plus petit
+        "full": 0.5,                # Plan pied, visage petit
+        "wide": 0.6,                # Plan large, visage très petit
+        "far": 0.6,                 # Très lointain
+        "profile": 0.4,             # Profil, face partielle
+        "back_three_quarter": None,  # Dos → pas de validation faciale
     },
 
     # Modèles
     "models": {
         "scenario": "gpt-4o",
+        "scenario_validation": "gpt-4o-mini",  # Modèle moins cher pour V1/V2/V3
         "image": "gemini-3-pro-image-preview",
-        "vision": None,  # Désactivé: DeepFace + ArcFace suffisent
+        "vision": "gemini-2.5-pro",  # Validation visuelle (tenue, accessoires, action, décor)
         "video": "fal-ai/minimax/hailuo-02/standard/image-to-video",
     },
 
@@ -207,6 +353,8 @@ DEFAULT_CONFIG = {
         "video_per_second": 0.045,  # Hailuo 02 Standard
         "scenario_input_per_1k": 0.005,  # GPT-4o input
         "scenario_output_per_1k": 0.015,  # GPT-4o output
+        "validation_input_per_1k": 0.00015,  # GPT-4o-mini input
+        "validation_output_per_1k": 0.0006,  # GPT-4o-mini output
     },
 }
 
@@ -217,6 +365,11 @@ DEFAULT_MODELS = DEFAULT_CONFIG["models"]
 # =============================================================================
 # TYPES DE SCÈNES
 # =============================================================================
+
+def get_scene_types(config):
+    """Return scene types from external config (database), or hardcoded defaults."""
+    return config.get("scene_types", SCENE_TYPES)
+
 
 SCENE_TYPES = {
     "ACTION": {
@@ -251,6 +404,17 @@ SCENE_TYPES = {
         "allows_camera_look": True
     },
     # Types réservés au mode scenario_pub
+    "PRE_SWITCH": {
+        "description": "Scène quotidien ennuyeux avant le switch Sublym. Palette désaturée, émotions négatives légères.",
+        "mode": "scenario_pub",
+        "examples": ["bureau morne", "métro bondé", "appartement le soir seul(e)"],
+    },
+    "DISCOVERY": {
+        "description": "Découverte du nouveau décor après le switch. Arc émotionnel atypique: confusion → émerveillement → joie → élan.",
+        "mode": "scenario_pub",
+        "examples": ["confusion → émerveillement → joie → premier élan"],
+    },
+    # Legacy (rétrocompatibilité)
     "TRANSITION_AWAKENING": {
         "description": "Le quotidien ennuyeux se transforme en environnement de rêve. Le personnage passe de la lassitude à l'émerveillement.",
         "mode": "scenario_pub",

@@ -3,7 +3,7 @@ import { Save, Plus, Search, Globe, ChevronDown, ChevronRight, Edit2, Trash2, Up
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 interface Text {
   id: number;

@@ -54,6 +54,17 @@ export const API_ENDPOINTS = {
   // Runs (list)
   runs: `${API_BASE_URL}/runs`,
 
+  // Testimonials
+  testimonials: `${API_BASE_URL}/testimonials`,
+  myTestimonials: `${API_BASE_URL}/testimonials/mine`,
+  testimonialProof: (id: number) => `${API_BASE_URL}/testimonials/${id}/proof`,
+
+  // Photos management
+  photosReorder: `${API_BASE_URL}/photos/reorder`,
+
+  // Static pages (CGV, privacy, etc.)
+  staticPage: (slug: string, lang: string) => `${API_BASE_URL}/config/pages/${slug}?lang=${lang}`,
+
   // Contact
   contact: `${API_BASE_URL}/contact`,
 

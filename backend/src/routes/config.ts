@@ -44,13 +44,13 @@ app.get('/texts/:lang', async (c) => {
 
 app.get('/pricing', async (c) => {
   const lang = c.req.query('lang') || 'fr';
-  
+
   // Get all enabled pricing levels
   const levels = await prisma.pricingLevel.findMany({
     where: { enabled: true },
     orderBy: { displayOrder: 'asc' },
   });
-  
+
   // Get pricing-related texts for localization
   const texts = await prisma.text.findMany({
     where: {
@@ -58,12 +58,47 @@ app.get('/pricing', async (c) => {
       key: { startsWith: 'pricing.' },
     },
   });
-  
+
   const textsMap = texts.reduce((acc, t) => {
     acc[t.key] = t.value;
     return acc;
   }, {} as Record<string, string>);
-  
+
+  // Build localized feature lines from parametrized data
+  function buildFeatureLines(level: typeof levels[0]): string[] {
+    const lines: string[] = [];
+    // Photos
+    if (level.photosMin === level.photosMax) {
+      lines.push(textsMap['pricing.feature.photos_exact']?.replace('{{count}}', String(level.photosMin))
+        || `${level.photosMin} photos`);
+    } else {
+      lines.push(textsMap['pricing.feature.photos_range']?.replace('{{min}}', String(level.photosMin)).replace('{{max}}', String(level.photosMax))
+        || `${level.photosMin} à ${level.photosMax} photos`);
+    }
+    // Keyframes
+    lines.push(textsMap['pricing.feature.keyframes']?.replace('{{count}}', String(level.keyframesCount))
+      || `${level.keyframesCount} images générées`);
+    // Video / scenes
+    if (level.videoEnabled) {
+      lines.push(textsMap['pricing.feature.scenes']?.replace('{{count}}', String(level.scenesCount))
+        || `${level.scenesCount} scènes vidéo`);
+    }
+    // Generations
+    if (level.generationsPerMonth === -1) {
+      lines.push(textsMap['pricing.feature.generations_unlimited'] || 'Générations illimitées');
+    } else if (level.generationsPerMonth === 0) {
+      lines.push(textsMap['pricing.feature.generation_free'] || '1 génération offerte');
+    } else {
+      lines.push(textsMap['pricing.feature.generations']?.replace('{{count}}', String(level.generationsPerMonth))
+        || `${level.generationsPerMonth} génération(s)/mois`);
+    }
+    // Subliminal
+    if (level.subliminalEnabled) {
+      lines.push(textsMap['pricing.feature.subliminal'] || 'Messages subliminaux');
+    }
+    return lines;
+  }
+
   return c.json({
     levels: levels.map((level) => ({
       level: level.level,
@@ -78,6 +113,7 @@ app.get('/pricing', async (c) => {
         generationsPerMonth: level.generationsPerMonth,
         subliminalEnabled: level.subliminalEnabled,
       },
+      featureLines: buildFeatureLines(level),
       price: {
         monthly: Number(level.priceMonthly),
         yearly: Number(level.priceYearly),
@@ -224,6 +260,8 @@ app.get('/pages/:slug', async (c) => {
     content: page.content,
     metaTitle: page.metaTitle,
     metaDescription: page.metaDescription,
+    version: page.version,
+    updatedAt: page.updatedAt,
   });
 });
 

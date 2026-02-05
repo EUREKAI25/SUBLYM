@@ -41,7 +41,9 @@ app.get('/', async (c) => {
       progress: r.progress,
       videoUrl: r.videoPath ? `/storage/${r.videoPath}` : null,
       teaserUrl: r.teaserPath ? `/storage/${r.teaserPath}` : null,
-      keyframesUrls: [],
+      keyframesUrls: r.keyframesPaths
+        ? (r.keyframesPaths as string[]).map((p) => `/storage/${p}`)
+        : [],
       createdAt: r.createdAt,
       completedAt: r.completedAt,
       dream: r.dream,
@@ -126,7 +128,7 @@ app.get('/:traceId', async (c) => {
     response.scenesCount = run.scenesCount;
     response.duration = run.duration;
     response.completedAt = run.completedAt;
-    
+
     if (run.isPhotosOnly) {
       response.keyframesZipUrl = run.keyframesZipPath
         ? `/storage/${run.keyframesZipPath}`
@@ -136,11 +138,16 @@ app.get('/:traceId', async (c) => {
         ? `/storage/${run.videoPath}`
         : null;
     }
-    
+
     response.teaserUrl = run.teaserPath
       ? `/storage/${run.teaserPath}`
       : null;
-    
+
+    // Add keyframes URLs (used for blurred thumbnail in Smile recording)
+    response.keyframesUrls = run.keyframesPaths
+      ? (run.keyframesPaths as string[]).map((p) => `/storage/${p}`)
+      : [];
+
     // Only show cost to user in dev mode
     if (process.env.NODE_ENV === 'development') {
       response.costEur = run.costEur;

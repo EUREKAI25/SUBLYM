@@ -11,6 +11,7 @@ from .image_validator import ImageValidator
 from .face_validator import FaceValidator
 from .video_generator import VideoGenerator
 from .video_montage import VideoMontage
+from .audit_log import AuditLog
 
 __all__ = [
     "DreamAnalyzer",
@@ -22,4 +23,5 @@ __all__ = [
     "FaceValidator",
     "VideoGenerator",
     "VideoMontage",
+    "AuditLog",
 ]

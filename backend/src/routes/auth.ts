@@ -25,6 +25,7 @@ const registerSchema = z.object({
   birthDate: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   lang: z.string().length(2).default('fr'),
+  country: z.string().max(2).optional(),
   invitationCode: z.string().optional(),
   rgpdConsent: z.boolean().refine((v) => v === true, 'RGPD consent required'),
   marketingConsent: z.boolean().optional().default(false),
@@ -37,6 +38,7 @@ const registerAndCheckoutSchema = z.object({
   birthDate: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   lang: z.string().length(2).default('fr'),
+  country: z.string().max(2).optional(),
   rgpdConsent: z.boolean().refine((v) => v === true, 'RGPD consent required'),
   marketingConsent: z.boolean().optional().default(false),
   planLevel: z.number().int().min(1).max(3),
@@ -52,6 +54,7 @@ const registerAndSmileSchema = z.object({
   birthDate: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   lang: z.string().length(2).default('fr'),
+  country: z.string().max(2).optional(),
   rgpdConsent: z.boolean().refine((v) => v === true, 'RGPD consent required'),
   marketingConsent: z.boolean().optional().default(false),
   smileConsent: z.enum(['country_only', 'worldwide']),
@@ -160,6 +163,7 @@ app.post('/register', authRateLimiter, zValidator('json', registerSchema), async
       birthDate: data.birthDate ? new Date(data.birthDate) : null,
       gender: data.gender,
       lang: data.lang,
+      country: data.country,
       freeGenerations,
       rgpdConsent: true,
       rgpdConsentAt: new Date(),
@@ -198,9 +202,10 @@ app.post('/register', authRateLimiter, zValidator('json', registerSchema), async
     },
   });
   
-  // Send email
-  await sendMagicLink(user.email, magicLink.token, user.lang);
-  
+  // Send email — use request Origin so the link matches the frontend port
+  const origin = c.req.header('origin') || c.req.header('referer')?.replace(/\/[^/]*$/, '');
+  await sendMagicLink(user.email, magicLink.token, user.lang, origin);
+
   return c.json({
     success: true,
     message: 'Account created. Check your email for the magic link.',
@@ -239,6 +244,7 @@ app.post('/register-and-checkout', authRateLimiter, zValidator('json', registerA
       birthDate: data.birthDate ? new Date(data.birthDate) : null,
       gender: data.gender,
       lang: data.lang,
+      country: data.country,
       subscriptionLevel: 0,
       rgpdConsent: true,
       rgpdConsentAt: new Date(),
@@ -323,6 +329,7 @@ app.post('/register-and-smile', authRateLimiter, zValidator('json', registerAndS
       birthDate: data.birthDate ? new Date(data.birthDate) : null,
       gender: data.gender,
       lang: data.lang,
+      country: data.country,
       subscriptionLevel: smileConfig.premiumLevel,
       subscriptionEnd,
       rgpdConsent: true,
@@ -422,12 +429,18 @@ app.post('/magic-link', authRateLimiter, zValidator('json', magicLinkSchema), as
     });
   }
   
-  // Send email
-  await sendMagicLink(user.email, magicLink.token, lang || user.lang);
-  
+  // Send email — use request Origin so the link matches the frontend port
+  const origin = c.req.header('origin') || c.req.header('referer')?.replace(/\/[^/]*$/, '');
+  const frontendUrl = origin || process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
+  const loginUrl = `${frontendUrl}/login?token=${magicLink.token}`;
+  await sendMagicLink(user.email, magicLink.token, lang || user.lang, origin);
+
+  // En dev, renvoyer le lien directement dans la réponse
+  const isDev = process.env.ENVIRONMENT !== 'production';
   return c.json({
     success: true,
     message: 'If an account exists with this email, a magic link has been sent.',
+    ...(isDev ? { devLoginUrl: loginUrl } : {}),
   });
 });
 
@@ -491,7 +504,7 @@ app.post('/refresh', zValidator('json', refreshSchema), async (c) => {
   
   try {
     const { verify } = await import('hono/jwt');
-    const payload = await verify(refreshToken, process.env.JWT_SECRET!) as JWTPayload;
+    const payload = await verify(refreshToken, process.env.JWT_SECRET!, 'HS256') as JWTPayload;
     
     if (payload.type !== 'refresh') {
       throw new UnauthorizedError('Invalid token type');
@@ -604,6 +617,40 @@ app.post('/logout', authMiddleware, async (c) => {
   return c.json({
     success: true,
     message: 'Logged out successfully',
+  });
+});
+
+// PUT /auth/me (update profile)
+const updateProfileSchema = z.object({
+  country: z.string().max(2).optional(),
+  lang: z.string().length(2).optional(),
+});
+
+app.put('/me', authMiddleware, zValidator('json', updateProfileSchema), async (c) => {
+  const { user } = getAuthContext(c);
+  const data = c.req.valid('json');
+
+  const updateData: Record<string, string> = {};
+  if (data.country !== undefined) updateData.country = data.country;
+  if (data.lang !== undefined) updateData.lang = data.lang;
+
+  if (Object.keys(updateData).length === 0) {
+    return c.json({ success: true, message: 'Nothing to update' });
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: updateData,
+  });
+
+  return c.json({
+    success: true,
+    user: {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      country: updatedUser.country,
+      lang: updatedUser.lang,
+    },
   });
 });
 

@@ -122,6 +122,9 @@ app.post('/upload', uploadRateLimiter, async (c) => {
     // Save file
     await fs.writeFile(filePath, processed);
     
+    // Auto-verify if Rekognition is not configured
+    const autoVerify = !process.env.AWS_ACCESS_KEY_ID;
+
     // Create database record
     const photo = await prisma.photo.create({
       data: {
@@ -132,7 +135,7 @@ app.post('/upload', uploadRateLimiter, async (c) => {
         mimeType: 'image/jpeg',
         size: processed.length,
         order: currentPhotos + i,
-        verified: false,
+        verified: autoVerify,
       },
     });
     

@@ -3,6 +3,7 @@ export { LoginPage } from './LoginPage';
 export { CreatePage } from './CreatePage';
 export { GalleryPage } from './GalleryPage';
 export { AccountPage } from './AccountPage';
+export { ProfilePage } from './ProfilePage';
 export { WatchPage } from './WatchPage';
 export { ContactPage } from './ContactPage';
 export { TermsPage } from './TermsPage';

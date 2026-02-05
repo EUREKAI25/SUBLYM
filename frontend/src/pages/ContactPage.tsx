@@ -56,12 +56,12 @@ export function ContactPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center"
             >
-              <div className="card bg-gradient-to-br from-wine-50 to-blush-50 border-wine-100">
-                <CheckCircle className="w-16 h-16 text-wine-500 mx-auto mb-6" />
-                <h1 className="font-display text-2xl text-wine-900 mb-3">
+              <div className="card bg-gradient-to-br from-teal-50 to-blush-50 border-teal-100">
+                <CheckCircle className="w-16 h-16 text-teal-500 mx-auto mb-6" />
+                <h1 className="font-display text-2xl text-teal-900 mb-3">
                   {t('contact.successTitle')}
                 </h1>
-                <p className="text-wine-700 mb-8">
+                <p className="text-teal-700 mb-8">
                   {t('contact.successMessage')}
                 </p>
                 <Link to="/" className="btn-primary inline-flex items-center gap-2">
@@ -76,10 +76,10 @@ export function ContactPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="text-center mb-8">
-                <h1 className="font-display text-3xl sm:text-4xl text-wine-900 mb-3">
+                <h1 className="font-display text-3xl sm:text-4xl text-teal-900 mb-3">
                   {t('contact.title')}
                 </h1>
-                <p className="text-charcoal-600">
+                <p className="text-gray-600">
                   {t('contact.subtitle')}
                 </p>
               </div>
@@ -87,7 +87,7 @@ export function ContactPage() {
               <div className="card">
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-charcoal-700 mb-1">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                       {t('contact.nameLabel')}
                     </label>
                     <input
@@ -103,7 +103,7 @@ export function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-charcoal-700 mb-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                       {t('contact.emailLabel')} *
                     </label>
                     <input
@@ -119,7 +119,7 @@ export function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-charcoal-700 mb-1">
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
                       {t('contact.subjectLabel')}
                     </label>
                     <input
@@ -135,7 +135,7 @@ export function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-charcoal-700 mb-1">
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
                       {t('contact.messageLabel')} *
                     </label>
                     <textarea
