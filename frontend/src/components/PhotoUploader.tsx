@@ -76,7 +76,7 @@ export function PhotoUploader({
         {label ? (
           <div className="flex items-center gap-2">
             <Icon className="w-4 h-4 text-teal-600" />
-            <label className="font-display text-lg text-gray-800">
+            <label className="font-display text-lg text-dark">
               {label}
               {required && <span className="text-teal-500 ml-1">*</span>}
             </label>

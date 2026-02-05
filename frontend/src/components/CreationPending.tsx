@@ -59,7 +59,7 @@ export function CreationPending({ email, onCreateAnother }: CreationPendingProps
         </div>
 
         {/* Title */}
-        <h1 className="font-display text-2xl sm:text-3xl text-gray-900 mb-4">
+        <h1 className="font-display text-2xl sm:text-3xl text-dark mb-4">
           {t('pending.title')}
         </h1>
 
@@ -95,7 +95,7 @@ export function CreationPending({ email, onCreateAnother }: CreationPendingProps
 
         {/* Tips */}
         <div className="bg-white rounded-2xl p-6 border border-gray-100 text-left space-y-3">
-          <p className="font-medium text-gray-800 text-sm">
+          <p className="font-medium text-dark text-sm">
             {t('pending.whileWaiting')}
           </p>
           <ul className="space-y-2 text-sm text-gray-600">

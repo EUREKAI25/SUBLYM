@@ -78,7 +78,7 @@ export function LandingPage() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               {/* Titre */}
-              <h1 className="font-serif text-2xl sm:text-[2.25rem] md:text-[2.75rem] text-gray-900 mb-4 leading-tight">
+              <h1 className="font-serif text-2xl sm:text-[2.25rem] md:text-[2.75rem] text-dark mb-4 leading-tight">
                 {renderTitle()}
               </h1>
 
@@ -117,9 +117,9 @@ export function LandingPage() {
                     className="bg-white rounded-2xl p-6 text-center shadow-md border border-gray-100"
                   >
                     <div className="flex justify-center mb-4">
-                      <IconComponent className="w-10 h-10 text-gray-800" strokeWidth={1.5} />
+                      <IconComponent className="w-10 h-10 text-dark" strokeWidth={1.5} />
                     </div>
-                    <h3 className="font-display text-lg text-gray-800 mb-2">
+                    <h3 className="font-display text-lg text-dark mb-2">
                       {t(`landing.${step.titleKey}`)}
                     </h3>
                     <p className="text-gray-600 text-sm">

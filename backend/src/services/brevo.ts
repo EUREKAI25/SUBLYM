@@ -124,46 +124,46 @@ export async function sendMagicLink(email: string, token: string, lang: string =
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t.subject}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fefdfb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fefdfb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="100%" max-width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-          <!-- Header -->
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(26, 95, 110, 0.08);">
+          <!-- Logo -->
           <tr>
-            <td style="background: linear-gradient(135deg, #8f1d40 0%, #ab2049 50%, #c4a35a 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; letter-spacing: 0.1em;">SUBLYM</h1>
+            <td style="padding: 40px 40px 10px; text-align: center;">
+              <img src="https://preprod.sublym.org/logo.svg" alt="SUBLYM" width="180" style="max-width: 180px; height: auto;" />
             </td>
           </tr>
-          
+
           <!-- Content -->
           <tr>
-            <td style="padding: 40px;">
-              <h2 style="margin: 0 0 20px; color: #1a1a1a; font-size: 24px; text-align: center;">${t.title}</h2>
-              
-              <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6; text-align: center;">
+            <td style="padding: 10px 40px 40px;">
+              <h2 style="margin: 0 0 20px; color: #013833; font-size: 24px; text-align: center; font-weight: 600;">${t.title}</h2>
+
+              <p style="margin: 0 0 30px; color: #555555; font-size: 16px; line-height: 1.6; text-align: center;">
                 ${t.expire}
               </p>
-              
+
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #8f1d40 0%, #ab2049 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-size: 18px; font-weight: 600;">
+                    <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #1a5f6e 0%, #2a7a8c 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-size: 18px; font-weight: 600;">
                       ${t.button}
                     </a>
                   </td>
                 </tr>
               </table>
-              
+
               <p style="margin: 30px 0 0; color: #999999; font-size: 14px; text-align: center;">
                 ${t.ignore}
               </p>
             </td>
           </tr>
-          
+
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+            <td style="background-color: #fafafa; padding: 20px; text-align: center; border-top: 1px solid #e8eeef;">
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © ${new Date().getFullYear()} SUBLYM. All rights reserved.
               </p>
@@ -225,12 +225,31 @@ export async function sendWelcomeEmail(email: string, firstName: string, lang: s
   <meta charset="utf-8">
   <title>${t.subject}</title>
 </head>
-<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-  <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px;">
-    <h1 style="color: #8f1d40; text-align: center; letter-spacing: 0.1em;">SUBLYM</h1>
-    <h2>${t.greeting}</h2>
-    <p>${t.message}</p>
-  </div>
+<body style="margin: 0; padding: 0; font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fefdfb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fefdfb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(26, 95, 110, 0.08);">
+          <tr>
+            <td style="padding: 40px 40px 10px; text-align: center;">
+              <img src="https://preprod.sublym.org/logo.svg" alt="SUBLYM" width="180" style="max-width: 180px; height: auto;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 40px 40px;">
+              <h2 style="margin: 0 0 16px; color: #013833; font-size: 22px; font-weight: 600;">${t.greeting}</h2>
+              <p style="margin: 0; color: #555555; font-size: 16px; line-height: 1.6;">${t.message}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #fafafa; padding: 20px; text-align: center; border-top: 1px solid #e8eeef;">
+              <p style="margin: 0; color: #999999; font-size: 12px;">© ${new Date().getFullYear()} SUBLYM. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
   `;
@@ -304,15 +323,34 @@ export async function sendVideoReadyEmail(
   <meta charset="utf-8">
   <title>${t.subject}</title>
 </head>
-<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-  <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; text-align: center;">
-    <h1 style="color: #8f1d40; letter-spacing: 0.1em;">SUBLYM</h1>
-    <h2>${t.title}</h2>
-    <p>${t.message}</p>
-    <a href="${videoUrl}" style="display: inline-block; background: linear-gradient(135deg, #8f1d40, #ab2049); color: white; padding: 16px 40px; border-radius: 50px; text-decoration: none; margin-top: 20px;">
-      ${t.button}
-    </a>
-  </div>
+<body style="margin: 0; padding: 0; font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fefdfb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fefdfb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(26, 95, 110, 0.08);">
+          <tr>
+            <td style="padding: 40px 40px 10px; text-align: center;">
+              <img src="https://preprod.sublym.org/logo.svg" alt="SUBLYM" width="180" style="max-width: 180px; height: auto;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 40px 40px; text-align: center;">
+              <h2 style="margin: 0 0 16px; color: #013833; font-size: 24px; font-weight: 600;">${t.title}</h2>
+              <p style="margin: 0 0 24px; color: #555555; font-size: 16px; line-height: 1.6;">${t.message}</p>
+              <a href="${videoUrl}" style="display: inline-block; background: linear-gradient(135deg, #1a5f6e 0%, #2a7a8c 100%); color: #ffffff; padding: 16px 40px; border-radius: 50px; text-decoration: none; font-size: 18px; font-weight: 600;">
+                ${t.button}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #fafafa; padding: 20px; text-align: center; border-top: 1px solid #e8eeef;">
+              <p style="margin: 0; color: #999999; font-size: 12px;">© ${new Date().getFullYear()} SUBLYM. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
   `;
@@ -382,37 +420,37 @@ export async function sendInvitationEmail(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t.subject}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fefdfb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fefdfb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="100%" max-width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-          <!-- Header -->
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(26, 95, 110, 0.08);">
+          <!-- Logo -->
           <tr>
-            <td style="background: linear-gradient(135deg, #8f1d40 0%, #ab2049 50%, #c4a35a 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; letter-spacing: 0.1em;">SUBLYM</h1>
+            <td style="padding: 40px 40px 10px; text-align: center;">
+              <img src="https://preprod.sublym.org/logo.svg" alt="SUBLYM" width="180" style="max-width: 180px; height: auto;" />
             </td>
           </tr>
 
           <!-- Content -->
           <tr>
-            <td style="padding: 40px;">
-              <h2 style="margin: 0 0 20px; color: #1a1a1a; font-size: 24px; text-align: center;">${t.title}</h2>
+            <td style="padding: 10px 40px 40px;">
+              <h2 style="margin: 0 0 20px; color: #013833; font-size: 24px; text-align: center; font-weight: 600;">${t.title}</h2>
 
-              <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6; text-align: center;">
+              <p style="margin: 0 0 20px; color: #555555; font-size: 16px; line-height: 1.6; text-align: center;">
                 ${t.intro}
               </p>
 
               ${escapedMessage ? `
-              <div style="background-color: #faf5f0; border-left: 4px solid #c4a35a; padding: 16px 20px; margin: 0 0 24px; border-radius: 0 8px 8px 0;">
+              <div style="background-color: #f0f7f8; border-left: 4px solid #013833; padding: 16px 20px; margin: 0 0 24px; border-radius: 0 8px 8px 0;">
                 <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.6; font-style: italic;">
                   ${escapedMessage}
                 </p>
               </div>
               ` : ''}
 
-              <div style="background-color: #f0f9f0; border-radius: 12px; padding: 20px; text-align: center; margin: 0 0 30px;">
-                <p style="margin: 0; color: #2d7d2d; font-size: 20px; font-weight: bold;">
+              <div style="background-color: #f0f7f8; border-radius: 12px; padding: 20px; text-align: center; margin: 0 0 30px;">
+                <p style="margin: 0; color: #013833; font-size: 20px; font-weight: bold;">
                   🎁 ${t.gift}
                 </p>
               </div>
@@ -420,7 +458,7 @@ export async function sendInvitationEmail(
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #8f1d40 0%, #ab2049 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-size: 18px; font-weight: 600;">
+                    <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #1a5f6e 0%, #2a7a8c 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-size: 18px; font-weight: 600;">
                       ${t.button}
                     </a>
                   </td>
@@ -435,7 +473,7 @@ export async function sendInvitationEmail(
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+            <td style="background-color: #fafafa; padding: 20px; text-align: center; border-top: 1px solid #e8eeef;">
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © ${new Date().getFullYear()} SUBLYM. All rights reserved.
               </p>
@@ -559,16 +597,35 @@ export async function sendContactNotification(
   <meta charset="utf-8">
   <title>Nouveau message de contact</title>
 </head>
-<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-  <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px;">
-    <h1 style="color: #8f1d40; text-align: center; letter-spacing: 0.1em;">SUBLYM</h1>
-    <h2>Nouveau message de contact</h2>
-    <p><strong>De:</strong> ${name} (${email})</p>
-    <p><strong>Sujet:</strong> ${subject}</p>
-    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-    <p><strong>Message:</strong></p>
-    <p style="white-space: pre-wrap;">${message}</p>
-  </div>
+<body style="margin: 0; padding: 0; font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fefdfb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fefdfb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(26, 95, 110, 0.08);">
+          <tr>
+            <td style="padding: 40px 40px 10px; text-align: center;">
+              <img src="https://preprod.sublym.org/logo.svg" alt="SUBLYM" width="180" style="max-width: 180px; height: auto;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 40px 40px;">
+              <h2 style="margin: 0 0 16px; color: #013833; font-size: 22px; font-weight: 600;">Nouveau message de contact</h2>
+              <p style="margin: 0 0 8px; color: #555555;"><strong>De:</strong> ${name} (${email})</p>
+              <p style="margin: 0 0 16px; color: #555555;"><strong>Sujet:</strong> ${subject}</p>
+              <hr style="border: none; border-top: 1px solid #e8eeef; margin: 16px 0;">
+              <p style="margin: 0 0 8px; color: #555555;"><strong>Message:</strong></p>
+              <p style="margin: 0; color: #555555; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #fafafa; padding: 20px; text-align: center; border-top: 1px solid #e8eeef;">
+              <p style="margin: 0; color: #999999; font-size: 12px;">© ${new Date().getFullYear()} SUBLYM. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
   `;

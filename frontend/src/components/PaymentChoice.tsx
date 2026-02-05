@@ -145,7 +145,7 @@ export function PaymentChoice({
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Title */}
       <div className="text-center">
-        <h2 className="font-display text-2xl sm:text-3xl text-gray-900 mb-3">
+        <h2 className="font-display text-2xl sm:text-3xl text-dark mb-3">
           {t('pricing.title')}
         </h2>
         <p className="text-gray-600 max-w-md mx-auto">
@@ -160,7 +160,7 @@ export function PaymentChoice({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl bg-gradient-to-r from-teal-600 to-blush-500 p-5 sm:p-6"
+          className="rounded-2xl bg-gradient-to-r from-teal-700 to-teal-500 p-5 sm:p-6"
         >
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center gap-4 flex-1">
@@ -206,7 +206,7 @@ export function PaymentChoice({
               "px-4 py-2 rounded-full text-sm font-medium transition-all",
               billingPeriod === 'monthly'
                 ? "bg-white text-teal-700 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
+                : "text-gray-600 hover:text-dark"
             )}
           >
             {t('pricing.monthly')}
@@ -217,7 +217,7 @@ export function PaymentChoice({
               "px-4 py-2 rounded-full text-sm font-medium transition-all",
               billingPeriod === 'yearly'
                 ? "bg-white text-teal-700 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
+                : "text-gray-600 hover:text-dark"
             )}
           >
             {t('pricing.yearly')}
@@ -273,7 +273,7 @@ export function PaymentChoice({
               </div>
 
               {/* Name & Description */}
-              <h3 className="font-display text-lg text-gray-800 mb-1">
+              <h3 className="font-display text-lg text-dark mb-1">
                 {plan.name}
               </h3>
               <p className="text-sm text-gray-500 mb-3 line-clamp-2">

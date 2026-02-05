@@ -602,7 +602,7 @@ export function CreatePage() {
                           <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
                             <CheckCircle className="w-7 h-7 text-teal-600" />
                           </div>
-                          <h3 className="font-display text-lg text-gray-900 mb-2">
+                          <h3 className="font-display text-lg text-dark mb-2">
                             {t('create.useExistingPhotos')}
                           </h3>
                           <p className="text-sm text-gray-600 mb-3">
@@ -625,7 +625,7 @@ export function CreatePage() {
                         <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
                           <Camera className="w-7 h-7 text-teal-600" />
                         </div>
-                        <h3 className="font-display text-lg text-gray-900 mb-2">
+                        <h3 className="font-display text-lg text-dark mb-2">
                           {t('create.takePhotos')}
                         </h3>
                         <p className="text-sm text-gray-600">
@@ -640,7 +640,7 @@ export function CreatePage() {
                         <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
                           <Image className="w-7 h-7 text-gray-600 group-hover:text-teal-600 transition-colors" />
                         </div>
-                        <h3 className="font-display text-lg text-gray-900 mb-2">
+                        <h3 className="font-display text-lg text-dark mb-2">
                           {t('create.importPhotos')}
                         </h3>
                         <p className="text-sm text-gray-600">
@@ -725,12 +725,12 @@ export function CreatePage() {
                   {t('common.back')}
                 </button>
                 <div className="text-center mb-10">
-                  <h1 className="font-display text-3xl sm:text-4xl text-gray-900 mb-4">{t('create.dreamStepTitle')}</h1>
+                  <h1 className="font-display text-3xl sm:text-4xl text-dark mb-4">{t('create.dreamStepTitle')}</h1>
                   <p className="text-gray-600 max-w-lg mx-auto">{t('create.dreamStepSubtitle')}</p>
                 </div>
                 <form onSubmit={handleDreamSubmit} className="space-y-6">
                   <div className="card">
-                    <label className="flex items-center gap-2 font-display text-lg text-gray-800 mb-3">
+                    <label className="flex items-center gap-2 font-display text-lg text-dark mb-3">
                       <Heart className="w-5 h-5 text-teal-600 fill-teal-200" />
                       {t('create.dreamLabel')}
                       <span className="text-teal-500">*</span>
@@ -753,7 +753,7 @@ export function CreatePage() {
                   </div>
 
                   <div className="card">
-                    <label className="block font-display text-lg text-gray-800 mb-2">
+                    <label className="block font-display text-lg text-dark mb-2">
                       {t('create.rejectLabel')}
                     </label>
                     <p className="text-sm text-gray-500 mb-3">
@@ -831,7 +831,7 @@ export function CreatePage() {
 
                 <Loader2 className="w-10 h-10 text-teal-600 animate-spin mx-auto mb-6" />
 
-                <h2 className="font-display text-xl text-gray-900 mb-6">
+                <h2 className="font-display text-xl text-dark mb-6">
                   {status?.currentStep
                     ? `${t(`create.steps.${status.currentStep}`) || status.currentStep} ${status?.progress || 0}%`
                     : t('create.preparingVisualization')}
@@ -867,7 +867,7 @@ export function CreatePage() {
                   <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-10 h-10 text-teal-600" />
                   </div>
-                  <h2 className="font-display text-2xl text-gray-900 mb-3">
+                  <h2 className="font-display text-2xl text-dark mb-3">
                     {t('create.paymentValidated')}
                   </h2>
                   <p className="text-gray-600 mb-2">
@@ -891,7 +891,7 @@ export function CreatePage() {
                   <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-6">
                     <XCircle className="w-10 h-10 text-orange-600" />
                   </div>
-                  <h2 className="font-display text-2xl text-gray-900 mb-3">
+                  <h2 className="font-display text-2xl text-dark mb-3">
                     {t('create.paymentCancelled')}
                   </h2>
                   <p className="text-gray-600 mb-6">
@@ -923,7 +923,7 @@ export function CreatePage() {
                   <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
                     <AlertCircle className="w-10 h-10 text-red-600" />
                   </div>
-                  <h2 className="font-display text-2xl text-gray-900 mb-3">
+                  <h2 className="font-display text-2xl text-dark mb-3">
                     {t('create.paymentDeclined')}
                   </h2>
                   <p className="text-gray-600 mb-6">
@@ -1021,7 +1021,7 @@ function RegisterForm({ data, onChange, onSubmit, onBack, isLoading, error, sele
           <div className="w-16 h-16 rounded-full bg-gradient-teal flex items-center justify-center mx-auto mb-4">
             <User className="w-8 h-8 text-white" />
           </div>
-          <h2 className="font-display text-2xl text-gray-900 mb-2">
+          <h2 className="font-display text-2xl text-dark mb-2">
             {t('create.createAccount')}
           </h2>
           <p className="text-gray-600">

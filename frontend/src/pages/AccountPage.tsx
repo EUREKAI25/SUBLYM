@@ -192,7 +192,7 @@ export function AccountPage() {
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-teal flex items-center justify-center mb-4">
                 <CreditCard className="w-7 h-7 sm:w-9 sm:h-9 text-white" />
               </div>
-              <h1 className="font-display text-2xl text-gray-900">
+              <h1 className="font-display text-2xl text-dark">
                 {t('account.mySubscription')}
               </h1>
             </div>
@@ -216,7 +216,7 @@ export function AccountPage() {
           >
             <div className="flex items-center gap-3 mb-6">
               <Star className="w-6 h-6 text-teal-600" />
-              <h2 className="font-display text-xl text-gray-900">{t('account.subscriptionTitle')}</h2>
+              <h2 className="font-display text-xl text-dark">{t('account.subscriptionTitle')}</h2>
             </div>
 
             {loading ? (
@@ -313,7 +313,7 @@ export function AccountPage() {
             >
               <div className="flex items-center gap-3 mb-6">
                 <CreditCard className="w-6 h-6 text-teal-600" />
-                <h2 className="font-display text-xl text-gray-900">{t('account.invoicesTitle')}</h2>
+                <h2 className="font-display text-xl text-dark">{t('account.invoicesTitle')}</h2>
               </div>
 
               <div className="space-y-3">
@@ -323,7 +323,7 @@ export function AccountPage() {
                     className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
                   >
                     <div>
-                      <p className="font-medium text-gray-800">
+                      <p className="font-medium text-dark">
                         {invoice.amount} {invoice.currency.toUpperCase()}
                       </p>
                       <p className="text-sm text-gray-500">

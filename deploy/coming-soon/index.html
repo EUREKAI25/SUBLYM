@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUBLYM — Bientot disponible</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="description" content="SUBLYM - Visualisez vos reves grace a l'intelligence artificielle. Preinscrivez-vous !">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* Video background */
+    .video-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+    }
+    .video-bg video, .video-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    /* Content */
+    .container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 540px;
+      width: 100%;
+    }
+    .logo {
+      width: 320px;
+      max-width: 80%;
+      margin: 0 auto 2.5rem;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+    }
+    .message {
+      color: #333;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 20px rgba(255,255,255,0.8);
+    }
+    .message strong {
+      color: #013833;
+    }
+
+    /* Form */
+    .form-wrapper {
+      display: flex;
+      gap: 0;
+      max-width: 440px;
+      margin: 0 auto;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .form-wrapper input {
+      flex: 1;
+      border: none;
+      padding: 16px 24px;
+      font-size: 1rem;
+      outline: none;
+      background: #fff;
+      color: #333;
+      min-width: 0;
+    }
+    .form-wrapper input::placeholder {
+      color: #aaa;
+    }
+    .form-wrapper button {
+      border: none;
+      background: linear-gradient(135deg, #013833 0%, #2a7a8c 100%);
+      color: #fff;
+      padding: 16px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .form-wrapper button:hover {
+      opacity: 0.9;
+    }
+    .form-wrapper button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Thank you */
+    .thank-you {
+      display: none;
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 2rem;
+      color: #333;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .thank-you.visible { display: block; }
+    .thank-you h2 {
+      color: #013833;
+      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+    }
+    .thank-you p {
+      color: #555;
+      line-height: 1.5;
+    }
+    .check-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Error */
+    .error-msg {
+      color: #c0392b;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    }
+    .error-msg.visible { display: block; }
+
+    /* Already registered */
+    .already-msg {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+      display: none;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    }
+    .already-msg.visible { display: block; }
+
+    @media (max-width: 480px) {
+      .logo { width: 240px; }
+      .message { font-size: 0.95rem; }
+      .form-wrapper {
+        flex-direction: column;
+        border-radius: 12px;
+      }
+      .form-wrapper input {
+        border-radius: 12px 12px 0 0;
+        text-align: center;
+      }
+      .form-wrapper button {
+        border-radius: 0 0 12px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Video background -->
+  <div class="video-bg">
+    <img id="bg-fallback" src="/background.gif" alt="">
+    <video id="bg-video" autoplay loop muted playsinline style="display:none">
+      <source src="/background.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-overlay"></div>
+
+  <!-- Content -->
+  <div class="container">
+    <img class="logo" src="/logo.svg" alt="SUBLYM">
+
+    <p class="message" id="message"></p>
+
+    <div id="form-section">
+      <div class="form-wrapper">
+        <input type="email" id="email" autocomplete="email" required>
+        <button id="submit-btn" onclick="submitForm()"></button>
+      </div>
+      <p class="error-msg" id="error-msg"></p>
+      <p class="already-msg" id="already-msg"></p>
+    </div>
+
+    <div class="thank-you" id="thank-you">
+      <div class="check-icon">&#10003;</div>
+      <h2 id="ty-title"></h2>
+      <p id="ty-message"></p>
+    </div>
+  </div>
+
+  <script>
+    // ========== i18n ==========
+    const TEXTS = {
+      fr: {
+        title: 'SUBLYM — Bientot disponible',
+        message: 'Desole, l\'acces est impossible pour le moment, toutes nos excuses !<br>Mais vous pouvez vous <strong>preinscrire</strong>, nous vous offrons votre premiere video pour nous faire pardonner !',
+        placeholder: 'Votre email',
+        button: 'Je m\'inscris',
+        sending: 'Envoi...',
+        tyTitle: 'Merci !',
+        tyMessage: 'Votre preinscription est enregistree. Vous recevrez un email de confirmation. A tres bientot sur SUBLYM !',
+        already: 'Cette adresse est deja preinscrite. Merci de votre patience !',
+        errorInvalid: 'Veuillez entrer un email valide.',
+        errorNetwork: 'Erreur de connexion. Reessayez.',
+      },
+      en: {
+        title: 'SUBLYM — Coming Soon',
+        message: 'Sorry, access is not available at the moment, our apologies!<br>But you can <strong>pre-register</strong>, we\'ll give you your first video for free to make it up to you!',
+        placeholder: 'Your email',
+        button: 'Sign me up',
+        sending: 'Sending...',
+        tyTitle: 'Thank you!',
+        tyMessage: 'Your pre-registration is confirmed. You\'ll receive a confirmation email. See you soon on SUBLYM!',
+        already: 'This email is already pre-registered. Thank you for your patience!',
+        errorInvalid: 'Please enter a valid email address.',
+        errorNetwork: 'Connection error. Please try again.',
+      },
+      de: {
+        title: 'SUBLYM — Bald verfugbar',
+        message: 'Entschuldigung, der Zugang ist momentan nicht moglich!<br>Aber Sie konnen sich <strong>voranmelden</strong>, wir schenken Ihnen Ihr erstes Video als Entschadigung!',
+        placeholder: 'Ihre E-Mail',
+        button: 'Anmelden',
+        sending: 'Senden...',
+        tyTitle: 'Danke!',
+        tyMessage: 'Ihre Voranmeldung ist gespeichert. Sie erhalten eine Bestatigungs-E-Mail. Bis bald auf SUBLYM!',
+        already: 'Diese E-Mail ist bereits vorangemeldet. Danke fur Ihre Geduld!',
+        errorInvalid: 'Bitte geben Sie eine gultige E-Mail-Adresse ein.',
+        errorNetwork: 'Verbindungsfehler. Bitte versuchen Sie es erneut.',
+      },
+      es: {
+        title: 'SUBLYM — Proximamente',
+        message: 'Lo sentimos, el acceso no esta disponible por el momento.<br>Pero puedes <strong>preinscribirte</strong>, te regalamos tu primer video para compensarte!',
+        placeholder: 'Tu email',
+        button: 'Inscribirme',
+        sending: 'Enviando...',
+        tyTitle: 'Gracias!',
+        tyMessage: 'Tu preinscripcion esta registrada. Recibiras un email de confirmacion. Hasta pronto en SUBLYM!',
+        already: 'Este email ya esta preinscrito. Gracias por tu paciencia!',
+        errorInvalid: 'Por favor, ingresa un email valido.',
+        errorNetwork: 'Error de conexion. Intentalo de nuevo.',
+      },
+      it: {
+        title: 'SUBLYM — In arrivo',
+        message: 'Siamo spiacenti, l\'accesso non e al momento disponibile!<br>Ma puoi <strong>preiscriverti</strong>, ti regaliamo il tuo primo video per farci perdonare!',
+        placeholder: 'La tua email',
+        button: 'Iscrivimi',
+        sending: 'Invio...',
+        tyTitle: 'Grazie!',
+        tyMessage: 'La tua preiscrizione e registrata. Riceverai un\'email di conferma. A presto su SUBLYM!',
+        already: 'Questa email e gia preiscritta. Grazie per la pazienza!',
+        errorInvalid: 'Inserisci un\'email valida.',
+        errorNetwork: 'Errore di connessione. Riprova.',
+      },
+    };
+
+    // Detect language
+    function detectLang() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('lang') && TEXTS[params.get('lang')]) return params.get('lang');
+      const nav = (navigator.language || navigator.userLanguage || 'fr').substring(0, 2).toLowerCase();
+      return TEXTS[nav] ? nav : 'fr';
+    }
+
+    const LANG = detectLang();
+    const T = TEXTS[LANG];
+
+    // Apply texts
+    document.title = T.title;
+    document.documentElement.lang = LANG;
+    document.getElementById('message').innerHTML = T.message;
+    document.getElementById('email').placeholder = T.placeholder;
+    document.getElementById('submit-btn').textContent = T.button;
+    document.getElementById('ty-title').textContent = T.tyTitle;
+    document.getElementById('ty-message').textContent = T.tyMessage;
+
+    // Video background
+    const video = document.getElementById('bg-video');
+    const fallback = document.getElementById('bg-fallback');
+    video.addEventListener('loadeddata', () => {
+      video.style.display = 'block';
+      fallback.style.display = 'none';
+    });
+
+    // API URL - use relative path (same domain via nginx proxy)
+    const API_URL = '/api/v1';
+
+    // Form submission
+    async function submitForm() {
+      const emailInput = document.getElementById('email');
+      const btn = document.getElementById('submit-btn');
+      const errorEl = document.getElementById('error-msg');
+      const alreadyEl = document.getElementById('already-msg');
+      const email = emailInput.value.trim();
+
+      errorEl.classList.remove('visible');
+      alreadyEl.classList.remove('visible');
+
+      // Validate
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errorEl.textContent = T.errorInvalid;
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = T.sending;
+
+      try {
+        const res = await fetch(`${API_URL}/preregister`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, lang: LANG }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          if (data.message === 'already_registered') {
+            alreadyEl.textContent = T.already;
+            alreadyEl.classList.add('visible');
+            btn.disabled = false;
+            btn.textContent = T.button;
+          } else {
+            // Show thank you
+            document.getElementById('form-section').style.display = 'none';
+            document.getElementById('thank-you').classList.add('visible');
+          }
+        } else {
+          errorEl.textContent = T.errorNetwork;
+          errorEl.classList.add('visible');
+          btn.disabled = false;
+          btn.textContent = T.button;
+        }
+      } catch {
+        errorEl.textContent = T.errorNetwork;
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = T.button;
+      }
+    }
+
+    // Enter key
+    document.getElementById('email').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitForm();
+    });
+  </script>
+</body>
+</html>

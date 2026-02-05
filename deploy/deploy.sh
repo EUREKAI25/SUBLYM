@@ -16,7 +16,7 @@ echo "  SUBLYM - Deploying branch: $BRANCH"
 echo "=========================================="
 
 # --- Pull latest code ---
-echo "[1/6] Pulling latest code..."
+echo "[1/7] Pulling latest code..."
 if [ ! -d "$APP_DIR/.git" ]; then
     cd /tmp
     rm -rf sublym-repo
@@ -32,27 +32,43 @@ fi
 
 cd "$APP_DIR"
 
+# --- Ensure critical env vars ---
+ENV_FILE="$APP_DIR/backend/.env"
+if [ -f "$ENV_FILE" ]; then
+    grep -q "^FRONTEND_URL=" "$ENV_FILE" || echo 'FRONTEND_URL=https://preprod.sublym.org' >> "$ENV_FILE"
+    sed -i 's/^BREVO_SENDER_EMAIL=nathalie\.brigitte@gmail\.com/BREVO_SENDER_EMAIL=noreply@sublym.org/' "$ENV_FILE"
+    echo "  → .env checked (FRONTEND_URL, BREVO_SENDER_EMAIL)"
+fi
+
 # --- Backend ---
-echo "[2/6] Building backend..."
+echo "[2/7] Building backend..."
 cd "$APP_DIR/backend"
 npm ci --production=false
 npx prisma generate
 npx prisma migrate deploy 2>/dev/null || npx prisma db push --accept-data-loss
 
 # --- Frontend ---
-echo "[3/6] Building frontend..."
+echo "[3/7] Building frontend..."
 cd "$APP_DIR/frontend"
 npm ci
 npx vite build
 
+# --- Coming Soon page ---
+echo "[4/7] Setting up coming-soon page..."
+mkdir -p "$APP_DIR/coming-soon"
+cp "$APP_DIR/deploy/coming-soon/"* "$APP_DIR/coming-soon/"
+cp "$APP_DIR/frontend/public/favicon.svg" "$APP_DIR/coming-soon/" 2>/dev/null || true
+cp "$APP_DIR/frontend/public/background.mp4" "$APP_DIR/coming-soon/" 2>/dev/null || true
+cp "$APP_DIR/frontend/public/background.gif" "$APP_DIR/coming-soon/" 2>/dev/null || true
+
 # --- Backoffice ---
-echo "[4/6] Building backoffice..."
+echo "[5/7] Building backoffice..."
 cd "$APP_DIR/backoffice"
 npm ci
 NODE_ENV=production npx vite build
 
 # --- Python environment ---
-echo "[5/6] Setting up Python environment..."
+echo "[6/7] Setting up Python environment..."
 cd "$APP_DIR"
 if [ ! -d "venv" ]; then
     python3.11 -m venv venv
@@ -62,7 +78,7 @@ pip install -q -r requirements.txt
 deactivate
 
 # --- Restart services ---
-echo "[6/6] Restarting services..."
+echo "[7/7] Restarting services..."
 pm2 delete sublym-api 2>/dev/null || true
 cd "$APP_DIR/backend"
 pm2 start "npx tsx src/index.ts" --name sublym-api --interpreter none --cwd "$APP_DIR/backend"

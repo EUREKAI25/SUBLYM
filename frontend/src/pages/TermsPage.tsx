@@ -74,7 +74,7 @@ export function TermsPage() {
             >
               <div className="card">
                 <FileText className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-                <h1 className="font-display text-2xl text-gray-800 mb-3">
+                <h1 className="font-display text-2xl text-dark mb-3">
                   {t('terms.title')}
                 </h1>
                 <p className="text-gray-500 mb-8">

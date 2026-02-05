@@ -70,7 +70,7 @@ export function ProgressDisplay({ status, error, onRetry }: ProgressDisplayProps
       )}
 
       {/* Title */}
-      <h3 className="font-display text-2xl text-gray-800 mb-2">
+      <h3 className="font-display text-2xl text-dark mb-2">
         {hasError
           ? t('progress.error')
           : isComplete

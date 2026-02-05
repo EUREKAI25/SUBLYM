@@ -99,7 +99,7 @@ export function LoginPage() {
           {/* Step: Email input */}
           {step === 'email' && (
             <>
-              <h1 className="font-display text-2xl text-center text-gray-900 mb-2">
+              <h1 className="font-display text-2xl text-center text-dark mb-2">
                 {t('login.title')}
               </h1>
               <p className="text-center text-gray-600 mb-8">
@@ -156,7 +156,7 @@ export function LoginPage() {
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-teal-50 flex items-center justify-center">
                 <CheckCircle className="w-8 h-8 text-teal-600" />
               </div>
-              <h2 className="font-display text-2xl text-gray-900 mb-4">
+              <h2 className="font-display text-2xl text-dark mb-4">
                 {t('login.emailSentTitle')}
               </h2>
               <p
@@ -186,7 +186,7 @@ export function LoginPage() {
           {step === 'verifying' && (
             <div className="text-center py-8">
               <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
-              <h2 className="font-display text-xl text-gray-900">
+              <h2 className="font-display text-xl text-dark">
                 {t('login.verifying')}
               </h2>
             </div>
@@ -198,7 +198,7 @@ export function LoginPage() {
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-50 flex items-center justify-center">
                 <AlertCircle className="w-8 h-8 text-red-500" />
               </div>
-              <h2 className="font-display text-2xl text-gray-900 mb-4">
+              <h2 className="font-display text-2xl text-dark mb-4">
                 {t('login.invalidLink')}
               </h2>
               <p className="text-gray-600 mb-6">{error}</p>

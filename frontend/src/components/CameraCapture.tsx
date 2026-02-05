@@ -65,6 +65,11 @@ export function CameraCapture({
             videoRef.current.onloadedmetadata = () => resolve();
           }
         });
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.warn('Video autoplay failed, user interaction may be required:', playErr);
+        }
       }
       setHasPermission(true);
       setIsLoading(false);
@@ -163,7 +168,7 @@ export function CameraCapture({
     return (
       <div className="text-center py-8">
         <AlertCircle className="w-12 h-12 text-teal-400 mx-auto mb-4" />
-        <h3 className="font-display text-xl text-gray-800 mb-2">{t('camera.noPermissionTitle')}</h3>
+        <h3 className="font-display text-xl text-dark mb-2">{t('camera.noPermissionTitle')}</h3>
         <p className="text-gray-600 mb-6 max-w-sm mx-auto text-sm">{errorMessage}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button onClick={initCamera} className="btn-secondary inline-flex items-center justify-center gap-2">
@@ -207,7 +212,7 @@ export function CameraCapture({
         className="text-center"
       >
         <div className="text-3xl mb-1">{currentPose.icon}</div>
-        <h3 className="font-display text-lg text-gray-800">
+        <h3 className="font-display text-lg text-dark">
           {t(`camera.${currentPose.labelKey}`)}
         </h3>
         <p className="text-gray-600 text-sm">

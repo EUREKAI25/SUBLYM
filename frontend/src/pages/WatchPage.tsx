@@ -188,7 +188,7 @@ export function WatchPage() {
           {pageState === 'not-ready' && (
             <div className="card text-center py-12">
               <Loader2 className="w-12 h-12 text-teal-400 mx-auto mb-4 animate-spin" />
-              <h2 className="font-display text-xl text-gray-800 mb-2">
+              <h2 className="font-display text-xl text-dark mb-2">
                 {t('watch.notReady')}
               </h2>
               <p className="text-gray-600">
@@ -223,7 +223,7 @@ export function WatchPage() {
           {pageState === 'uploading' && (
             <div className="card text-center py-12">
               <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
-              <h2 className="font-display text-xl text-gray-800 mb-2">
+              <h2 className="font-display text-xl text-dark mb-2">
                 {t('watch.uploadingReaction')}
               </h2>
               <p className="text-gray-600">{t('watch.uploadingHint')}</p>
@@ -285,7 +285,7 @@ export function WatchPage() {
               {/* Comment section (for Smile users) */}
               {smileStatus?.hasStarted && (
                 <div className="card">
-                  <h3 className="font-display text-lg text-gray-800 mb-3 flex items-center gap-2">
+                  <h3 className="font-display text-lg text-dark mb-3 flex items-center gap-2">
                     <MessageSquare className="w-5 h-5 text-teal-600" />
                     {t('watch.commentTitle')}
                   </h3>
@@ -301,7 +301,7 @@ export function WatchPage() {
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={t('watch.commentPlaceholder')}
                         rows={3}
-                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-200 outline-none resize-none transition-colors"
+                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-dark placeholder-gray-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-200 outline-none resize-none transition-colors"
                         maxLength={1000}
                       />
                       <div className="flex justify-between items-center">

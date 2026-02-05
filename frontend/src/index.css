@@ -4,7 +4,7 @@
 
 :root {
   /* New turquoise color scheme */
-  --teal-primary: #1a5f6e;
+  --teal-primary: #013833;
   --teal-light: #2a7a8c;
   --teal-dark: #0f4a57;
   --teal-muted: #3d8a9a;
@@ -98,14 +98,14 @@ h1, h2, h3, h4 {
   }
 
   .glass-teal {
-    background: rgba(26, 95, 110, 0.95);
+    background: rgba(1, 56, 51, 0.95);
     backdrop-filter: blur(12px);
   }
 
   /* Buttons */
   .btn-primary {
     @apply px-8 py-3.5 rounded-full font-medium transition-all duration-300;
-    background: linear-gradient(135deg, #1a5f6e 0%, #2a7a8c 100%);
+    background: linear-gradient(135deg, #013833 0%, #2a7a8c 100%);
     color: white;
     font-family: 'Raleway', sans-serif;
     font-weight: 600;
@@ -116,7 +116,7 @@ h1, h2, h3, h4 {
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(26, 95, 110, 0.3);
+    box-shadow: 0 10px 30px rgba(1, 56, 51, 0.3);
   }
 
   .btn-primary:disabled {
@@ -129,8 +129,8 @@ h1, h2, h3, h4 {
   .btn-secondary {
     @apply px-6 py-3 rounded-full font-medium transition-all duration-300;
     background: transparent;
-    border: 2px solid #1a5f6e;
-    color: #1a5f6e;
+    border: 2px solid #013833;
+    color: #013833;
     font-family: 'Raleway', sans-serif;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -139,7 +139,7 @@ h1, h2, h3, h4 {
   }
 
   .btn-secondary:hover {
-    background: #1a5f6e;
+    background: #013833;
     color: white;
   }
 
@@ -149,7 +149,7 @@ h1, h2, h3, h4 {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(26, 95, 110, 0.15);
+    border: 2px solid rgba(1, 56, 51, 0.15);
     font-family: 'Raleway', sans-serif;
   }
 
@@ -177,13 +177,13 @@ h1, h2, h3, h4 {
   }
 
   .card:hover {
-    box-shadow: 0 10px 40px rgba(26, 95, 110, 0.1);
+    box-shadow: 0 10px 40px rgba(1, 56, 51, 0.1);
   }
 
   /* Upload zone */
   .upload-zone {
     @apply rounded-2xl p-8 transition-all duration-300 cursor-pointer;
-    border: 2px dashed rgba(26, 95, 110, 0.3);
+    border: 2px dashed rgba(1, 56, 51, 0.3);
     background: rgba(255, 255, 255, 0.6);
   }
 
@@ -193,8 +193,8 @@ h1, h2, h3, h4 {
   }
 
   .upload-zone.active {
-    border-color: #1a5f6e;
-    background: rgba(26, 95, 110, 0.05);
+    border-color: #013833;
+    background: rgba(1, 56, 51, 0.05);
   }
 
   /* Photo thumbnails */
@@ -209,7 +209,7 @@ h1, h2, h3, h4 {
 
   .photo-thumb .remove-btn {
     @apply absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center;
-    background: rgba(26, 95, 110, 0.9);
+    background: rgba(1, 56, 51, 0.9);
     color: white;
     opacity: 0;
     transition: opacity 0.2s;
@@ -222,24 +222,24 @@ h1, h2, h3, h4 {
   /* Progress bar */
   .progress-bar {
     @apply h-2 rounded-full overflow-hidden;
-    background: rgba(26, 95, 110, 0.1);
+    background: rgba(1, 56, 51, 0.1);
   }
 
   .progress-bar-fill {
     @apply h-full rounded-full transition-all duration-500;
-    background: linear-gradient(90deg, #1a5f6e 0%, #3d8a9a 100%);
+    background: linear-gradient(90deg, #013833 0%, #3d8a9a 100%);
   }
 
   /* Info/Alert boxes */
   .info-box {
     @apply rounded-xl p-4;
-    background: rgba(26, 95, 110, 0.08);
-    border: 1px solid rgba(26, 95, 110, 0.2);
+    background: rgba(1, 56, 51, 0.08);
+    border: 1px solid rgba(1, 56, 51, 0.2);
   }
 
   /* Links */
   .link-teal {
-    color: #1a5f6e;
+    color: #013833;
     font-weight: 500;
     transition: color 0.2s;
   }
@@ -268,17 +268,17 @@ h1, h2, h3, h4 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(26, 95, 110, 0.3);
+  background: rgba(1, 56, 51, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(26, 95, 110, 0.5);
+  background: rgba(1, 56, 51, 0.5);
 }
 
 /* Selection */
 ::selection {
-  background: rgba(26, 95, 110, 0.2);
+  background: rgba(1, 56, 51, 0.2);
   color: #0f4a57;
 }
 

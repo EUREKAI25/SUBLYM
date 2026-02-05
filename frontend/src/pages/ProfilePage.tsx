@@ -380,7 +380,7 @@ export function ProfilePage() {
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-teal flex items-center justify-center mb-4">
                 <User className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
-              <h1 className="font-display text-2xl text-gray-900">{t('account.myProfile')}</h1>
+              <h1 className="font-display text-2xl text-dark">{t('account.myProfile')}</h1>
             </div>
 
             <div className="space-y-4 mb-8">
@@ -388,7 +388,7 @@ export function ProfilePage() {
                 <Mail className="w-5 h-5 text-teal-600 flex-shrink-0" />
                 <div className="min-w-0">
                   <p className="text-sm text-gray-500">Email</p>
-                  <p className="text-gray-800 font-medium truncate">{user.email}</p>
+                  <p className="text-dark font-medium truncate">{user.email}</p>
                 </div>
               </div>
 
@@ -396,7 +396,7 @@ export function ProfilePage() {
                 <Calendar className="w-5 h-5 text-teal-600 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-gray-500">{t('account.memberSince')}</p>
-                  <p className="text-gray-800 font-medium">{user.created_at ? formatDate(user.created_at) : 'N/A'}</p>
+                  <p className="text-dark font-medium">{user.created_at ? formatDate(user.created_at) : 'N/A'}</p>
                 </div>
               </div>
 
@@ -524,7 +524,7 @@ export function ProfilePage() {
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
               <Camera className="w-6 h-6 text-teal-600" />
-              <h2 className="font-display text-xl text-gray-900">{t('profile.myPhotos')}</h2>
+              <h2 className="font-display text-xl text-dark">{t('profile.myPhotos')}</h2>
               <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
                 {photosTotal}/{MAX_PHOTOS_USER}
               </span>
@@ -644,7 +644,7 @@ export function ProfilePage() {
                     >
                       <X className="w-5 h-5 text-gray-500" />
                     </button>
-                    <h3 className="font-display text-lg text-gray-900 mb-4">{t('profile.takePhotos')}</h3>
+                    <h3 className="font-display text-lg text-dark mb-4">{t('profile.takePhotos')}</h3>
                     <CameraCapture
                       onPhotosComplete={handleCameraComplete}
                       onSwitchToUpload={handleSwitchToUpload}
@@ -706,7 +706,7 @@ export function ProfilePage() {
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
               <MessageSquare className="w-6 h-6 text-teal-600" />
-              <h2 className="font-display text-xl text-gray-900">{t('profile.myTestimonials')}</h2>
+              <h2 className="font-display text-xl text-dark">{t('profile.myTestimonials')}</h2>
             </div>
 
             {/* Loading */}

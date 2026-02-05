@@ -138,7 +138,7 @@ export function SmileRecording({
     return (
       <div className="card text-center py-12">
         <AlertCircle className="w-12 h-12 text-teal-400 mx-auto mb-4" />
-        <h3 className="font-display text-xl text-gray-800 mb-2">
+        <h3 className="font-display text-xl text-dark mb-2">
           {t('smile.noPermissionTitle')}
         </h3>
         <p className="text-gray-600 mb-6">
@@ -168,7 +168,7 @@ export function SmileRecording({
             </div>
 
             <div>
-              <h2 className="font-display text-2xl sm:text-3xl text-gray-900 mb-3">
+              <h2 className="font-display text-2xl sm:text-3xl text-dark mb-3">
                 {t('smile.introTitle')}
               </h2>
               <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
@@ -209,7 +209,7 @@ export function SmileRecording({
             className="space-y-6"
           >
             <div className="text-center">
-              <h2 className="font-display text-2xl text-gray-900 mb-2">
+              <h2 className="font-display text-2xl text-dark mb-2">
                 {t('smile.readyTitle')}
               </h2>
               <p className="text-gray-600">
@@ -325,7 +325,7 @@ export function SmileRecording({
             </div>
 
             <div>
-              <h2 className="font-display text-2xl text-gray-900 mb-2">
+              <h2 className="font-display text-2xl text-dark mb-2">
                 {t('smile.doneTitle')}
               </h2>
               <p className="text-gray-600">
