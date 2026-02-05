@@ -1,0 +1,318 @@
+// SUBLYM Dream App - Schema Prisma
+// Version 1.0 - Février 2026
+// Mode: Images uniquement (pas de vidéos)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// UTILISATEURS
+// ============================================
+
+model User {
+  id                    String    @id @default(uuid())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Préférences
+  navigationMode        String    @default("scroll") // scroll | swipe
+  gestureSensitivity    Float     @default(0.5) // 0..1
+  useDreamTheme         Boolean   @default(true)
+  themePreference       String    @default("system") // system | light | dark
+
+  // Sécurité
+  pinHash               String    // PIN 6 chiffres, obligatoire
+
+  // Statut
+  status                String    @default("active") // active | blocked
+  deletedAt             DateTime?
+
+  // Relations
+  sessions              Session[]
+  dreams                Dream[]
+  imageAssets           ImageAsset[]
+  markers               Marker[]
+
+  @@index([status])
+  @@index([deletedAt])
+}
+
+// ============================================
+// SESSIONS & AUTHENTIFICATION
+// ============================================
+
+model Session {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token         String    @unique
+  createdAt     DateTime  @default(now())
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  lastSeenAt    DateTime  @default(now())
+
+  // Metadata
+  deviceLabel   String?
+  userAgent     String?
+  ip            String?
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AccessCode {
+  id              String    @id @default(uuid())
+  code            String    @unique
+
+  // Statut
+  status          String    @default("valid") // valid | used | revoked | expired
+
+  // Limites
+  maxActivations  Int       @default(1)
+  currentUses     Int       @default(0)
+
+  // Dates
+  createdAt       DateTime  @default(now())
+  usedAt          DateTime?
+  expiresAt       DateTime?
+
+  // Source tracking (Etsy, etc.)
+  source          String?   // etsy | direct | partner | gift
+  sourceMetadata  Json?     // Metadata signée du Link Builder
+
+  // Utilisateur associé
+  userId          String?
+
+  // Traçabilité
+  createdBy       String?   // Admin ID ou "system"
+
+  @@index([code])
+  @@index([status])
+  @@index([source])
+}
+
+// ============================================
+// RÊVES
+// ============================================
+
+model Dream {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Contenu
+  title           String?
+  description     String    @db.Text
+  rejectText      String?   @db.Text // Éléments interdits
+
+  // Statut
+  status          String    @default("active") // active | inactive | realized
+  isActive        Boolean   @default(true) // V1: max 1 true
+  activeRank      Int?      // Future: multi-rêves premium
+
+  // Thème
+  palette         Json?     // Palette de couleurs extraite
+  backgroundAssetId String? // Image utilisée comme background in-app
+
+  // Dates
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  realizedAt      DateTime?
+
+  // Relations
+  imageAssets     ImageAsset[]
+  sequences       DreamSequence[]
+  markers         Marker[]
+  generationJobs  GenerationJob[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([isActive])
+}
+
+// ============================================
+// IMAGES
+// ============================================
+
+model ImageAsset {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dreamId         String?
+  dream           Dream?    @relation(fields: [dreamId], references: [id], onDelete: SetNull)
+
+  // Type
+  kind            String    // user_photo | dream_image | wallpaper
+  source          String    @default("upload") // upload | ai | webcam
+
+  // Stockage (MinIO)
+  storageKey      String    // Clé dans le bucket
+  storageUrl      String?   // URL signée (générée à la demande)
+
+  // Metadata
+  width           Int?
+  height          Int?
+  format          String?   // jpg | png | webp
+  bytes           Int?
+  hash            String?   // Pour déduplication
+
+  // Flags
+  isEnabled       Boolean   @default(true) // Exclure de la diffusion
+  isFavorite      Boolean   @default(false) // V2: filtre favoris
+
+  // Dates
+  createdAt       DateTime  @default(now())
+  deletedAt       DateTime?
+
+  // Relations
+  sequenceItems   DreamSequenceItem[]
+  markers         Marker[]
+
+  @@index([userId])
+  @@index([dreamId])
+  @@index([kind])
+  @@index([isEnabled])
+  @@index([deletedAt])
+}
+
+// ============================================
+// SÉQUENCES D'IMAGES
+// ============================================
+
+model DreamSequence {
+  id              String    @id @default(uuid())
+  dreamId         String
+  dream           Dream     @relation(fields: [dreamId], references: [id], onDelete: Cascade)
+
+  // Configuration
+  loop            Boolean   @default(true)
+  filterMode      String    @default("all") // all | favorites_only (V2)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  items           DreamSequenceItem[]
+
+  @@index([dreamId])
+}
+
+model DreamSequenceItem {
+  id              String        @id @default(uuid())
+  sequenceId      String
+  sequence        DreamSequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+  assetId         String
+  asset           ImageAsset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  order           Int           @default(0)
+
+  @@index([sequenceId])
+  @@index([assetId])
+}
+
+// ============================================
+// MARKERS (Check / C'est arrivé)
+// ============================================
+
+model Marker {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dreamId         String
+  dream           Dream     @relation(fields: [dreamId], references: [id], onDelete: Cascade)
+  assetId         String?
+  asset           ImageAsset? @relation(fields: [assetId], references: [id], onDelete: SetNull)
+
+  type            String    @default("check") // check (unifié)
+  note            String?   @db.Text
+
+  createdAt       DateTime  @default(now())
+
+  @@index([userId])
+  @@index([dreamId])
+  @@index([assetId])
+}
+
+// ============================================
+// GÉNÉRATION D'IMAGES (Jobs)
+// ============================================
+
+model GenerationJob {
+  id              String    @id @default(uuid())
+  dreamId         String
+  dream           Dream     @relation(fields: [dreamId], references: [id], onDelete: Cascade)
+
+  traceId         String    @unique @default(uuid())
+
+  // Statut
+  status          String    @default("queued") // queued | running | succeeded | failed
+  progress        Int       @default(0) // 0-100
+  currentStep     String?
+  stepMessage     String?
+
+  // Résultats
+  imagesCount     Int?
+
+  // Coûts
+  costEur         Decimal?  @db.Decimal(10, 4)
+  costDetails     Json?
+
+  // Erreur
+  error           String?
+  canRetry        Boolean   @default(true)
+
+  // Dates
+  createdAt       DateTime  @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+
+  @@index([dreamId])
+  @@index([traceId])
+  @@index([status])
+}
+
+// ============================================
+// CONFIGURATION GLOBALE
+// ============================================
+
+model Config {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  type      String   @default("string") // string | number | boolean | json
+  category  String   @default("general") // general | limits | analytics | etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditLog {
+  id        String    @id @default(uuid())
+
+  action    String    // USER_CREATE | DREAM_CREATE | CONFIG_UPDATE | etc.
+  actor     String?   // user:uuid | admin:uuid | system
+  target    String?   // dream:uuid | config:key | etc.
+  details   Json?
+
+  ip        String?
+  userAgent String?
+
+  createdAt DateTime  @default(now())
+
+  @@index([action])
+  @@index([actor])
+  @@index([target])
+  @@index([createdAt])
+}

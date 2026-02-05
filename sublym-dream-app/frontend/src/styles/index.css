@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-system-carbon-400 text-white;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Safe area for notched devices */
+  .safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Glassmorphism card */
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+
+  .glass-card-dark {
+    @apply bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+
+  /* Neumorphism button */
+  .neu-button {
+    @apply relative bg-system-carbon-300 rounded-xl px-6 py-3;
+    box-shadow:
+      8px 8px 16px rgba(0, 0, 0, 0.4),
+      -8px -8px 16px rgba(60, 60, 60, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .neu-button:active {
+    box-shadow:
+      inset 4px 4px 8px rgba(0, 0, 0, 0.4),
+      inset -4px -4px 8px rgba(60, 60, 60, 0.2);
+  }
+
+  .neu-button-light {
+    @apply relative bg-system-ivory-100 rounded-xl px-6 py-3 text-system-carbon-400;
+    box-shadow:
+      8px 8px 16px #d1d1d1,
+      -8px -8px 16px #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .neu-button-light:active {
+    box-shadow:
+      inset 4px 4px 8px #d1d1d1,
+      inset -4px -4px 8px #ffffff;
+  }
+
+  /* Gradient button */
+  .gradient-button {
+    @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium text-white;
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #6366f1 100%);
+    transition: all 0.3s ease;
+  }
+
+  .gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px -10px rgba(168, 85, 247, 0.5);
+  }
+
+  .gradient-button:active {
+    transform: translateY(0);
+  }
+
+  /* Input styles */
+  .input-glass {
+    @apply w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40;
+    @apply focus:outline-none focus:border-dream-500/50 focus:ring-2 focus:ring-dream-500/20;
+    transition: all 0.2s ease;
+  }
+
+  .input-neu {
+    @apply w-full bg-system-carbon-300 rounded-xl px-4 py-3 text-white placeholder-white/40;
+    box-shadow:
+      inset 4px 4px 8px rgba(0, 0, 0, 0.3),
+      inset -4px -4px 8px rgba(60, 60, 60, 0.1);
+    @apply focus:outline-none focus:ring-2 focus:ring-dream-500/30;
+  }
+
+  /* PIN input */
+  .pin-digit {
+    @apply w-12 h-14 text-center text-2xl font-bold bg-white/5 border border-white/20 rounded-xl;
+    @apply focus:outline-none focus:border-dream-500 focus:ring-2 focus:ring-dream-500/30;
+  }
+
+  /* Scrim overlay */
+  .scrim-light {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 100%);
+  }
+
+  .scrim-dark {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+  }
+
+  /* Bottom action bar */
+  .bottom-action-bar {
+    @apply fixed bottom-0 left-0 right-0 glass-card rounded-t-3xl;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-dream;
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Swipe gesture styles */
+.swipe-container {
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Image viewer full screen */
+.viewer-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}

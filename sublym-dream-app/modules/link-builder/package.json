@@ -1,0 +1,27 @@
+{
+  "name": "@eurkai/link-builder",
+  "version": "1.0.0",
+  "description": "Eurkai Link Builder - Generate signed links and QR codes for access distribution",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.9",
+    "@hono/zod-validator": "^0.2.0",
+    "@prisma/client": "^5.8.0",
+    "hono": "^4.0.0",
+    "nanoid": "^5.0.4",
+    "qrcode": "^1.5.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/qrcode": "^1.5.5",
+    "prisma": "^5.8.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
