@@ -36,8 +36,13 @@ cd "$APP_DIR"
 ENV_FILE="$APP_DIR/backend/.env"
 if [ -f "$ENV_FILE" ]; then
     grep -q "^FRONTEND_URL=" "$ENV_FILE" || echo 'FRONTEND_URL=https://preprod.sublym.org' >> "$ENV_FILE"
-    sed -i 's/^BREVO_SENDER_EMAIL=nathalie\.brigitte@gmail\.com/BREVO_SENDER_EMAIL=noreply@sublym.org/' "$ENV_FILE"
-    echo "  → .env checked (FRONTEND_URL, BREVO_SENDER_EMAIL)"
+    # Force correct sender email (replace any existing value)
+    sed -i 's/^BREVO_SENDER_EMAIL=.*/BREVO_SENDER_EMAIL=noreply@sublym.org/' "$ENV_FILE"
+    # Ensure ENVIRONMENT is set for production email sending
+    grep -q "^ENVIRONMENT=" "$ENV_FILE" || echo 'ENVIRONMENT=production' >> "$ENV_FILE"
+    echo "  → .env patched: FRONTEND_URL, BREVO_SENDER_EMAIL, ENVIRONMENT"
+    echo "  → Current sender: $(grep BREVO_SENDER_EMAIL "$ENV_FILE")"
+    echo "  → Current frontend: $(grep FRONTEND_URL= "$ENV_FILE" | head -1)"
 fi
 
 # --- Backend ---
