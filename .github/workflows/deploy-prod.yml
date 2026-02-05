@@ -1,8 +1,6 @@
-name: Deploy to Preprod
+name: Deploy to Prod
 
 on:
-  push:
-    branches: [preprod]
   workflow_dispatch:
     inputs:
       triggered_by:
@@ -22,4 +20,4 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /var/www/sublym
-            bash deploy/deploy.sh preprod
+            bash deploy/deploy.sh main

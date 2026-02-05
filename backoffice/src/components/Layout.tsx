@@ -19,9 +19,11 @@ import {
   Code,
   Shield,
   History,
+  Rocket,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { DeployModal } from './DeployModal';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -46,6 +48,11 @@ export function Layout() {
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [deployOpen, setDeployOpen] = useState(false);
+
+  const hostname = window.location.hostname;
+  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+  const deployTarget = isLocal ? 'preprod' : 'prod' as const;
 
   const handleLogout = () => {
     logout();
@@ -135,6 +142,21 @@ export function Layout() {
           >
             <Menu className="w-5 h-5" />
           </button>
+
+          {admin?.role === 'superadmin' && (
+            <button
+              onClick={() => setDeployOpen(true)}
+              className={cn(
+                'ml-auto flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                isLocal
+                  ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                  : 'bg-red-100 text-red-700 hover:bg-red-200'
+              )}
+            >
+              <Rocket className="w-4 h-4" />
+              {isLocal ? 'Deploy Preprod' : 'Deploy Prod'}
+            </button>
+          )}
         </header>
 
         {/* Page content */}
@@ -142,6 +164,13 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Deploy modal */}
+      <DeployModal
+        open={deployOpen}
+        onClose={() => setDeployOpen(false)}
+        target={deployTarget}
+      />
     </div>
   );
 }

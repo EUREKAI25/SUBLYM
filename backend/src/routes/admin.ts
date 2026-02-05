@@ -2437,4 +2437,113 @@ app.delete('/smile-configs/:id', async (c) => {
   return c.json({ success: true });
 });
 
+// ============================================
+// DEPLOY (Trigger GitHub Actions workflows)
+// ============================================
+
+const deploySchema = z.object({
+  target: z.enum(['preprod', 'prod']),
+});
+
+app.post('/deploy', superadminMiddleware, zValidator('json', deploySchema), async (c) => {
+  const { admin } = getAdminContext(c);
+  const { target } = c.req.valid('json');
+
+  const githubPat = process.env.GITHUB_PAT;
+  const owner = process.env.GITHUB_OWNER || 'EUREKAI25';
+  const repo = process.env.GITHUB_REPO || 'SUBLYM';
+
+  if (!githubPat) {
+    throw new ValidationError('GITHUB_PAT non configuré sur le serveur');
+  }
+
+  const workflowFile = target === 'prod' ? 'deploy-prod.yml' : 'deploy-preprod.yml';
+  const ref = target === 'prod' ? 'main' : 'preprod';
+
+  const ghResponse = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`,
+    {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': `token ${githubPat}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify({
+        ref,
+        inputs: { triggered_by: `${admin.email} (backoffice)` },
+      }),
+    }
+  );
+
+  if (!ghResponse.ok) {
+    const errorBody = await ghResponse.text();
+    console.error('[Deploy] GitHub API error:', ghResponse.status, errorBody);
+    throw new ValidationError(`Erreur GitHub API: ${ghResponse.status} - ${errorBody}`);
+  }
+
+  await prisma.auditLog.create({
+    data: {
+      adminId: admin.id,
+      action: 'DEPLOY_TRIGGER',
+      target: `deploy:${target}`,
+      details: { target, workflowFile, ref, triggeredAt: new Date().toISOString() },
+    },
+  });
+
+  return c.json({
+    success: true,
+    message: `Déploiement ${target} déclenché`,
+    target,
+    workflowFile,
+  });
+});
+
+app.get('/deploy/status', superadminMiddleware, async (c) => {
+  const githubPat = process.env.GITHUB_PAT;
+  const owner = process.env.GITHUB_OWNER || 'EUREKAI25';
+  const repo = process.env.GITHUB_REPO || 'SUBLYM';
+
+  if (!githubPat) {
+    return c.json({ preprod: null, prod: null });
+  }
+
+  const headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': `token ${githubPat}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+
+  const fetchRun = async (workflowFile: string) => {
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/runs?per_page=1`,
+        { headers }
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      const run = data.workflow_runs?.[0];
+      if (!run) return null;
+      return {
+        id: run.id,
+        status: run.status as string,
+        conclusion: run.conclusion as string | null,
+        createdAt: run.created_at,
+        updatedAt: run.updated_at,
+        htmlUrl: run.html_url,
+        triggeredBy: run.triggering_actor?.login,
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  const [preprod, prod] = await Promise.all([
+    fetchRun('deploy-preprod.yml'),
+    fetchRun('deploy-prod.yml'),
+  ]);
+
+  return c.json({ preprod, prod });
+});
+
 export { app as adminRoutes };
