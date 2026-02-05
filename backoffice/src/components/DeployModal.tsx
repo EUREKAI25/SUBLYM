@@ -132,7 +132,10 @@ export function DeployModal({ open, onClose, target }: DeployModalProps) {
               )}
 
               <p className="text-sm text-gray-600">
-                Cela va declencher le deploiement du code actuel vers <strong>{targetLabel}</strong> via GitHub Actions.
+                {isProd
+                  ? <>Cela va <strong>merger preprod dans main</strong> et deployer en production.</>
+                  : <>Cela va <strong>pusher le code local</strong> sur la branche preprod et deployer sur le serveur.</>
+                }
               </p>
 
               {/* Last deploy info */}

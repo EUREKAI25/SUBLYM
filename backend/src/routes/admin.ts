@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { prisma } from '../db';
 import { adminMiddleware, superadminMiddleware, getAdminContext } from '../middleware/auth';
 import { ValidationError, NotFoundError, UnauthorizedError } from '../middleware/error-handler';
@@ -2438,8 +2440,10 @@ app.delete('/smile-configs/:id', async (c) => {
 });
 
 // ============================================
-// DEPLOY (Trigger GitHub Actions workflows)
+// DEPLOY (Push + trigger GitHub Actions)
 // ============================================
+
+const execAsync = promisify(exec);
 
 const deploySchema = z.object({
   target: z.enum(['preprod', 'prod']),
@@ -2457,29 +2461,76 @@ app.post('/deploy', superadminMiddleware, zValidator('json', deploySchema), asyn
     throw new ValidationError('GITHUB_PAT non configuré sur le serveur');
   }
 
-  const workflowFile = target === 'prod' ? 'deploy-prod.yml' : 'deploy-preprod.yml';
-  const ref = target === 'prod' ? 'main' : 'preprod';
+  const ghHeaders = {
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': `token ${githubPat}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
 
-  const ghResponse = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`,
-    {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': `token ${githubPat}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      body: JSON.stringify({
-        ref,
-        inputs: { triggered_by: `${admin.email} (backoffice)` },
-      }),
+  const isLocal = process.env.NODE_ENV === 'development';
+  let pushResult = '';
+
+  if (target === 'preprod' && isLocal) {
+    // LOCAL → PREPROD : git push local code to preprod branch
+    const repoDir = path.resolve(process.cwd(), '..');
+    try {
+      // Push current branch to preprod
+      const { stdout, stderr } = await execAsync(
+        'git push origin HEAD:preprod',
+        { cwd: repoDir }
+      );
+      pushResult = stdout || stderr || 'Push OK';
+      console.log('[Deploy] Git push to preprod:', pushResult);
+    } catch (err: any) {
+      console.error('[Deploy] Git push failed:', err.message);
+      throw new ValidationError(`Git push failed: ${err.stderr || err.message}`);
     }
-  );
+    // The push to preprod auto-triggers the deploy-preprod workflow (push trigger)
+    // No need for workflow_dispatch
 
-  if (!ghResponse.ok) {
-    const errorBody = await ghResponse.text();
-    console.error('[Deploy] GitHub API error:', ghResponse.status, errorBody);
-    throw new ValidationError(`Erreur GitHub API: ${ghResponse.status} - ${errorBody}`);
+  } else if (target === 'prod') {
+    // PREPROD → PROD : merge preprod into main via GitHub API, then trigger deploy
+    // Step 1: Merge preprod → main
+    const mergeRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/merges`,
+      {
+        method: 'POST',
+        headers: ghHeaders,
+        body: JSON.stringify({
+          base: 'main',
+          head: 'preprod',
+          commit_message: `Deploy to prod (triggered by ${admin.email})`,
+        }),
+      }
+    );
+
+    if (!mergeRes.ok) {
+      const errorBody = await mergeRes.text();
+      console.error('[Deploy] GitHub merge error:', mergeRes.status, errorBody);
+      if (mergeRes.status === 409) {
+        throw new ValidationError('Conflit de merge entre preprod et main. Résoudre manuellement.');
+      }
+      throw new ValidationError(`Erreur merge GitHub: ${mergeRes.status}`);
+    }
+
+    // Step 2: Trigger deploy-prod workflow
+    const dispatchRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/deploy-prod.yml/dispatches`,
+      {
+        method: 'POST',
+        headers: ghHeaders,
+        body: JSON.stringify({
+          ref: 'main',
+          inputs: { triggered_by: `${admin.email} (backoffice)` },
+        }),
+      }
+    );
+
+    if (!dispatchRes.ok) {
+      const errorBody = await dispatchRes.text();
+      console.error('[Deploy] GitHub dispatch error:', dispatchRes.status, errorBody);
+      throw new ValidationError(`Erreur workflow dispatch: ${dispatchRes.status}`);
+    }
   }
 
   await prisma.auditLog.create({
@@ -2487,15 +2538,21 @@ app.post('/deploy', superadminMiddleware, zValidator('json', deploySchema), asyn
       adminId: admin.id,
       action: 'DEPLOY_TRIGGER',
       target: `deploy:${target}`,
-      details: { target, workflowFile, ref, triggeredAt: new Date().toISOString() },
+      details: {
+        target,
+        isLocal,
+        pushResult: pushResult || undefined,
+        triggeredAt: new Date().toISOString(),
+      },
     },
   });
 
   return c.json({
     success: true,
-    message: `Déploiement ${target} déclenché`,
+    message: target === 'preprod'
+      ? 'Code pushé sur preprod — déploiement automatique'
+      : 'Preprod mergé dans main — déploiement prod déclenché',
     target,
-    workflowFile,
   });
 });
 
