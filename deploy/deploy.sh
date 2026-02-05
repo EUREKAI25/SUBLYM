@@ -86,6 +86,19 @@ deactivate
 echo "[7/7] Restarting services..."
 pm2 delete sublym-api 2>/dev/null || true
 cd "$APP_DIR/backend"
+
+# Load .env variables into the shell so PM2 inherits them
+# (the backend has no dotenv dependency, so env vars must come from the process environment)
+if [ -f "$APP_DIR/backend/.env" ]; then
+    echo "  → Loading .env into environment..."
+    set -a
+    source "$APP_DIR/backend/.env"
+    set +a
+    echo "  → ENVIRONMENT=$ENVIRONMENT"
+    echo "  → FRONTEND_URL=$FRONTEND_URL"
+    echo "  → BREVO_SENDER_EMAIL=$BREVO_SENDER_EMAIL"
+fi
+
 pm2 start "npx tsx src/index.ts" --name sublym-api --interpreter none --cwd "$APP_DIR/backend"
 pm2 save
 
