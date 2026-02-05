@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
-import { API_ENDPOINTS, fetchWithAuth } from '@/lib/config';
+import { API_BASE_URL, API_ENDPOINTS, fetchWithAuth } from '@/lib/config';
 import type { User, AuthState } from '@/types';
 
 interface AuthContextType extends AuthState {
@@ -91,6 +91,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return false;
     }
   }, []);
+
+  // Auto-apply pending invitation when user becomes authenticated
+  useEffect(() => {
+    if (!state.user || !state.token) return;
+    const pendingInvite = localStorage.getItem('pendingInvite');
+    if (!pendingInvite) return;
+
+    fetchWithAuth(`${API_BASE_URL}/invitations/${pendingInvite.toUpperCase()}/apply`, {
+      method: 'POST',
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          localStorage.removeItem('pendingInvite');
+          console.log('[AUTH] Invitation auto-applied:', pendingInvite);
+        }
+      })
+      .catch(() => {
+        // Silently fail - user can still manually apply from invite page
+      });
+  }, [state.user, state.token]);
 
   const logout = useCallback(() => {
     localStorage.removeItem('auth_token');

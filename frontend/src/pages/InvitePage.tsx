@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Gift, Loader2, AlertCircle, ArrowRight, Mail, Heart } from 'lucide-react';
+import { Gift, Loader2, AlertCircle, ArrowRight, Mail, UserPlus } from 'lucide-react';
 import { Logo } from '@/components';
 import { useAuth, useI18n } from '@/hooks';
 import { API_BASE_URL, fetchWithAuth } from '@/lib/config';
@@ -174,17 +174,21 @@ export function InvitePage() {
                   )}
                 </button>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <Link
-                    to={`/login?invite=${code}`}
+                    to={`/create?invite=${code}`}
                     className="btn-primary w-full flex items-center justify-center gap-2"
                   >
-                    <Mail className="w-4 h-4" />
-                    Se connecter pour accepter
+                    <UserPlus className="w-4 h-4" />
+                    Créer mon compte
                   </Link>
-                  <p className="text-sm text-gray-500">
-                    Connectez-vous ou créez un compte pour recevoir votre cadeau.
-                  </p>
+                  <Link
+                    to={`/login?invite=${code}`}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-teal-600 text-teal-700 rounded-full font-medium hover:bg-teal-50 transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    J'ai déjà un compte
+                  </Link>
                 </div>
               )}
             </>
