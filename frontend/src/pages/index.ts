@@ -7,3 +7,4 @@ export { ProfilePage } from './ProfilePage';
 export { WatchPage } from './WatchPage';
 export { ContactPage } from './ContactPage';
 export { TermsPage } from './TermsPage';
+export { InvitePage } from './InvitePage';

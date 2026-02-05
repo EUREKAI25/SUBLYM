@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, I18nProvider } from '@/hooks';
-import { LandingPage, LoginPage, CreatePage, GalleryPage, AccountPage, ProfilePage, WatchPage, ContactPage, TermsPage } from '@/pages';
+import { LandingPage, LoginPage, CreatePage, GalleryPage, AccountPage, ProfilePage, WatchPage, ContactPage, TermsPage, InvitePage } from '@/pages';
 import { initGA, trackPageView } from '@/lib/analytics';
 
 function PageTracker() {
@@ -28,6 +28,7 @@ function App() {
             <Route path="/watch/:traceId" element={<WatchPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/invite/:code" element={<InvitePage />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
