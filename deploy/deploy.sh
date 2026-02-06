@@ -66,6 +66,11 @@ cp "$APP_DIR/frontend/public/favicon.svg" "$APP_DIR/coming-soon/" 2>/dev/null ||
 cp "$APP_DIR/frontend/public/background.mp4" "$APP_DIR/coming-soon/" 2>/dev/null || true
 cp "$APP_DIR/frontend/public/background.gif" "$APP_DIR/coming-soon/" 2>/dev/null || true
 
+# --- Static pages (privacy, etc.) ---
+echo "[4b/7] Copying static pages..."
+mkdir -p "$APP_DIR/frontend"
+cp "$APP_DIR/frontend/public/privacy.html" "$APP_DIR/frontend/" 2>/dev/null || true
+
 # --- Backoffice ---
 echo "[5/7] Building backoffice..."
 cd "$APP_DIR/backoffice"
